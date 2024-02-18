@@ -1,0 +1,12 @@
+{
+  "item.lancer_shot": {
+    "subtitle": "subtitles.item.phantom_lancer",
+    "sounds": [
+      "wrathy_armament:items/phantom_splash/phantom_ray",
+      "wrathy_armament:items/phantom_splash/phantom_ray1",
+      "wrathy_armament:items/phantom_splash/phantom_ray2",
+      "wrathy_armament:items/phantom_splash/phantom_ray3",
+      "wrathy_armament:items/phantom_splash/phantom_ray4"
+    ]
+  }
+}

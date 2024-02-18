@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="GPL-3.0"
+
+[[mods]]
+modId="wrathy_armament"
+version="0.1.4"
+displayName="Wrathy Armament"
+logoFile=""
+authors="SashaKYotoz"
+description="Weapony of games' galaxy"
+
+[[dependencies.wrathy_armament]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="BOTH"
+
+
+
+

@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.sashakyotoz.wrathy_armament.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "wrathy_armament.refmap.json",
+  "mixins": [
+    "ServerLevelMixin"
+  ],
+  "client": [
+    "OverBossHealthBarMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
