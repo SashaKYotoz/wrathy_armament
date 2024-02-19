@@ -42,7 +42,6 @@ public class SashaKYotozRandomStrollGoal extends Goal {
                     return false;
                 }
             }
-
             Vec3 vec3 = this.getPosition();
             if (vec3 == null) {
                 return false;

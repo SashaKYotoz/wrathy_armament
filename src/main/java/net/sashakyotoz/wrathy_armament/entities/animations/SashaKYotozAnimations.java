@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SashaKYotozAnimations {
-
     public static final AnimationDefinition TAKEOFF = AnimationDefinition.Builder.withLength(0.375f)
             .addAnimation("Head",
                     new AnimationChannel(AnimationChannel.Targets.ROTATION,

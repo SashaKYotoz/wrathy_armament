@@ -10,6 +10,7 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 import net.sashakyotoz.wrathy_armament.entities.animations.SashaKYotozAnimations;
+import org.jetbrains.annotations.NotNull;
 
 public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T> {
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "sashakyotoz_model"), "main");
@@ -201,7 +202,7 @@ public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.root().getAllParts().forEach(ModelPart::resetPose);
-		float f = Math.min((float) entity.getDeltaMovement().lengthSqr() * 200.0F, 8.0F);
+		float f = Math.min((float) entity.getDeltaMovement().lengthSqr() * 100.0F, 4.0F);
 		this.head.yRot = netHeadYaw / (180F / (float) Math.PI);
 		this.head.xRot = headPitch / (180F / (float) Math.PI);
 		this.animate(entity.idle, SashaKYotozAnimations.IDLE,ageInTicks);
@@ -211,8 +212,9 @@ public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T
 		this.animate(entity.attackPhantomRay,SashaKYotozAnimations.ATTACKPHANTOMRAY,ageInTicks);
 		this.animate(entity.takeOff,SashaKYotozAnimations.TAKEOFF,ageInTicks);
 		this.animate(entity.landing,SashaKYotozAnimations.LANDING,ageInTicks);
-		this.animate(entity.attackCycleOfPhantoms,SashaKYotozAnimations.ATTACKPHANTOMCYCLE,ageInTicks,0.25f);
-		this.animateWalk(entity.getFlyPhase() == 1 ? SashaKYotozAnimations.FLY : SashaKYotozAnimations.WALK,limbSwing,limbSwingAmount,2.0F, 2.5F);
+		this.animate(entity.attackCycleOfPhantoms,SashaKYotozAnimations.ATTACKPHANTOMCYCLE,ageInTicks,0.5f);
+		this.animate(entity.walk,SashaKYotozAnimations.WALK,ageInTicks,f);
+		this.animate(entity.fly,SashaKYotozAnimations.FLY,ageInTicks);
 	}
 
 	@Override
@@ -221,7 +223,7 @@ public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T
 	}
 
 	@Override
-	public ModelPart root() {
+	public @NotNull ModelPart root() {
 		return this.root;
 	}
 }

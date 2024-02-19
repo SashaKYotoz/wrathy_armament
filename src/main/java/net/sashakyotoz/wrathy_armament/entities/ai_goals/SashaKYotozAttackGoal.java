@@ -34,7 +34,11 @@ public class SashaKYotozAttackGoal extends Goal {
 
     public boolean canUse() {
         long i = this.mob.level().getGameTime();
-        if (i - this.lastCanUseCheck < 15 || this.mob.isPhantomRayAttack() || this.mob.isPhantomCycleAttack()) {
+        if (i - this.lastCanUseCheck < 15) {
+            return false;
+        } else if (this.mob.isLongAttacking()) {
+            return false;
+        } else if (!this.mob.onGround()) {
             return false;
         } else {
             this.lastCanUseCheck = i;
@@ -74,7 +78,7 @@ public class SashaKYotozAttackGoal extends Goal {
         } else if (!this.mob.isWithinRestriction(livingentity.blockPosition())) {
             return false;
         } else {
-            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player) livingentity).isCreative() || !this.mob.getMeleeAttackType().equals("cycleAttack");
+            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player) livingentity).isCreative() || !this.mob.isLongAttacking();
         }
     }
 
@@ -100,7 +104,7 @@ public class SashaKYotozAttackGoal extends Goal {
 
     public void tick() {
         LivingEntity livingentity = this.mob.getTarget();
-        if (livingentity != null && !this.mob.getMeleeAttackType().equals("cycleAttack")) {
+        if (livingentity != null) {
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
             this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
             if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(livingentity)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || livingentity.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 0.5D || this.mob.getRandom().nextFloat() < 0.05F)) {
@@ -139,6 +143,8 @@ public class SashaKYotozAttackGoal extends Goal {
     protected void checkAndPerformAttack(LivingEntity entity) {
         if (this.canPerformAttack(entity)) {
             this.mob.setAttacking(true);
+            if (this.mob.getFlyPhase() == 1)
+                this.mob.setFlyPhase(0);
             setRandomMeleeAttackType();
             int tmpDuration = 12;
             this.resetAttackCooldown();
@@ -152,25 +158,7 @@ public class SashaKYotozAttackGoal extends Goal {
     }
     private void setRandomMeleeAttackType(){
         RandomSource source = RandomSource.create();
-        switch (this.mob.getMeleeAttackType()){
-            case "scythe" -> {
-                if (this.mob.getCycleAttackCooldown() <= 0 && source.nextBoolean()){
-                    this.mob.setMeleeAttackType("cycleAttack");
-                    this.mob.setCycleAttackCooldown(this.mob.getRandom().nextIntBetweenInclusive(200,400));
-                }
-                else
-                    this.mob.setMeleeAttackType("blade");
-            }
-            case "blade" ->{
-                if (this.mob.getCycleAttackCooldown() <= 0 && source.nextBoolean()){
-                    this.mob.setMeleeAttackType("cycleAttack");
-                    this.mob.setCycleAttackCooldown(this.mob.getRandom().nextIntBetweenInclusive(200,400));
-                }
-                else
-                    this.mob.setMeleeAttackType("scythe");
-            }
-            case "cycleAttack" -> this.mob.setMeleeAttackType(source.nextBoolean() ? "scythe" : "blade");
-        }
+        this.mob.setMeleeAttackType(source.nextBoolean() ? "scythe" : "blade");
     }
     protected void resetAttackCooldown() {
         int tmp = this.mob.getRandom().nextIntBetweenInclusive(30,80);
