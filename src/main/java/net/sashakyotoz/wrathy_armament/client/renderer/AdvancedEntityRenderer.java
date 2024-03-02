@@ -33,22 +33,20 @@ public abstract class AdvancedEntityRenderer <T extends ZenithEntity, M extends 
         return this.model;
     }
 
-    public void render(T entity, float p_115309_, float p_115310_, PoseStack poseStack, MultiBufferSource bufferSource, int p_115313_) {
+    public void render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLightIn) {
         poseStack.pushPose();
-        float f = Mth.rotLerp(p_115310_, entity.xRotO, entity.yRotO);
-        float f1 = Mth.rotLerp(p_115310_, entity.xRotO, entity.yRotO);
+        float f = Mth.rotLerp(partialTicks, entity.xRotO, entity.yRotO);
+        float f1 = Mth.rotLerp(partialTicks, entity.xRotO, entity.yRotO);
         float f2 = f1 - f;
-        float f6 = Mth.lerp(p_115310_, entity.xRotO, entity.getXRot());
-        float f7 = this.getBob(entity, p_115310_);
+        float f6 = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
+        float f7 = this.getBob(entity, partialTicks);
         poseStack.scale(-1.0F, -1.0F, 1.0F);
-        this.scale(entity, poseStack, p_115310_);
+        this.scale(entity, poseStack, partialTicks);
         poseStack.translate(0.0F, -1.501F, 0.0F);
-        float f8 = 0.0F;
-        float f5 = 0.0F;
-        this.model.prepareMobModel(entity, f5, f8, p_115310_);
-        this.model.setupAnim(entity, f5, f8, f7, f2, f6);
+        this.model.prepareMobModel(entity, 0, 0, partialTicks);
+        this.model.setupAnim(entity, 0, 0, f7, f2, f6);
         poseStack.popPose();
-        super.render(entity, p_115309_, p_115310_, poseStack, bufferSource, p_115313_);
+        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLightIn);
     }
 
 
@@ -57,6 +55,6 @@ public abstract class AdvancedEntityRenderer <T extends ZenithEntity, M extends 
     }
 
 
-    protected void scale(T entity, PoseStack p_115315_, float p_115316_) {
+    protected void scale(T entity, PoseStack stack, float shadowSize) {
     }
 }

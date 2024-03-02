@@ -21,8 +21,8 @@ public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
         this.model = new JohannesSpearsModel<>(context.bakeLayer(JohannesSpearsModel.LAYER_LOCATION));
     }
 
-    public void render(JohannesSpearEntity entity, float p_114529_, float p_114530_, PoseStack poseStack, MultiBufferSource multiBufferSource, int p_114533_) {
-        float f = entity.getAnimationProgress(p_114530_);
+    public void render(JohannesSpearEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLightIn) {
+        float f = entity.getAnimationProgress(partialTicks);
         if (f != 0.0F) {
             float f1 = 2.0F;
             if (f > 0.9F) {
@@ -31,13 +31,13 @@ public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - entity.getYRot()));
             poseStack.scale(-f1, -f1, f1);
-            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.2D : 0.5, 0.0D);
+            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.1D : 0.6, 0.0D);
             poseStack.scale(0.5F, 0.5F, 0.5F);
             this.model.setupAnim(entity, f, 0.0F, 0.0F, entity.getYRot(), entity.getXRot());
             VertexConsumer vertexconsumer = multiBufferSource.getBuffer(this.model.renderType(TEXTURE_LOCATION));
-            this.model.renderToBuffer(poseStack, vertexconsumer, p_114533_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(poseStack, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             poseStack.popPose();
-            super.render(entity, p_114529_, p_114530_, poseStack, multiBufferSource, p_114533_);
+            super.render(entity, entityYaw, partialTicks, poseStack, multiBufferSource, packedLightIn);
         }
     }
 

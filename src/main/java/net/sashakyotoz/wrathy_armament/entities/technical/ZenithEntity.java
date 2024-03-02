@@ -1,8 +1,10 @@
 package net.sashakyotoz.wrathy_armament.entities.technical;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -18,8 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentEntities;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
 
 import javax.annotation.Nullable;
 
@@ -56,12 +59,20 @@ public class ZenithEntity extends AbstractArrow {
         }
         Entity entity = this.getOwner();
         int i = this.entityData.get(RETURNING_SPEED);
+        if (timer > 40 && timer < 110 && this.tickCount % 20 == 0){
+            if (this.level() instanceof ServerLevel level) {
+                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 0.6f, false, true, 7,
+                        ParticleTypes.ASH, "zenith_semicycle");
+                particleEntity.moveTo(new Vec3(this.getX(), this.getY() + 0.5f, this.getZ()));
+                level.addFreshEntity(particleEntity);
+            }
+        }
         if(timer > 50){
             double speed = 1.5;
             double Yaw = this.getYRot();
             this.level().addParticle(WrathyArmamentParticleTypes.ZENITH_WAY.get(),this.getX(),this.getY(),this.getZ(),(speed * Math.cos((Yaw + 90) * (Math.PI / 180))),(this.getXRot() * (-0.025)),(speed * Math.sin((Yaw + 90) * (Math.PI / 180))));
         }
-        if (entity != null && timer < 100) {
+        if (entity != null && timer < 105) {
             if (!this.isAcceptibleReturnOwner()) {
                 this.discard();
             } else {

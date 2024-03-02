@@ -3,9 +3,12 @@ package net.sashakyotoz.wrathy_armament.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -13,11 +16,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 import java.util.List;
 
-public class BladeOfChaos extends Item {
+public class BladeOfChaos extends SwordLikeItem {
     public BladeOfChaos(Properties properties) {
         super(properties);
     }
@@ -45,5 +51,15 @@ public class BladeOfChaos extends Item {
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.blade_of_chaos_hint1").withStyle(WrathyArmamentItems.RED_DESCRIPTION_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.blade_of_chaos_attack1").withStyle(WrathyArmamentItems.TITLE_FORMAT));
+    }
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+            if (entity.level() instanceof ServerLevel level && stack.is(this)){
+                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(),level,0.6f,true,false,13,
+                        ParticleTypes.ASH,"cycle");
+                particleEntity.moveTo(new Vec3(entity.getX(),entity.getY() +1,entity.getZ()));
+                entity.level().addFreshEntity(particleEntity);
+            }
+        return super.onEntitySwing(stack, entity);
     }
 }

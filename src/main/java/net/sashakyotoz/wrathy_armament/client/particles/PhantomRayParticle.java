@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.particles;
+package net.sashakyotoz.wrathy_armament.client.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;

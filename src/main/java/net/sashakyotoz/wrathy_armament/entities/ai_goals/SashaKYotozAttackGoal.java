@@ -12,7 +12,7 @@ import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import java.util.EnumSet;
 
 public class SashaKYotozAttackGoal extends Goal {
-    protected final SashaKYotoz mob;
+    private final SashaKYotoz mob;
     private final double speedModifier;
     private final boolean followingTargetEvenIfNotSeen;
     private Path path;

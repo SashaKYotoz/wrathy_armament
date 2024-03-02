@@ -29,13 +29,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
+import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
 import net.sashakyotoz.wrathy_armament.items.MasterSword;
+import net.sashakyotoz.wrathy_armament.registers.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -64,6 +67,32 @@ public class OnActionsTrigger {
             workQueue.removeAll(actions);
         }
     }
+
+    @SubscribeEvent
+    public static void onClickEvent(AttackEntityEvent event) {
+        Player player = event.getEntity();
+        if (player.getMainHandItem().is(WrathyArmamentItems.BLADE_OF_CHAOS.get()) && player.level() instanceof ServerLevel level) {
+            ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 0.6f, true, false, 13,
+                    ParticleTypes.ASH, "cycle");
+            particleEntity.moveTo(new Vec3(player.getX(), player.getY() + 1, player.getZ()));
+            level.addFreshEntity(particleEntity);
+        }
+        if (player.getMainHandItem().is(WrathyArmamentItems.MASTER_SWORD.get()) && player.level() instanceof ServerLevel level) {
+            ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 0.6f, true, true, 3,
+                    ParticleTypes.ELECTRIC_SPARK, "semicycle");
+            particleEntity.setOwner(player);
+            particleEntity.moveTo(new Vec3(player.getX(), player.getY() + 1, player.getZ()));
+            level.addFreshEntity(particleEntity);
+        }
+        if (player.getMainHandItem().is(WrathyArmamentItems.MURASAMA.get()) && player.level() instanceof ServerLevel level) {
+            ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 0.6f, true, true, 4,
+                    ParticleTypes.FLAME, "semicycle");
+            particleEntity.setOwner(player);
+            particleEntity.moveTo(new Vec3(player.getX(), player.getY() + 1, player.getZ()));
+            level.addFreshEntity(particleEntity);
+        }
+    }
+
     @SubscribeEvent
     public static void onPlayerAttack(LivingAttackEvent event) {
         LivingEntity entity = event.getEntity();
@@ -89,14 +118,16 @@ public class OnActionsTrigger {
             bladeOfChaosAttack((LivingEntity) event.getSource().getEntity());
         }
     }
+
     @SubscribeEvent
-    public static void onEntityDiesEvent(LivingDeathEvent event){
+    public static void onEntityDiesEvent(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof Player player && player.getMainHandItem().is(WrathyArmamentItems.HALF_ZATOICHI.get())) {
-            if (player.getMainHandItem().getOrCreateTag().getInt("charge")< 3)
-                player.getMainHandItem().getOrCreateTag().putInt("charge",player.getMainHandItem().getOrCreateTag().getInt("charge")+1);
+            if (player.getMainHandItem().getOrCreateTag().getInt("charge") < 3)
+                player.getMainHandItem().getOrCreateTag().putInt("charge", player.getMainHandItem().getOrCreateTag().getInt("charge") + 1);
             player.addEffect(new MobEffectInstance(MobEffects.HEAL, 10, 1 + player.getMainHandItem().getOrCreateTag().getInt("charge")));
         }
     }
+
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
@@ -117,12 +148,12 @@ public class OnActionsTrigger {
                 player.getCooldowns().addCooldown(stack.getItem(), 10);
             }
         }
-        if (stack.is(WrathyArmamentItems.MASTER_SWORD.get()) && stack.getOrCreateTag().getDouble("playerX") != 0){
+        if (stack.is(WrathyArmamentItems.MASTER_SWORD.get()) && stack.getOrCreateTag().getDouble("playerX") != 0) {
             WrathyArmament.LOGGER.debug("Coordinate: " + stack.getOrCreateTag().getDouble("playerX"));
             MasterSword.timerToRerecord = 240;
-            addParticles(ParticleTypes.GLOW_SQUID_INK,level,player.getX(),player.getY(),player.getZ(),2);
-            player.teleportTo(stack.getOrCreateTag().getDouble("playerX"),stack.getOrCreateTag().getDouble("playerY"),stack.getOrCreateTag().getDouble("playerZ"));
-            stack.getOrCreateTag().putDouble("playerX",0);
+            addParticles(ParticleTypes.GLOW_SQUID_INK, level, player.getX(), player.getY(), player.getZ(), 2);
+            player.teleportTo(stack.getOrCreateTag().getDouble("playerX"), stack.getOrCreateTag().getDouble("playerY"), stack.getOrCreateTag().getDouble("playerZ"));
+            stack.getOrCreateTag().putDouble("playerX", 0);
         }
     }
 
@@ -149,7 +180,7 @@ public class OnActionsTrigger {
             player.setDeltaMovement(0, 0.5, 0);
             player.playSound(SoundEvents.PHANTOM_BITE);
             player.getCooldowns().addCooldown(event.getItemStack().getItem(), Mth.randomBetweenInclusive(RandomSource.create(), 20, 80));
-            addParticles(ParticleTypes.EXPLOSION,level,player.getX(),player.getY(),player.getZ(),3);
+            addParticles(ParticleTypes.EXPLOSION, level, player.getX(), player.getY(), player.getZ(), 3);
             final Vec3 center = new Vec3(event.getPos().getX(), event.getPos().getY() + 1, event.getPos().getZ());
             List<Entity> entities = event.getLevel().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(8 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(center))).toList();
             for (Entity entityIterator : entities) {
@@ -163,6 +194,7 @@ public class OnActionsTrigger {
             }
         }
     }
+
     private static double getXVector(double speed, double yaw) {
         return speed * Math.cos((yaw + 90) * (Math.PI / 180));
     }
@@ -170,12 +202,14 @@ public class OnActionsTrigger {
     private static double getZVector(double speed, double yaw) {
         return speed * Math.sin((yaw + 90) * (Math.PI / 180));
     }
+
     private static void addParticles(SimpleParticleType type, Level world, double x, double y, double z, float modifier) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0)
                 world.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
         }
     }
+
     private static void johannesSwordDash(Player player, ItemStack stack) {
         player.setDeltaMovement(0, 0.5, 0);
         player.getCooldowns().addCooldown(stack.getItem(), 50);
@@ -190,6 +224,10 @@ public class OnActionsTrigger {
                 LightningBolt entityToSpawn = EntityType.LIGHTNING_BOLT.create(serverLevel);
                 entityToSpawn.moveTo(Vec3.atBottomCenterOf(BlockPos.containing(target.getX(), target.getY(), target.getZ())));
                 serverLevel.addFreshEntity(entityToSpawn);
+                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 0.2f, true, false, 2,
+                        ParticleTypes.ELECTRIC_SPARK, "semicycle");
+                particleEntity.moveTo(new Vec3(target.getX(), target.getY() + 1, target.getZ()));
+                level.addFreshEntity(particleEntity);
             }
         } else {
             if (!target.level().isClientSide()) {
@@ -222,25 +260,25 @@ public class OnActionsTrigger {
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY() + 1),
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()), d0,
                     0.1, d1);
-            if (i1+1 == 9 && !level.isClientSide()){
+            if (i1 + 1 == 9 && !level.isClientSide()) {
                 BlockPos pos = new BlockPos(
                         level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(9)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX(),
                         level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(9)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
                         level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(9)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ());
                 if (level.getBlockState(pos).isAir())
-                    level.setBlock(pos, Blocks.FIRE.defaultBlockState(),3);
+                    level.setBlock(pos, Blocks.FIRE.defaultBlockState(), 3);
                 BlockPos pos1 = new BlockPos(
-                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()-(int) d0,
+                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX() - (int) d0,
                         level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
-                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()+(int) d1);
+                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ() + (int) d1);
                 if (level.getBlockState(pos1).isAir())
-                    level.setBlock(pos1, Blocks.FIRE.defaultBlockState(),3);
+                    level.setBlock(pos1, Blocks.FIRE.defaultBlockState(), 3);
                 BlockPos pos2 = new BlockPos(
-                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX() +(int) d0,
+                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX() + (int) d0,
                         level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
-                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()- (int) d1);
+                        level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ() - (int) d1);
                 if (level.getBlockState(pos2).isAir())
-                    level.setBlock(pos2, Blocks.FIRE.defaultBlockState(),3);
+                    level.setBlock(pos2, Blocks.FIRE.defaultBlockState(), 3);
             }
             final Vec3 center = new Vec3(
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),

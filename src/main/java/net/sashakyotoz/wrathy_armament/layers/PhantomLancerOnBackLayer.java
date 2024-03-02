@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.sashakyotoz.wrathy_armament.Config;
 import net.sashakyotoz.wrathy_armament.client.models.technical.LancerBackModel;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 public class PhantomLancerOnBackLayer <T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private static final ResourceLocation LANCER_LOCATION = new ResourceLocation("wrathy_armament:textures/item/phantom_lancer.png");
@@ -33,7 +33,7 @@ public class PhantomLancerOnBackLayer <T extends LivingEntity, M extends EntityM
         ItemStack itemstack = entity.getItemBySlot(EquipmentSlot.CHEST);
         if (shouldRender(itemstack, entity)) {
             ResourceLocation resourcelocation;
-            resourcelocation = getElytraTexture(itemstack, entity);
+            resourcelocation = getLancerTexture();
             stack.pushPose();
             stack.translate(0.0F, 0.0F, 0.125F);
             this.getParentModel().copyPropertiesTo(this.lancerBackModel);
@@ -52,7 +52,7 @@ public class PhantomLancerOnBackLayer <T extends LivingEntity, M extends EntityM
             return false;
     }
 
-    public ResourceLocation getElytraTexture(ItemStack stack, T entity) {
+    public ResourceLocation getLancerTexture() {
         return LANCER_LOCATION;
     }
 }

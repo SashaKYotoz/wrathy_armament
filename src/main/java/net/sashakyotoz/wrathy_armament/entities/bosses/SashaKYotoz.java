@@ -1,6 +1,7 @@
 package net.sashakyotoz.wrathy_armament.entities.bosses;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -8,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -27,16 +29,15 @@ import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozFlyMoveGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozRandomStrollGoal;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentEntities;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
 
 public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
-    private static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(SashaKYotoz.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> LONG_ATTACKING = SynchedEntityData.defineId(SashaKYotoz.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> MELEE_ATTACK_TYPE = SynchedEntityData.defineId(SashaKYotoz.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<String> LONG_ATTACK_TYPE = SynchedEntityData.defineId(SashaKYotoz.class, EntityDataSerializers.STRING);
@@ -94,22 +95,25 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
                 this.attackByBlade.stop();
             }
         }
-        if (isPowered() && this.onGround()) {
-            if (this.getLongAttackType().equals("ray")) {
-                rayAttack();
-                if (!this.attackPhantomRay.isStarted())
-                    this.attackPhantomRay.start(this.tickCount);
-            } else {
-                for (int i = 0; i < 2; i++) {
-                    int finalI = i;
-                    OnActionsTrigger.queueServerWork(30 * i, () -> {
-                        spawnParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(), this.level(), this.getX(), this.getY(), this.getZ(), 1 + finalI);
-                        hitNearbyMobs(Component.translatable("death.attack.wrathy_armament.phantom_shock_message"), 10, 4 * finalI);
-                    });
+        if (isPowered()) {
+            if (this.onGround()) {
+                if (this.getLongAttackType().equals("ray")) {
+                    rayAttack();
+                    if (!this.attackPhantomRay.isStarted())
+                        this.attackPhantomRay.start(this.tickCount);
+                } else {
+                    for (int i = 0; i < 2; i++) {
+                        int finalI = i;
+                        OnActionsTrigger.queueServerWork(30 * i, () -> {
+                            spawnParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(), this.level(), this.getX(), this.getY(), this.getZ(), 1 + finalI);
+                            hitNearbyMobs(Component.translatable("death.attack.wrathy_armament.phantom_shock_message"), 10, 4 * finalI);
+                        });
+                    }
+                    if (!this.attackCycleOfPhantoms.isStarted())
+                        this.attackCycleOfPhantoms.start(this.tickCount);
                 }
-                if (!this.attackCycleOfPhantoms.isStarted())
-                    this.attackCycleOfPhantoms.start(this.tickCount);
-            }
+            }else
+                this.animatePhantomFlight();
         }
         if (this.onGround() && this.getTarget() != null) {
             if (this.getLongAttackCooldown() > 0) {
@@ -124,7 +128,7 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
                         this.setLongAttacking(false);
                     });
                 } else {
-                    OnActionsTrigger.queueServerWork(50, () -> {
+                    OnActionsTrigger.queueServerWork(40, () -> {
                         this.setLongAttackType("ray");
                         this.heal(10);
                         this.setLongAttacking(false);
@@ -152,6 +156,21 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
                 }
             }
         }
+    }
+    private void animatePhantomFlight(){
+        float f = Mth.cos((this.getId() * 3 + this.tickCount) * 7.45F * ((float)Math.PI / 180F) + (float)Math.PI);
+        int i = 1;
+        float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.1F + 0.21F * (float)i);
+        float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.1F + 0.21F * (float)i);
+        float f4 = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
+        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
+    }
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        if (this.getFlyPhase() == 1)
+            this.setFlyPhase(0);
+        return super.doHurtTarget(entity);
     }
 
     // ray attack
@@ -233,7 +252,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(ATTACKING, false);
         this.entityData.define(LONG_ATTACKING, false);
         this.entityData.define(MELEE_ATTACK_TYPE, "scythe");
         this.entityData.define(LONG_ATTACK_TYPE, "ray");
@@ -252,9 +270,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
         this.entityData.set(FLY_PHASE, tmp);
     }
 
-    public void setAttacking(boolean tmp) {
-        this.entityData.set(ATTACKING, tmp);
-    }
 
     public void setLongAttackCooldown(int tmp) {
         this.entityData.set(LONG_ATTACK_COOLDOWN, tmp);
@@ -282,10 +297,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
 
     public boolean isLongAttacking() {
         return this.entityData.get(LONG_ATTACKING);
-    }
-
-    public boolean isAttacking() {
-        return this.entityData.get(ATTACKING);
     }
 
     public int getFlyPhase() {

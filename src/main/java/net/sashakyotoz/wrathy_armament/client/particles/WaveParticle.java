@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.particles;
+package net.sashakyotoz.wrathy_armament.client.particles;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -9,7 +9,7 @@ import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.wrathy_armament.particles.shaders.ParticleShaders;
+import net.sashakyotoz.wrathy_armament.client.particles.shaders.ParticleShaders;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -23,7 +23,7 @@ public class WaveParticle extends TextureSheetParticle {
         super(world, x, y, z, movementVector.get(0), movementVector.get(1), movementVector.get(2));
         this.setColor(colorList.get(0), colorList.get(1), colorList.get(2));
         this.setPos(x, y, z);
-        this.quadSize = 0.9f;
+        this.quadSize = 0.8f;
         this.gravity = 0;
         this.friction = 0f;
         this.lifetime = RandomSource.create().nextInt(10, 31) + 10;

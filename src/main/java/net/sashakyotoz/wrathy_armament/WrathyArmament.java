@@ -10,7 +10,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -19,18 +18,12 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sashakyotoz.wrathy_armament.layers.PhantomLancerOnBackLayer;
-import net.sashakyotoz.wrathy_armament.particles.FireTrailParticle;
-import net.sashakyotoz.wrathy_armament.particles.FrostSoulParticle;
-import net.sashakyotoz.wrathy_armament.particles.PhantomRayParticle;
-import net.sashakyotoz.wrathy_armament.particles.ZenithWayParticle;
-import net.sashakyotoz.wrathy_armament.utils.*;
+import net.sashakyotoz.wrathy_armament.client.particles.FireTrailParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.FrostSoulParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.PhantomRayParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.ZenithWayParticle;
+import net.sashakyotoz.wrathy_armament.registers.*;
 import org.slf4j.Logger;
-
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Mod(WrathyArmament.MODID)
 public class WrathyArmament {

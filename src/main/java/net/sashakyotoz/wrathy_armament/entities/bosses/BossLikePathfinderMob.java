@@ -3,6 +3,9 @@ package net.sashakyotoz.wrathy_armament.entities.bosses;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,13 +18,14 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
 
 public abstract class BossLikePathfinderMob extends PathfinderMob implements Enemy {
+    public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(BossLikePathfinderMob.class, EntityDataSerializers.BOOLEAN);
     protected BossLikePathfinderMob(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
@@ -30,6 +34,17 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
         return false;
     }
 
+    @Override
+    protected void defineSynchedData() {
+        this.entityData.define(ATTACKING, false);
+        super.defineSynchedData();
+    }
+    public void setAttacking(boolean tmp) {
+        this.entityData.set(ATTACKING, tmp);
+    }
+    public boolean isAttacking() {
+        return this.entityData.get(ATTACKING);
+    }
     @Override
     public boolean removeWhenFarAway(double distance) {
         return false;

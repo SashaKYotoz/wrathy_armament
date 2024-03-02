@@ -15,17 +15,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 import java.util.List;
 
-public class HalfZatoichi extends Item {
+public class HalfZatoichi extends SwordLikeItem {
     int timer, charge;
     public HalfZatoichi(Properties properties) {
         super(properties);
     }
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean variable) {
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int i, boolean variable) {
         charge = stack.getOrCreateTag().getInt("charge");
         if (entity instanceof Player player){
             if (player.getMainHandItem().is(WrathyArmamentItems.HALF_ZATOICHI.get()))

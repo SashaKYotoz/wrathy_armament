@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.managers;
+package net.sashakyotoz.wrathy_armament.utils;
 
 import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;

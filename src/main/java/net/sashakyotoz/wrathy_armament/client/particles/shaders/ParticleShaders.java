@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.particles.shaders;
+package net.sashakyotoz.wrathy_armament.client.particles.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;

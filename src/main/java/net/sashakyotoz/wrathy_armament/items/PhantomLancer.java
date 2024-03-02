@@ -37,19 +37,17 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentEnchants;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentParticleTypes;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentSounds;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEnchants;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PhantomLancer extends Item implements IClientItemExtensions {
-    private static UseAnim anim = UseAnim.CUSTOM;
+public class PhantomLancer extends SwordLikeItem implements IClientItemExtensions {
     public PhantomLancer(Properties properties) {
         super(properties);
     }
@@ -78,22 +76,22 @@ public class PhantomLancer extends Item implements IClientItemExtensions {
                 tmp = 1;
             float scaling = 0;
             for (int i1 = 0; i1 < 15 + tmp * 3; i1++) {
-                if (!entity.level().getBlockState(new BlockPos(
-                                entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX(),
-                                entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
-                                entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()))
+                if (!level.getBlockState(new BlockPos(
+                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX(),
+                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
+                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()))
                         .canOcclude())
                     scaling = scaling + 1;
-                entity.level().addParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(),
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()), d0,
+                level.addParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(),
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()), d0,
                         0.1, d1);
                 final Vec3 _center = new Vec3(
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
-                        (entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()));
-                List<Entity> entityList = entity.level().getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate((1.5 + tmp) / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
+                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()));
+                List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate((1.5 + tmp) / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
                 for (Entity entityiterator : entityList) {
                     if (!(entityiterator == entity)) {
                         if (entityiterator instanceof LivingEntity livingEntity) {
@@ -193,66 +191,32 @@ public class PhantomLancer extends Item implements IClientItemExtensions {
     //animations
     @Override
     public UseAnim getUseAnimation(ItemStack itemStack) {
-        return anim;
+        return UseAnim.CUSTOM;
     }
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
-            private int currentPose = 0;
-            private static final HumanoidModel.ArmPose IDLE_POSE = HumanoidModel.ArmPose.create("IDLE", false, (model, entity, arm) -> {
-                if (arm == HumanoidArm.RIGHT) {
-                    model.rightArm.yRot = 0.15f;
-                    model.rightArm.zRot = 0.1f;
-                } else {
-                    model.leftArm.yRot = -0.15f;
-                    model.leftArm.zRot = -0.1f;
-                }
-            });
             private static final HumanoidModel.ArmPose STRIKE_POSE = HumanoidModel.ArmPose.create("STRIKE", false, (model, entity, arm) -> {
                 if (arm == HumanoidArm.LEFT) {
-                    model.leftArm.xRot = -0.75f + (float) entity.swingTime / 2;
+                    model.leftArm.xRot = -0.75f;
                     model.leftArm.yRot = -0.3f;
                     model.leftArm.zRot = -0.15f;
-                } else{
-                    model.rightArm.xRot = -0.75f + (float) entity.swingTime / 2;
-                    model.rightArm.yRot = -0.3f;
+                } else {
+                    model.rightArm.xRot = -0.75f;
+                    model.rightArm.yRot = 0.3f;
                     model.rightArm.zRot = 0.15f;
                 }
             });
-            private static final HumanoidModel.ArmPose CUT_POSE = HumanoidModel.ArmPose.create("CUT", false, (model, entity, arm) -> {
-                float f = (float) entity.swingTime / 2;
-                if (arm == HumanoidArm.RIGHT) {
-                    model.rightArm.xRot = 0.9f - f;
-                    model.rightArm.zRot = -0.5f - f;
-                } else {
-                    model.leftArm.xRot = 0.9f - f;
-                    model.leftArm.zRot = 0.5f - f;
-                }
-            });
-
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
                 if (!itemStack.isEmpty()) {
-                    if (!(entityLiving.getUseItemRemainingTicks() > 0) && !entityLiving.swinging) {
-                        currentPose = 0;
-                        anim = UseAnim.CUSTOM;
-                        return IDLE_POSE;
-                    }
-                    if (entityLiving.getUseItemRemainingTicks() > 0) {
-                        currentPose = 1;
-                        anim = UseAnim.CUSTOM;
+                    if (!(entityLiving.isUsingItem()) && !entityLiving.swinging)
+                        return HumanoidModel.ArmPose.ITEM;
+                    if (entityLiving.isUsingItem())
                         return STRIKE_POSE;
-                    }
-                    if (entityLiving.swinging && hand.equals(InteractionHand.OFF_HAND)) {
-                        currentPose = 2;
-                        anim = UseAnim.CUSTOM;
-                        return CUT_POSE;
-                    } else if (entityLiving.swinging && hand.equals(InteractionHand.MAIN_HAND)) {
-                        currentPose = 2;
-                        anim = UseAnim.BLOCK;
-                        return HumanoidModel.ArmPose.TOOT_HORN;
-                    }
+                    if (entityLiving.swinging)
+                        return HumanoidModel.ArmPose.ITEM;
                 }
                 return HumanoidModel.ArmPose.EMPTY;
             }
@@ -261,45 +225,28 @@ public class PhantomLancer extends Item implements IClientItemExtensions {
             public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
                 int k = arm == HumanoidArm.RIGHT ? 1 : -1;
                 poseStack.translate(k * 0.56F, -0.52F, -0.72F);
-                switch (currentPose) {
-                    case 0 -> {
+                if (player.isUsingItem()) {
+                    poseStack.translate((float) k * -0.28F, 0.15F, 0.158F);
+                    poseStack.mulPose(Axis.XP.rotationDegrees(-14F));
+                    poseStack.mulPose(Axis.YP.rotationDegrees((float) k * 65F));
+                    poseStack.mulPose(Axis.ZP.rotationDegrees((float) k * -10F));
+                    float f8 = (float) itemInHand.getUseDuration() - ((float) player.getUseItemRemainingTicks() - partialTick + 1.0F);
+                    float f12 = f8 / 20.0F;
+                    f12 = (f12 * f12 + f12 * 2.0F) / 3.0F;
+                    if (f12 > 1.0F) {
+                        f12 = 1.0F;
                     }
-                    case 1 -> {
-                        if (player.getUseItem() == itemInHand && player.isUsingItem()) {
-                            poseStack.translate((float) k * -0.28F, 0.15F, 0.158F);
-                            poseStack.mulPose(Axis.XP.rotationDegrees(-13.935F));
-                            poseStack.mulPose(Axis.YP.rotationDegrees((float) k * 65F));
-                            poseStack.mulPose(Axis.ZP.rotationDegrees((float) k * -10F));
-                            float f8 = (float) itemInHand.getUseDuration() - ((float) player.getUseItemRemainingTicks() - partialTick + 1.0F);
-                            float f12 = f8 / 20.0F;
-                            f12 = (f12 * f12 + f12 * 2.0F) / 3.0F;
-                            if (f12 > 1.0F) {
-                                f12 = 1.0F;
-                            }
-                            if (f12 > 0.1F) {
-                                float f15 = Mth.sin((f8 - 0.1F) * 1.3F);
-                                float f18 = f12 - 0.1F;
-                                float f20 = f15 * f18;
-                                poseStack.translate(f20 * 0.0F, f20 * 0.004F, f20 * 0.0F);
-                            }
-                            poseStack.translate(f12 * 0.0F, f12 * 0.0F, f12 * 0.04F);
-                            poseStack.scale(1.0F, 1.0F, 1.0F + f12 * 0.2F);
-                            poseStack.mulPose(Axis.YN.rotationDegrees((float) k * 75.0F));
-                        }
+                    if (f12 > 0.1F) {
+                        float f15 = Mth.sin((f8 - 0.1F) * 1.3F);
+                        float f18 = f12 - 0.1F;
+                        float f20 = f15 * f18;
+                        poseStack.translate(0.0F, f20 * 0.004F, 0.0F);
                     }
-                    case 2 -> {
-                        float f = (float) player.swingTime / 2;
-                        float f1 = (f - swingProcess) * 5f;
-                        if (arm.equals(HumanoidArm.RIGHT)) {
-                            poseStack.rotateAround(Axis.YN.rotationDegrees(25f - f1 * 2), 0, 0.1f, 0);
-                            poseStack.rotateAround(Axis.ZN.rotationDegrees(55f + f1), 0, -0.75f, -1.5f);
-                            //not zp
-                        } else {
-                            poseStack.mulPose(Axis.ZN.rotationDegrees(-35f - f1 * 2));
-                        }
-                    }
+                    poseStack.translate(0.0F, 0.0F, f12 * 0.04F);
+                    poseStack.scale(1.0F, 1.0F, 1.0F + f12 * 0.2F);
+                    poseStack.mulPose(Axis.YN.rotationDegrees((float) k * 75.0F));
                 }
-                return true;
+                return !player.swinging;
             }
         });
     }

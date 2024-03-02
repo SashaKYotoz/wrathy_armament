@@ -4,7 +4,7 @@ license="GPL-3.0"
 
 [[mods]]
 modId="wrathy_armament"
-version="0.1.4"
+version="0.1.5"
 displayName="Wrathy Armament"
 logoFile=""
 authors="SashaKYotoz"

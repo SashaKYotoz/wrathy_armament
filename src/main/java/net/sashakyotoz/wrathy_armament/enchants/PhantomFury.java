@@ -1,6 +1,5 @@
 package net.sashakyotoz.wrathy_armament.enchants;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -9,7 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 import java.util.Set;
 

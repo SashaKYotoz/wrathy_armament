@@ -13,11 +13,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 import java.util.List;
 
-public class Zenith extends Item {
+public class Zenith extends SwordLikeItem {
     public Zenith(Properties properties) {
         super(properties);
     }

@@ -3,8 +3,10 @@ package net.sashakyotoz.wrathy_armament.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,12 +18,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 import java.util.List;
 import java.util.UUID;
 
-public class Murasama extends Item {
+public class Murasama extends SwordLikeItem {
     private int timer = 0;
     private float speedBoost;
     public static final UUID SWIFTNESS = UUID.fromString("91AEAA56-376B-4498-935B-2F7F68070635");
@@ -65,7 +70,7 @@ public class Murasama extends Item {
             if(entity instanceof Player player)
                 player.getInventory().setChanged();
         }
-        itemStack.getOrCreateTag().putDouble("CustomModelData",itemStack.getHoverName().getString().contains("Blue") ? 1 : 0);
+        itemStack.getOrCreateTag().putDouble("CustomModelData",itemStack.getHoverName().getString().contains("Muramasa") ? 1 : 0);
     }
 
     @Override
@@ -75,5 +80,16 @@ public class Murasama extends Item {
             timer +=150;
         }
         return super.onLeftClickEntity(stack,player,entity);
+    }
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if (entity.level() instanceof ServerLevel level && stack.is(this)){
+            ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(),level,0.6f,true,true,4,
+                    ParticleTypes.ASH,"semicycle");
+            particleEntity.setOwner(entity);
+            particleEntity.moveTo(new Vec3(entity.getX(),entity.getY() +1,entity.getZ()));
+            entity.level().addFreshEntity(particleEntity);
+        }
+        return super.onEntitySwing(stack, entity);
     }
 }

@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.utils;
+package net.sashakyotoz.wrathy_armament.registers;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;

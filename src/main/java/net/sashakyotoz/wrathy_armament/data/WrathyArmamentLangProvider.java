@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentEntities;
-import net.sashakyotoz.wrathy_armament.utils.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 public class WrathyArmamentLangProvider extends LanguageProvider {
     private static final String NORMAL_CHARS = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_,;.?!/\\'";
@@ -30,7 +30,7 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
         add("enchantment.wrathy_armament.phantom_fury","Phantom Fury");
         add("enchantment.wrathy_armament.nightmare_jumping","Nightmare Jumping");
         add("enchantment.wrathy_armament.phantoquake","Phantoquake");
-        add("boss.wrathy_armament.sashakyotoz.appeared","On the fourth day, nightmare were visualized");
+        add("boss.wrathy_armament.sashakyotoz.appeared","On the fourth sleepless day, nightmare were visualized");
         addWeaponsDescriptions();
         addDeathDescriptions();
         addBossDescriptions();
@@ -59,7 +59,7 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
         add("item.wrathy_armament.blade_of_chaos_hint1","- Cyclone of chaos");
         add("item.wrathy_armament.blade_of_chaos_attack1","Circular attack to set whole ord of enemies into dust");
         add("item.wrathy_armament.frostmourne_hint","- Frost-soul rain");
-        add("item.wrathy_armament.frostmourne_attack","Strike enemies by ray of frost souls to freeze and damage them");
+        add("item.wrathy_armament.frostmourne_attack","Strike enemies by rain of souls to freeze and damage them");
         add("item.wrathy_armament.frostmourne_hint1","- Rising of fallen");
         add("item.wrathy_armament.frostmourne_attack1","Killed undead enemy can arise to be your ally");
         add("item.wrathy_armament.murasama_hint","- HF-absorption");
@@ -87,6 +87,7 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
     }
     private void addBossDescriptions(){
         add("boss.wrathy_armament.sashakyotoz","SashaKYotoz, the Phantom Lancer Keeper");
+        add("boss.wrathy_armament.lich_king","Lich King, the Frostmourne Keeper");
     }
 
     private void addEntityType(RegistryObject<EntityType<?>> entity) {

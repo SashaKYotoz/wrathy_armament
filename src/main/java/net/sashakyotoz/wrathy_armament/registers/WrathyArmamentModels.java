@@ -1,9 +1,10 @@
-package net.sashakyotoz.wrathy_armament.utils;
+package net.sashakyotoz.wrathy_armament.registers;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.sashakyotoz.wrathy_armament.client.models.mobs.LichKingModel;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.SashaKYotozModel;
 import net.sashakyotoz.wrathy_armament.client.models.technical.*;
 
@@ -18,5 +19,7 @@ public class WrathyArmamentModels {
         event.registerLayerDefinition(MeowmereModel.LAYER_LOCATION, MeowmereModel::createBodyLayer);
         event.registerLayerDefinition(JohannesSpearsModel.LAYER_LOCATION, JohannesSpearsModel::createBodyLayer);
         event.registerLayerDefinition(SashaKYotozModel.LAYER_LOCATION, SashaKYotozModel::createBodyLayer);
+        event.registerLayerDefinition(LichKingModel.LAYER_LOCATION, LichKingModel::createBodyLayer);
+        event.registerLayerDefinition(ParticleLikeEntityModel.LAYER_LOCATION, ParticleLikeEntityModel::createBodyLayer);
     }
 }
