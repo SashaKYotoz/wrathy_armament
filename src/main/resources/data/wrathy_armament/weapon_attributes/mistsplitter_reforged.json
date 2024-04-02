@@ -22,7 +22,7 @@
         "upswing": 0.5,
         "animation": "wrathy_armament:katana_like_stab",
         "swing_sound": {
-          "id": "bettercombat:glaive_slash_quick"
+          "id": "wrathy_armament:item.katana_swing"
         }
       },
       {

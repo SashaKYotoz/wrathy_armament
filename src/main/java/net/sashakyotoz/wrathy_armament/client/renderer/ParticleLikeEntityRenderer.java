@@ -46,7 +46,7 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
     public void scale(ParticleLikeEntity entity, PoseStack stack, float partialTicks) {
         stack.scale(entity.getSize(),0.1f,entity.getSize());
     }
-    protected float getBob(ParticleLikeEntity entity, float partialTicks) {
+    private float getBob(ParticleLikeEntity entity, float partialTicks) {
         return (float)entity.tickCount + partialTicks;
     }
     @Override

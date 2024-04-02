@@ -20,17 +20,17 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.wrathy_armament.entities.alive.LichMyrmidon;
+import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class ParticleLikeEntity extends Entity {
-    public int timeToVanish = 0;
-    @Nullable
-    private LivingEntity owner;
+public class ParticleLikeEntity extends VanishableLikeEntity {
     private ZenithEntity zenith;
+    private LichKing lich;
     private static final EntityDataAccessor<Boolean> TO_MODIFY_SIZE = SynchedEntityData.defineId(ParticleLikeEntity.class,EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> TURN_PARTICLE = SynchedEntityData.defineId(ParticleLikeEntity.class,EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> ID_OF_COLOR = SynchedEntityData.defineId(ParticleLikeEntity.class, EntityDataSerializers.INT);
@@ -111,7 +111,7 @@ public class ParticleLikeEntity extends Entity {
             this.timeToVanish++;
         else if(this.timeToVanish < 50 && (this.getParticleType().equals("semicycle") || this.getParticleType().equals("zenith_semicycle")))
             this.timeToVanish++;
-        else if (this.timeToVanish < 100 && this.getParticleType().equals("rain"))
+        else if (this.timeToVanish < 100 && (this.getParticleType().equals("rain") || this.getParticleType().equals("lich_rain")))
             this.timeToVanish++;
         else
             this.discard();
@@ -147,23 +147,35 @@ public class ParticleLikeEntity extends Entity {
                 }
             }
         }
+        if (this.level() instanceof ServerLevel level && this.getParticleType().equals("lich_rain") && this.lich != null){
+            level.sendParticles(this.tailParticle(), this.getX() + getXVector(this.getYRot()), this.getY() - 1, this.getZ() + getZVector(this.getYRot()), 21, 1 + getXVector(this.getYRot()), -1, 1 + getZVector(this.getYRot()), 1);
+            if (this.tickCount % 10 == 0){
+                this.setDeltaMovement(new Vec3(this.getXVector(lich.getYRot())*4, this.getYVector(lich.getXRot()), this.getZVector(lich.getYRot())*4));
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                final Vec3 center = new Vec3(
+                        this.getX(),this.getY()-1,this.getZ());
+                List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(5), e -> true).stream().sorted(Comparator.comparingDouble(entity1 -> entity1.distanceToSqr(center))).toList();
+                for (Entity entityIterator : entityList) {
+                    if (entityIterator != this && entityIterator != this.lich && !(entityIterator instanceof LichMyrmidon)) {
+                        if (entityIterator instanceof LivingEntity livingEntity) {
+                            livingEntity.setTicksFrozen(160);
+                            livingEntity.hurt(this.damageSources().magic(),5);
+                        }
+                    }
+                }
+            }
+        }
         if (toTurnParticle() && this.owner == null){
             this.owner = getNearestPlayer();
         }
         if (this.getParticleType().equals("zenith_semicycle") && this.zenith == null){
             this.zenith = getNearestZenith();
         }
+        if (this.getParticleType().equals("lich_rain") && this.lich == null){
+            this.lich = getNearestLich();
+        }
     }
-    public Player getNearestPlayer() {
-            final Vec3 _center = new Vec3(this.getX(), this.getY(), this.getZ());
-            List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(_center))).toList();
-            for (Entity entityiterator : entityList) {
-                if (entityiterator instanceof Player player)
-                    return player;
-            }
-        return null;
-    }
-    public ZenithEntity getNearestZenith() {
+    private ZenithEntity getNearestZenith() {
         final Vec3 _center = new Vec3(this.getX(), this.getY(), this.getZ());
         List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(_center))).toList();
         for (Entity entityiterator : entityList) {
@@ -172,32 +184,22 @@ public class ParticleLikeEntity extends Entity {
         }
         return null;
     }
-    public void setOwner(LivingEntity owner){
-        this.owner = owner;
-    }
-    public float rotationRelativelyToY() {
-        return this.owner != null ? this.owner.getYRot() : 0;
-    }
-    public double getXVector(double yaw) {
-        return Math.cos((yaw + 90) * (Math.PI / 180));
-    }
-    private double getYVector(double xRot) {
-        return (xRot * (-0.025)) + 0.25;
-    }
-
-    public double getZVector(double yaw) {
-        return Math.sin((yaw + 90) * (Math.PI / 180));
+    private LichKing getNearestLich() {
+        final Vec3 _center = new Vec3(this.getX(), this.getY(), this.getZ());
+        List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(_center))).toList();
+        for (Entity entityiterator : entityList) {
+            if (entityiterator instanceof LichKing entity)
+                return entity;
+        }
+        return null;
     }
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-        timeToVanish = tag.getInt("timeToVanish");
         this.setStandardSize(tag.getInt("actualSize"));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        if (timeToVanish > 0)
-            tag.putInt("timeToVanish",this.timeToVanish);
         tag.putFloat("actualSize",this.getSize());
     }
 

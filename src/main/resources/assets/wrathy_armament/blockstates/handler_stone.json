@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "facing=north,sword_index=0": {
+      "model": "wrathy_armament:block/handler_stone",
+      "y": 0
+    },
+    "facing=east,sword_index=0": {
+      "model": "wrathy_armament:block/handler_stone",
+      "y": 90
+    },
+    "facing=south,sword_index=0": {
+      "model": "wrathy_armament:block/handler_stone",
+      "y": 180
+    },
+    "facing=west,sword_index=0": {
+      "model": "wrathy_armament:block/handler_stone",
+      "y": 270
+    },
+    "facing=north,sword_index=1": {
+      "model": "wrathy_armament:block/master_sword_handler_stone",
+      "y": 0
+    },
+    "facing=east,sword_index=1": {
+      "model": "wrathy_armament:block/master_sword_handler_stone",
+      "y": 90
+    },
+    "facing=south,sword_index=1": {
+      "model": "wrathy_armament:block/master_sword_handler_stone",
+      "y": 180
+    },
+    "facing=west,sword_index=1": {
+      "model": "wrathy_armament:block/master_sword_handler_stone",
+      "y": 270
+    },
+    "facing=north,sword_index=2": {
+      "model": "wrathy_armament:block/frostmourne_handler_stone",
+      "y": 0
+    },
+    "facing=east,sword_index=2": {
+      "model": "wrathy_armament:block/frostmourne_handler_stone",
+      "y": 90
+    },
+    "facing=south,sword_index=2": {
+      "model": "wrathy_armament:block/frostmourne_handler_stone",
+      "y": 180
+    },
+    "facing=west,sword_index=2": {
+      "model": "wrathy_armament:block/frostmourne_handler_stone",
+      "y": 270
+    },
+    "facing=north,sword_index=3": {
+      "model": "wrathy_armament:block/johannes_sword_handler_stone",
+      "y": 0
+    },
+    "facing=east,sword_index=3": {
+      "model": "wrathy_armament:block/johannes_sword_handler_stone",
+      "y": 90
+    },
+    "facing=south,sword_index=3": {
+      "model": "wrathy_armament:block/johannes_sword_handler_stone",
+      "y": 180
+    },
+    "facing=west,sword_index=3": {
+      "model": "wrathy_armament:block/johannes_sword_handler_stone",
+      "y": 270
+    }
+  }
+}

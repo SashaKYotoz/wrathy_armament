@@ -32,6 +32,7 @@ public class LichKingModel<T extends LichKing> extends HierarchicalModel<T> {
         this.frostmourne = root.getChild("frostmourne");
         this.root = root;
     }
+
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
@@ -347,38 +348,38 @@ public class LichKingModel<T extends LichKing> extends HierarchicalModel<T> {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.Head.yRot = netHeadYaw / (180F / (float) Math.PI);
         this.Head.xRot = headPitch / (180F / (float) Math.PI);
-        float f = 0.2617994F;
-        float f4 = 1.0F;
-        Vec3 vec3 = entity.getDeltaMovement();
-        if (vec3.y < 0.0D) {
-            Vec3 vec31 = vec3.normalize();
-            f4 = 1.0F - (float)Math.pow(-vec31.y, 1.5D);
-        }
-        if (!(entity.getDeltaMovement().length() > 1.0E-6D))
-            f = 0.27f;
-        f = -f4 * 0.34906584F + (1.0F - f4) * f;
-        if (!entity.isFallFlying())
-            this.cloak.xRot = Mth.triangleWave(limbSwing,10f) * -f*1.5f + 0.5f;
-        if (entity.isInHealingState() && !entity.transition_to_heal.isStarted()){
-            this.rightArm.xRot = -0.75f;
-            this.rightArm.yRot = -0.25f;
-            this.rightArm.zRot = 0.15f;
-            this.leftArm.xRot = -0.75f;
-            this.leftArm.yRot = 0.25f;
-            this.leftArm.zRot = -0.15f;
-            this.frostmourne.xRot = 0.9f;
+        animateIdlePose(ageInTicks,entity);
+        if (entity.isInHealingState() && !entity.transition_to_heal.isStarted() && !entity.isDeadOrDying()) {
+            this.rightArm.xRot = -1.5f;
+            this.rightArm.yRot = -0.5f;
+            this.rightArm.zRot = 0.3f;
+            this.leftArm.xRot = -1.5f;
+            this.leftArm.yRot = 0.5f;
+            this.leftArm.zRot = -0.3f;
+            this.frostmourne.xRot = -3f;
             this.frostmourne.zRot = -0.05f;
-            this.frostmourne.x = 14;
-            this.frostmourne.y = 20;
+            this.frostmourne.x = 8.5f;
+            this.frostmourne.y = -5;
         }
-        this.animateWalk(LichKingAnimations.WALK, limbSwing,limbSwingAmount,2.0F, 2.5F);
-        this.animate(entity.combo_attack,LichKingAnimations.COMBO_ATTACK,ageInTicks,1.1f);
-        this.animate(entity.combo_attack1,LichKingAnimations.COMBO_ATTACK1,ageInTicks);
-        this.animate(entity.combo_attack2,LichKingAnimations.COMBO_ATTACK2,ageInTicks);
-        this.animate(entity.rain_cast,LichKingAnimations.RAIN_CAST,ageInTicks,0.5f);
-        this.animate(entity.transition_to_heal,LichKingAnimations.TRANSITION_TO_HEAL,ageInTicks);
-        this.animate(entity.summon,LichKingAnimations.SUMMON,ageInTicks,0.5f);
-        this.animate(entity.spawn,LichKingAnimations.SPAWN,ageInTicks,0.5f);
+        this.animateWalk(LichKingAnimations.WALK, limbSwing, limbSwingAmount, 2.0F, 2.5F);
+        this.animate(entity.combo_attack, LichKingAnimations.COMBO_ATTACK, ageInTicks, 1.1f);
+        this.animate(entity.combo_attack1, LichKingAnimations.COMBO_ATTACK1, ageInTicks);
+        this.animate(entity.combo_attack2, LichKingAnimations.COMBO_ATTACK2, ageInTicks);
+        this.animate(entity.spin_attack, LichKingAnimations.SPIN_ATTACK, ageInTicks);
+        this.animate(entity.rain_cast, LichKingAnimations.RAIN_CAST, ageInTicks, 0.5f);
+        this.animate(entity.transition_to_heal, LichKingAnimations.TRANSITION_TO_HEAL, ageInTicks);
+        this.animate(entity.summon, LichKingAnimations.SUMMON, ageInTicks, 0.5f);
+        this.animate(entity.spawn, LichKingAnimations.SPAWN, ageInTicks, 0.5f);
+        this.animate(entity.death, LichKingAnimations.DEATH, ageInTicks, 0.25f);
+    }
+    private void animateIdlePose(float ageInTicks,T entity) {
+        float f = ageInTicks * 0.1F;
+        float f1 = Mth.cos(f);
+        float f2 = Mth.sin(f);
+        float modifier =(float)entity.getDeltaMovement().horizontalDistanceSqr();
+        this.Head.zRot += 0.06F * f1;
+        this.Head.xRot += 0.06F * f2;
+        this.cloak.xRot += 0.05F * f1 * modifier * 10;
     }
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {

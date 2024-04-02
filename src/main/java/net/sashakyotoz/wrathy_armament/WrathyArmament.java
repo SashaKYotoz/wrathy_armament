@@ -33,6 +33,8 @@ public class WrathyArmament {
     public WrathyArmament() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         WrathyArmamentItems.ITEMS.register(modEventBus);
+        WrathyArmamentEntityDataSerializer.SERIALIZER.register(modEventBus);
+        WrathyArmamentBlocks.BLOCKS.register(modEventBus);
         WrathyArmamentTab.CREATIVE_MODE_TABS.register(modEventBus);
         WrathyArmamentParticleTypes.PARTICLE_TYPES.register(modEventBus);
         WrathyArmamentEnchants.ENCHANTMENTS.register(modEventBus);

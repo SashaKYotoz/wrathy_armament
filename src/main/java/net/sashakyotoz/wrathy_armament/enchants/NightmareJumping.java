@@ -17,8 +17,8 @@ public class NightmareJumping extends Enchantment {
         super(rarity, category, slots);
     }
     @Override
-    public boolean canEnchant(ItemStack p_44689_) {
-        return p_44689_.is(WrathyArmamentItems.PHANTOM_LANCER.get());
+    public boolean canEnchant(ItemStack stack) {
+        return stack.is(WrathyArmamentItems.PHANTOM_LANCER.get());
     }
 
     @Override
@@ -27,8 +27,8 @@ public class NightmareJumping extends Enchantment {
     }
 
     @Override
-    protected boolean checkCompatibility(Enchantment p_44690_) {
-        return p_44690_ != WrathyArmamentEnchants.PHANTOQUAKE.get();
+    protected boolean checkCompatibility(Enchantment enchantment) {
+        return enchantment != WrathyArmamentEnchants.PHANTOQUAKE.get();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class NightmareJumping extends Enchantment {
     }
 
     @Override
-    public Component getFullname(int p_44701_) {
+    public Component getFullname(int i) {
         return Component.translatable("enchantment.wrathy_armament.nightmare_jumping").withStyle(ChatFormatting.DARK_PURPLE);
     }
 

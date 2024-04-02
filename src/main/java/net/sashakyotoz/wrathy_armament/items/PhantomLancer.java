@@ -42,6 +42,7 @@ import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -132,7 +133,7 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
     }
 
     @Override
-    public void onStopUsing(ItemStack stack, LivingEntity entity, int count) {
+    public void onStopUsing(ItemStack stack, LivingEntity entity, int i1) {
         Player player = (Player) entity;
         final Vec3 center = new Vec3(entity.getX(), entity.getY(), entity.getZ());
         List<Entity> entities = player.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(6 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(entcnd -> entcnd.distanceToSqr(center))).toList();
@@ -218,7 +219,7 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
                     if (entityLiving.swinging)
                         return HumanoidModel.ArmPose.ITEM;
                 }
-                return HumanoidModel.ArmPose.EMPTY;
+                return IClientItemExtensions.super.getArmPose(entityLiving, hand, itemStack);
             }
 
             @Override

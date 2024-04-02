@@ -1,7 +1,9 @@
 package net.sashakyotoz.wrathy_armament.registers;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -25,4 +27,8 @@ public class WrathyArmamentItems {
     public static final RegistryObject<Item> MURASAMA = ITEMS.register("murasama",()-> new Murasama(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> MISTSPLITTER_REFORGED = ITEMS.register("mistsplitter_reforged",()-> new MistsplitterReforged(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> HALF_ZATOICHI = ITEMS.register("half_zatoichi",()-> new HalfZatoichi(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
+    public static final RegistryObject<Item> HANDLER_STONE = block(WrathyArmamentBlocks.HANDLER_STONE);
+    private static RegistryObject<Item> block(RegistryObject<Block> block) {
+        return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
+    }
 }

@@ -18,9 +18,9 @@ import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
 
 public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityModel<ZenithEntity>> {
     private static final ResourceLocation zenithTexture = new ResourceLocation("wrathy_armament:textures/item/zenith.png");
-    private static final ResourceLocation terrabladeTexture = new ResourceLocation("wrathy_armament:textures/entity/terrablade.png");
-    private static final ResourceLocation meowmereTexture = new ResourceLocation("wrathy_armament:textures/entity/meowmere.png");
-    private static final ResourceLocation copperSwordTexture = new ResourceLocation("wrathy_armament:textures/entity/copper_sword.png");
+    private static final ResourceLocation terrabladeTexture = new ResourceLocation("wrathy_armament:textures/entity/projectile_like/terrablade.png");
+    private static final ResourceLocation meowmereTexture = new ResourceLocation("wrathy_armament:textures/entity/projectile_like/meowmere.png");
+    private static final ResourceLocation copperSwordTexture = new ResourceLocation("wrathy_armament:textures/entity/projectile_like/copper_sword.png");
     private final ZenithModel<ZenithEntity> zenith;
     private final TerrabladeModel<ZenithEntity> terrablade;
     private final MeowmereModel<ZenithEntity> meowmere;

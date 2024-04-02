@@ -12,7 +12,7 @@
         "upswing": 0.5,
         "animation": "wrathy_armament:katana_like_stab",
         "swing_sound": {
-          "id": "bettercombat:katana_slash"
+          "id": "wrathy_armament:item.katana_swing"
         }
       },
       {
@@ -32,7 +32,17 @@
         "upswing": 0.5,
         "animation": "bettercombat:two_handed_slash_horizontal_left",
         "swing_sound": {
-          "id": "bettercombat:glaive_slash_slow"
+          "id": "wrathy_armament:item.katana_swing"
+        }
+      },
+	{
+        "hitbox": "HORIZONTAL_PLANE",
+        "damage_multiplier": 1.25,
+        "angle": 120,
+        "upswing": 0.5,
+        "animation": "wrathy_armament:light_sword_spin",
+        "swing_sound": {
+          "id": "bettercombat:katana_slash"
         }
       }
     ]

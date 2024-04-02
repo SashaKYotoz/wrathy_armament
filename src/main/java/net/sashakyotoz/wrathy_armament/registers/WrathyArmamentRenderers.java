@@ -4,9 +4,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.sashakyotoz.wrathy_armament.client.renderer.JohannesSpearRenderer;
-import net.sashakyotoz.wrathy_armament.client.renderer.ParticleLikeEntityRenderer;
-import net.sashakyotoz.wrathy_armament.client.renderer.ZenithRenderer;
+import net.sashakyotoz.wrathy_armament.client.renderer.*;
+import net.sashakyotoz.wrathy_armament.client.renderer.bosses.JohannesKnightRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.LichKingRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.SashaKYotozRenderer;
 
@@ -18,6 +17,9 @@ public class WrathyArmamentRenderers {
         event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_SPEAR.get(), JohannesSpearRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.SASHAKYOTOZ.get(), SashaKYotozRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.LICH_KING.get(), LichKingRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.LICH_MYRMIDON.get(), LichMyrmidonRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_KNIGHT.get(), JohannesKnightRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), ParticleLikeEntityRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(), HarmfulProjectileRenderer::new);
     }
 }

@@ -1,4 +1,7 @@
 {
+  "boss.wrathy_armament.johannes_fountain": "Johannes, the Fountain",
+  "boss.wrathy_armament.johannes_fountain.dying": "The sun... I had forgotten how it feels",
+  "boss.wrathy_armament.johannes_knight": "Johannes, the Traitor",
   "boss.wrathy_armament.lich_king": "Lich King, the Frostmourne Keeper",
   "boss.wrathy_armament.sashakyotoz": "SashaKYotoz, the Phantom Lancer Keeper",
   "boss.wrathy_armament.sashakyotoz.appeared": "On the fourth sleepless day, nightmare were visualized",
@@ -12,8 +15,11 @@
   "enchantment.wrathy_armament.nightmare_jumping": "Nightmare Jumping",
   "enchantment.wrathy_armament.phantom_fury": "Phantom Fury",
   "enchantment.wrathy_armament.phantoquake": "Phantoquake",
+  "entity.wrathy_armament.harmful_projectile_entity": "Harmful Projectile Entity",
+  "entity.wrathy_armament.johannes_knight": "Johannes Knight",
   "entity.wrathy_armament.johannes_spear": "Johannes Spear",
   "entity.wrathy_armament.lich_king": "Lich King",
+  "entity.wrathy_armament.lich_myrmidon": "Lich Myrmidon",
   "entity.wrathy_armament.particle_like_entity": "Particle Like Entity",
   "entity.wrathy_armament.sashakyotoz": "Sashakyotoz",
   "entity.wrathy_armament.zenith_entity": "Zenith Entity",
@@ -26,6 +32,7 @@
   "item.wrathy_armament.frostmourne": "Frostmourne",
   "item.wrathy_armament.frostmourne_attack": "Strike enemies by rain of souls to freeze and damage them",
   "item.wrathy_armament.frostmourne_attack1": "Killed undead enemy can arise to be your ally",
+  "item.wrathy_armament.frostmourne_charge": "Souls contain: ",
   "item.wrathy_armament.frostmourne_hint": "- Frost-soul rain",
   "item.wrathy_armament.frostmourne_hint1": "- Rising of fallen",
   "item.wrathy_armament.game.blade_of_chaos": "-Original from God of War series",
@@ -65,5 +72,8 @@
   "item.wrathy_armament.zenith": "Zenith",
   "item.wrathy_armament.zenith_ability": "When swung, the sword sprites of its component swords fly towards enemies",
   "item.wrathy_armament.zenith_hint": "- Oo Zenith",
-  "subtitles.item.phantom_lancer": "Splash of phantoms"
+  "subtitles.item.katana_swing": "Katana-like swing",
+  "subtitles.item.light_swing": "Light sword swing",
+  "subtitles.item.phantom_lancer": "Splash of phantoms",
+  "subtitles.item.soul_swing": "Soulful sword swing"
 }

@@ -8,5 +8,27 @@
       "wrathy_armament:items/phantom_splash/phantom_ray3",
       "wrathy_armament:items/phantom_splash/phantom_ray4"
     ]
+  },
+  "item.light_swing": {
+    "subtitle": "subtitles.item.light_swing",
+    "sounds": [
+      "wrathy_armament:items/light_swing/light_swing",
+      "wrathy_armament:items/light_swing/light_swing1"
+    ]
+  },
+  "item.katana_swing": {
+    "subtitle": "subtitles.item.katana_swing",
+    "sounds": [
+      "wrathy_armament:items/katana_swing/katana_swing",
+      "wrathy_armament:items/katana_swing/katana_swing1",
+      "wrathy_armament:items/katana_swing/katana_swing2"
+    ]
+  },
+  "item.soul_swing": {
+    "subtitle": "subtitles.item.soul_swing",
+    "sounds": [
+      "wrathy_armament:items/soul_swing/soul_slash",
+      "wrathy_armament:items/soul_swing/soul_slash1"
+    ]
   }
 }

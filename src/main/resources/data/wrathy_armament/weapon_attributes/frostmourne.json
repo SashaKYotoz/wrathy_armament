@@ -3,7 +3,7 @@
     "attack_range": 4,
     "pose": "bettercombat:pose_two_handed_sword",
     "two_handed": true,
-    "category": "sword",
+    "category": "claymore",
     "attacks": [
       {
         "hitbox": "HORIZONTAL_PLANE",
@@ -20,9 +20,9 @@
         "damage_multiplier": 1.5,
         "angle": 0,
         "upswing": 0.5,
-        "animation": "wrathy_armament:double_swing",
+        "animation": "wrathy_armament:sword_slash_upward",
         "swing_sound": {
-          "id": "bettercombat:wand_swing"
+          "id": "wrathy_armament:item.soul_swing"
         }
       },
       {
@@ -42,7 +42,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:two_handed_stab_right",
         "swing_sound": {
-          "id": "bettercombat:spear_stab"
+          "id": "wrathy_armament:item.soul_swing"
         }
       }
     ]

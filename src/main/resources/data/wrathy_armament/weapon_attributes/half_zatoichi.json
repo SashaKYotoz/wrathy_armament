@@ -3,7 +3,7 @@
     "attack_range": 4,
     "pose": "bettercombat:pose_two_handed_katana",
     "two_handed": true,
-    "category": "katana",
+    "category": "rapier",
     "attacks": [
       {
         "hitbox": "HORIZONTAL_PLANE",
@@ -22,7 +22,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:two_handed_slash_vertical_right",
         "swing_sound": {
-          "id": "bettercombat:glaive_slash_quick"
+          "id": "wrathy_armament:item.light_swing"
         }
       },
       {
@@ -32,7 +32,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:two_handed_slash_horizontal_left",
         "swing_sound": {
-          "id": "bettercombat:glaive_slash_slow"
+          "id": "wrathy_armament:item.katana_swing"
         }
       }
     ]

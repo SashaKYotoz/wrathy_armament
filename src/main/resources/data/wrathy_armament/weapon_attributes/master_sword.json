@@ -9,7 +9,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:one_handed_stab",
         "swing_sound": {
-          "id": "bettercombat:wand_swing"
+          "id": "wrathy_armament:item.light_swing"
         }
       },
       {
@@ -27,9 +27,9 @@
         "damage_multiplier": 1.5,
         "angle": 0,
         "upswing": 0.5,
-        "animation": "wrathy_armament:double_swing",
+        "animation": "wrathy_armament:halberd_stab_right",
         "swing_sound": {
-          "id": "bettercombat:wand_swing"
+          "id": "wrathy_armament:item.light_swing"
         }
       }
     ]

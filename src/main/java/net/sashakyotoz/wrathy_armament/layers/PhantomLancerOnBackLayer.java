@@ -38,7 +38,7 @@ public class PhantomLancerOnBackLayer <T extends LivingEntity, M extends EntityM
             stack.translate(0.0F, 0.0F, 0.125F);
             this.getParentModel().copyPropertiesTo(this.lancerBackModel);
             this.lancerBackModel.setupAnim(entity, p_116955_, p_116956_, p_116958_, p_116959_, p_116960_);
-            VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(bufferSource, RenderType.entityCutoutNoCull(resourcelocation), false, itemstack.hasFoil());
+            VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(bufferSource, RenderType.entitySmoothCutout(resourcelocation), false, itemstack.hasFoil());
             this.lancerBackModel.renderToBuffer(stack, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             stack.popPose();
         }

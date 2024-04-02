@@ -12,6 +12,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -44,6 +45,7 @@ import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEnchants;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -70,6 +72,9 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
     @Override
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, world, list, flag);
+        MutableComponent charge = Component.translatable("item.wrathy_armament.frostmourne_charge");
+        charge.withStyle(WrathyArmamentItems.TITLE_FORMAT);
+        charge.append(CommonComponents.SPACE).append(Component.translatable("" + itemstack.getOrCreateTag().getInt("charge")));
         list.add(Component.translatable("item.wrathy_armament.game.frostmourne").withStyle(WrathyArmamentItems.TITLE_FORMAT).withStyle(ChatFormatting.ITALIC));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
@@ -80,6 +85,7 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.frostmourne_hint1").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.frostmourne_attack1").withStyle(WrathyArmamentItems.TITLE_FORMAT));
+        list.add(charge);
     }
 
     @Override
@@ -91,7 +97,7 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
         if (!((double) f < 0.75D)) {
             WrathyArmament.LOGGER.debug("Soul Attack");
             entity.playSound(SoundEvents.SOUL_ESCAPE);
-            if (level instanceof ServerLevel serverLevel){
+            if (level instanceof ServerLevel serverLevel) {
                 ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), serverLevel, 0.6f, false, false, 6,
                         ParticleTypes.SOUL, "rain");
                 particleEntity.setOwner(entity);
@@ -108,13 +114,29 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
 
     @Override
     public int getUseDuration(ItemStack itemstack) {
-        return 30;
+        return 32000;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player entity, InteractionHand hand) {
         entity.startUsingItem(hand);
         return new InteractionResultHolder(InteractionResult.SUCCESS, entity.getItemInHand(hand));
+    }
+
+    @Override
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int i) {
+        if (i % 4 == 0 && level instanceof ServerLevel serverLevel)
+            serverLevel.sendParticles(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(),
+                    entity.getX() + OnActionsTrigger.getXVector(-2, entity.getYRot()),
+                    entity.getY() + 2,
+                    entity.getZ() + OnActionsTrigger.getZVector(-2, entity.getYRot()),
+                    9,
+                    OnActionsTrigger.getXVector(2, entity.getYRot()),
+                    -0.25f,
+                    OnActionsTrigger.getZVector(2, entity.getYRot()),
+                    0.5f
+            );
+        super.onUseTick(level, entity, stack, i);
     }
 
     private static float getPowerForTime(int i) {
@@ -130,13 +152,13 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
             private static final HumanoidModel.ArmPose SHOOT_POSE = HumanoidModel.ArmPose.create("SHOOT", true, (model, entity, arm) -> {
-                if (arm == HumanoidArm.RIGHT){
+                if (arm == HumanoidArm.RIGHT) {
                     model.rightArm.xRot = -0.8f;
                     model.leftArm.xRot = -0.9f;
                     model.rightArm.yRot = 0.5f;
                     model.leftArm.yRot = 0.75f;
                     model.rightArm.zRot = 1.1f;
-                }else{
+                } else {
                     model.leftArm.xRot = -0.8f;
                     model.rightArm.xRot = -0.9f;
                     model.leftArm.yRot = -0.5f;
@@ -155,6 +177,7 @@ public class Frostmourne extends SwordLikeItem implements IClientItemExtensions 
                     return HumanoidModel.ArmPose.ITEM;
                 return HumanoidModel.ArmPose.EMPTY;
             }
+
             @Override
             public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
                 int k = arm == HumanoidArm.RIGHT ? 1 : -1;

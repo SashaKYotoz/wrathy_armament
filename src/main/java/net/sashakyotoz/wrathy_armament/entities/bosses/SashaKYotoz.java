@@ -46,7 +46,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
     private static final EntityDataAccessor<Integer> TARGET_ABOVE_TIMER = SynchedEntityData.defineId(SashaKYotoz.class, EntityDataSerializers.INT);
     private final ServerBossEvent bossEvent = new ServerBossEvent(Component.translatable("boss.wrathy_armament.sashakyotoz"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.NOTCHED_10);
     private int idleAnimationTimeout = 0;
-    public int attackAnimationTimeout = 0;
     public final AnimationState idle = new AnimationState();
     public final AnimationState takeOff = new AnimationState();
     public final AnimationState landing = new AnimationState();
@@ -115,6 +114,8 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
             }else
                 this.animatePhantomFlight();
         }
+        if (this.isLongAttacking() && !this.onGround())
+            this.setLongAttacking(false);
         if (this.onGround() && this.getTarget() != null) {
             if (this.getLongAttackCooldown() > 0) {
                 this.setLongAttackCooldown(this.getLongAttackCooldown() - 1);
@@ -163,8 +164,8 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
         float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.1F + 0.21F * (float)i);
         float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.1F + 0.21F * (float)i);
         float f4 = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
-        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4 +0.5f, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4 +0.5f, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
     }
     @Override
     public boolean doHurtTarget(Entity entity) {
@@ -244,10 +245,10 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
 
     @Override
     protected void registerGoals() {
+        super.registerGoals();
         this.goalSelector.addGoal(0, new SashaKYotozFlyMoveGoal(this));
         this.goalSelector.addGoal(1, new SashaKYotozRandomStrollGoal(this, 0.8, 160));
         this.targetSelector.addGoal(2, new SashaKYotozAttackGoal(this, 1.5, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false, true));
     }
 
     @Override
@@ -289,10 +290,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
 
     private void setLongAttacking(boolean b) {
         this.entityData.set(LONG_ATTACKING, b);
-    }
-
-    private boolean isMoving() {
-        return this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-6D;
     }
 
     public boolean isLongAttacking() {

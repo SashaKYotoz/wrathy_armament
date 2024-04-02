@@ -27,10 +27,14 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
         WrathyArmamentEntities.REGISTRY.getEntries().forEach(this::addEntityType);
         add("creativetab.wrathy_armament_tab","Wrathly Armament Arsenal:");
         add("subtitles.item.phantom_lancer","Splash of phantoms");
+        add("subtitles.item.light_swing","Light sword swing");
+        add("subtitles.item.katana_swing","Katana-like swing");
+        add("subtitles.item.soul_swing","Soulful sword swing");
         add("enchantment.wrathy_armament.phantom_fury","Phantom Fury");
         add("enchantment.wrathy_armament.nightmare_jumping","Nightmare Jumping");
         add("enchantment.wrathy_armament.phantoquake","Phantoquake");
         add("boss.wrathy_armament.sashakyotoz.appeared","On the fourth sleepless day, nightmare were visualized");
+        add("boss.wrathy_armament.johannes_fountain.dying","The sun... I had forgotten how it feels");
         addWeaponsDescriptions();
         addDeathDescriptions();
         addBossDescriptions();
@@ -62,6 +66,7 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
         add("item.wrathy_armament.frostmourne_attack","Strike enemies by rain of souls to freeze and damage them");
         add("item.wrathy_armament.frostmourne_hint1","- Rising of fallen");
         add("item.wrathy_armament.frostmourne_attack1","Killed undead enemy can arise to be your ally");
+        add("item.wrathy_armament.frostmourne_charge","Souls contain: ");
         add("item.wrathy_armament.murasama_hint","- HF-absorption");
         add("item.wrathy_armament.murasama_attack","Each hit of enemy in combo modify speed of sword's owner, stacks to 30%");
         add("item.wrathy_armament.mistsplitter_hint","- Time charger");
@@ -88,6 +93,8 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
     private void addBossDescriptions(){
         add("boss.wrathy_armament.sashakyotoz","SashaKYotoz, the Phantom Lancer Keeper");
         add("boss.wrathy_armament.lich_king","Lich King, the Frostmourne Keeper");
+        add("boss.wrathy_armament.johannes_knight","Johannes, the Traitor");
+        add("boss.wrathy_armament.johannes_fountain","Johannes, the Fountain");
     }
 
     private void addEntityType(RegistryObject<EntityType<?>> entity) {

@@ -160,16 +160,16 @@ public class SashaKYotozAttackGoal extends Goal {
         RandomSource source = RandomSource.create();
         this.mob.setMeleeAttackType(source.nextBoolean() ? "scythe" : "blade");
     }
-    protected void resetAttackCooldown() {
+    public void resetAttackCooldown() {
         int tmp = this.mob.getRandom().nextIntBetweenInclusive(30,80);
         this.ticksUntilNextAttack = this.adjustedTickDelay(tmp);
     }
 
-    protected boolean isTimeToAttack() {
+    private boolean isTimeToAttack() {
         return this.ticksUntilNextAttack <= 0;
     }
 
-    protected boolean canPerformAttack(LivingEntity entity) {
+    public boolean canPerformAttack(LivingEntity entity) {
         return this.isTimeToAttack() && this.mob.isWithinMeleeAttackRange(entity) && this.mob.getSensing().hasLineOfSight(entity);
     }
 }

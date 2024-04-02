@@ -13,7 +13,7 @@ import net.sashakyotoz.wrathy_armament.client.models.technical.JohannesSpearsMod
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
 
 public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(WrathyArmament.MODID,"textures/entity/johannes_spear.png");
+    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(WrathyArmament.MODID,"textures/entity/projectile_like/johannes_spear.png");
     private final JohannesSpearsModel<JohannesSpearEntity> model;
 
     public JohannesSpearRenderer(EntityRendererProvider.Context context) {
@@ -25,9 +25,8 @@ public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
         float f = entity.getAnimationProgress(partialTicks);
         if (f != 0.0F) {
             float f1 = 2.0F;
-            if (f > 0.9F) {
+            if (f > 0.9F)
                 f1 *= (1.0F - f) / 0.1F;
-            }
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - entity.getYRot()));
             poseStack.scale(-f1, -f1, f1);

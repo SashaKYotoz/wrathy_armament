@@ -15,8 +15,8 @@ public class Phantoquake extends Enchantment {
     public Phantoquake(Rarity rarity, EnchantmentCategory category, EquipmentSlot[] slots) {
         super(rarity, category, slots);
     }    @Override
-    public boolean canEnchant(ItemStack p_44689_) {
-        return p_44689_.is(WrathyArmamentItems.PHANTOM_LANCER.get());
+    public boolean canEnchant(ItemStack stack) {
+        return stack.is(WrathyArmamentItems.PHANTOM_LANCER.get());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Phantoquake extends Enchantment {
     }
 
     @Override
-    public Component getFullname(int p_44701_) {
+    public Component getFullname(int i) {
         return Component.translatable("enchantment.wrathy_armament.phantoquake").withStyle(ChatFormatting.GOLD);
     }
 
