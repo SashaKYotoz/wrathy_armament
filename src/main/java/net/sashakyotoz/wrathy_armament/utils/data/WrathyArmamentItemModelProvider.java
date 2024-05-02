@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.data;
+package net.sashakyotoz.wrathy_armament.utils.data;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;

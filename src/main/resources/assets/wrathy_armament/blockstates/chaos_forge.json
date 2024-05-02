@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "wrathy_armament:block/chaos_forge",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "wrathy_armament:block/chaos_forge",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "wrathy_armament:block/chaos_forge"
+    },
+    "facing=west": {
+      "model": "wrathy_armament:block/chaos_forge",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "fallback": "wrathy_armament:icecrown_citadel/castle_north_east",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:icecrown_citadel/north_west_down",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

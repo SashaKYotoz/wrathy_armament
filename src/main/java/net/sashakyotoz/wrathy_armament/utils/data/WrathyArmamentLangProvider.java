@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.data;
+package net.sashakyotoz.wrathy_armament.utils.data;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.EntityType;
@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
@@ -25,7 +26,9 @@ public class WrathyArmamentLangProvider extends LanguageProvider {
     protected void addTranslations() {
         WrathyArmamentItems.ITEMS.getEntries().stream().filter(item -> !(item.get() instanceof BlockItem)).forEach(this::addItem);
         WrathyArmamentEntities.REGISTRY.getEntries().forEach(this::addEntityType);
+        WrathyArmamentBlocks.BLOCKS.getEntries().forEach(this::addBlock);
         add("creativetab.wrathy_armament_tab","Wrathly Armament Arsenal:");
+        add("item.wrathy_armament.material","Material");
         add("subtitles.item.phantom_lancer","Splash of phantoms");
         add("subtitles.item.light_swing","Light sword swing");
         add("subtitles.item.katana_swing","Katana-like swing");

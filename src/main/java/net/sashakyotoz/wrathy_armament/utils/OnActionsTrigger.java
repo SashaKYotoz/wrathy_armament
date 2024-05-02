@@ -23,7 +23,9 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -42,6 +44,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.blocks.MythrilAnvil;
+import net.sashakyotoz.wrathy_armament.blocks.gui.MythrilAnvilMenu;
 import net.sashakyotoz.wrathy_armament.entities.alive.LichMyrmidon;
 import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
@@ -53,6 +57,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber
 public class OnActionsTrigger {
@@ -171,9 +176,10 @@ public class OnActionsTrigger {
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
+        TickEvent.Phase phase = event.phase;
         if (timer > 0)
             timer--;
-        if (event.phase == TickEvent.Phase.END && player.getInventory().contains(new ItemStack(WrathyArmamentItems.ZENITH.get()))) {
+        if (phase == TickEvent.Phase.END && player.getInventory().contains(new ItemStack(WrathyArmamentItems.ZENITH.get()))) {
             ItemStack stack = player.getInventory().getItem(player.getInventory().findSlotMatchingItem(new ItemStack(WrathyArmamentItems.ZENITH.get())));
             if (stack.getOrCreateTag().getDouble("CustomModelData") == 1 && timer <= 0)
                 stack.getOrCreateTag().putDouble("CustomModelData", 0);

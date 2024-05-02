@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "wrathy_armament:icecrown_citadel",
+      "weight": 1
+    },
+    {
+      "structure": "wrathy_armament:muddy_temple",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1680941355,
+    "exclusion_zone": {
+      "other_set": "minecraft:igloos",
+      "chunk_count": 1
+    },
+    "spacing": 64,
+    "separation": 48
+  }
+}

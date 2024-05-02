@@ -11,7 +11,7 @@ import net.sashakyotoz.wrathy_armament.WrathyArmament;
 public class WrathyArmamentTab {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, WrathyArmament.MODID);
     public static final RegistryObject<CreativeModeTab> WRATHY_ARMAMENT_TAB = CREATIVE_MODE_TABS.register("wrathy_armament_tab", () -> CreativeModeTab.builder()
-            .withTabsBefore(CreativeModeTabs.COMBAT).title(Component.translatable("creativetab.wrathy_armament_tab"))
+            .title(Component.translatable("creativetab.wrathy_armament_tab"))
             .icon(() -> WrathyArmamentItems.PHANTOM_LANCER.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
             output.accept(WrathyArmamentItems.PHANTOM_LANCER.get());
@@ -23,5 +23,8 @@ public class WrathyArmamentTab {
             output.accept(WrathyArmamentItems.MURASAMA.get());
             output.accept(WrathyArmamentItems.MISTSPLITTER_REFORGED.get());
             output.accept(WrathyArmamentItems.HALF_ZATOICHI.get());
+            output.accept(WrathyArmamentItems.COPPER_SWORD.get());
+            output.accept(WrathyArmamentItems.MEOWMERE.get());
+            output.accept(WrathyArmamentItems.MYTHRIL_INGOT.get());
             }).build());
 }

@@ -1,0 +1,63 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "wrathy_armament:block/mythril_anvil",
+		"particle": "wrathy_armament:block/mythril_anvil"
+	},
+	"elements": [
+		{
+			"name": "Lower narrow portion",
+			"from": [4, 4, 3],
+			"to": [12, 5, 13],
+			"faces": {
+				"north": {"uv": [10, 0, 14, 0.5], "texture": "#0"},
+				"east": {"uv": [8, 2, 7.5, 7], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [10, 0, 14, 0.5], "texture": "#0"},
+				"west": {"uv": [7.5, 2, 8, 7], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [10, 11, 14, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [0, 0, 0, 0], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Wider section beneath top portion",
+			"from": [6, 5, 4],
+			"to": [10, 10, 12],
+			"faces": {
+				"north": {"uv": [14, 0, 16, 2.5], "texture": "#0"},
+				"east": {"uv": [8, 4, 10.5, 8], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [16, 0, 14, 2.5], "texture": "#0"},
+				"west": {"uv": [10.5, 4, 8, 8], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [0, 0, 0, 0], "texture": "#0"},
+				"down": {"uv": [0, 0, 0, 0], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Anvil top",
+			"from": [3, 10, 0],
+			"to": [13, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 5, 3], "texture": "#0"},
+				"east": {"uv": [13.5, 0, 10.5, 8], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [0, 0, 5, 3], "texture": "#0"},
+				"west": {"uv": [10.5, 0, 13.5, 8], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [1.5, 8, 6.5, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [1.5, 16, 6.5, 8], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"name": "Anvil base",
+			"from": [2, 0, 2],
+			"to": [14, 4, 14],
+			"faces": {
+				"north": {"uv": [5.5, 1.5, 7.5, 7.5], "rotation": 90, "texture": "#0"},
+				"east": {"uv": [7.5, 1.5, 5.5, 7.5], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [5.5, 1.5, 7.5, 7.5], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [5.5, 1.5, 7.5, 7.5], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [9, 9, 15, 15], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [9, 9, 15, 15], "rotation": 180, "texture": "#0", "cullface": "down"}
+			}
+		}
+	]
+}

@@ -27,8 +27,7 @@ public class WrathyArmamentItems {
     public static final RegistryObject<Item> MURASAMA = ITEMS.register("murasama",()-> new Murasama(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> MISTSPLITTER_REFORGED = ITEMS.register("mistsplitter_reforged",()-> new MistsplitterReforged(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> HALF_ZATOICHI = ITEMS.register("half_zatoichi",()-> new HalfZatoichi(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).fireResistant().stacksTo(1).durability(3200).fireResistant()));
-    public static final RegistryObject<Item> HANDLER_STONE = block(WrathyArmamentBlocks.HANDLER_STONE);
-    private static RegistryObject<Item> block(RegistryObject<Block> block) {
-        return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
-    }
+    public static final RegistryObject<Item> COPPER_SWORD = ITEMS.register("copper_sword",()->new ItemWithDescription(new Item.Properties(),"item.wrathy_armament.material"));
+    public static final RegistryObject<Item> MEOWMERE = ITEMS.register("meowmere",()->new ItemWithDescription(new Item.Properties(),"item.wrathy_armament.material"));
+    public static final RegistryObject<Item> MYTHRIL_INGOT = ITEMS.register("mythril_ingot",()->new ItemWithDescription(new Item.Properties(),"item.wrathy_armament.material"));
 }
