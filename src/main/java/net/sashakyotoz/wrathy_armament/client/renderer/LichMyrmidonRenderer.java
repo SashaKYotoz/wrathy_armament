@@ -15,7 +15,7 @@ public class LichMyrmidonRenderer extends FixedDeathAnimationMobRenderer<LichMyr
         this.addLayer(new EyesLayer<>(this) {
             @Override
             public RenderType renderType() {
-                return RenderType.eyes(new ResourceLocation(WrathyArmament.MODID,"textures/entity/lich_myrmidon_glowing_eyes.png"));
+                return RenderType.eyes(new ResourceLocation(WrathyArmament.MODID,"textures/entity/layers/lich_myrmidon_glowing_eyes.png"));
             }
         });
     }

@@ -7,8 +7,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEnchants;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 
 import java.util.Set;
 
@@ -28,7 +28,7 @@ public class NightmareJumping extends Enchantment {
 
     @Override
     protected boolean checkCompatibility(Enchantment enchantment) {
-        return enchantment != WrathyArmamentEnchants.PHANTOQUAKE.get();
+        return enchantment != WrathyArmamentMiscRegistries.PHANTOQUAKE.get();
     }
 
     @Override

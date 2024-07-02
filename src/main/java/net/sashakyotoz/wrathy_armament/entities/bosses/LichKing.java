@@ -35,7 +35,7 @@ import net.sashakyotoz.wrathy_armament.entities.alive.LichMyrmidon;
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.jetbrains.annotations.NotNull;
 
@@ -180,7 +180,7 @@ public class LichKing extends BossLikePathfinderMob implements RangedAttackMob {
             this.clientDiggingParticles(this.spawn.isStarted() ? this.spawn : this.death);
         if (this.isInHealingState() && this.tickCount % 20 == 0) {
             if (this.getHealth() != this.getMaxHealth()) {
-                this.spawnParticle(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(), this.level(), this.getX(), this.getY() + 1, this.getZ(), 2.5f * this.random.nextInt(1, 4));
+                this.spawnParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), this.level(), this.getX(), this.getY() + 1, this.getZ(), 2.5f * this.random.nextInt(1, 4));
                 this.heal(5);
             }
         }
@@ -265,7 +265,7 @@ public class LichKing extends BossLikePathfinderMob implements RangedAttackMob {
         float scaling = 0;
         for (int i1 = 0; i1 < 24; i1++) {
                 scaling = scaling + 1;
-            this.level().addParticle(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(),
+            this.level().addParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getX()),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getY()),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getZ()), d0,

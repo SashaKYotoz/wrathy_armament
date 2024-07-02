@@ -127,11 +127,9 @@ public class JohannesSpearEntity extends Entity implements TraceableEntity {
         super.handleEntityEvent(bytes);
         if (bytes == 4) {
             this.clientSideAttackStarted = true;
-            if (!this.isSilent()) {
+            if (!this.isSilent())
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
-            }
         }
-
     }
 
     public float getAnimationProgress(float p_36937_) {

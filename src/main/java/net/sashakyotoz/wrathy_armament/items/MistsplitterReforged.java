@@ -12,15 +12,17 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
 
 import java.util.List;
 
@@ -30,6 +32,29 @@ public class MistsplitterReforged extends SwordLikeItem {
     public MistsplitterReforged(Properties properties) {
         super(properties);
     }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+        WaveParticleOption option = new WaveParticleOption(player.getYRot(), 2f, 0.75f, 0, 0.5f);
+        player.level().addParticle(option, player.getX(), player.getY() + 4f, player.getZ(),
+                OnActionsTrigger.getXVector(2, player.getYRot()),
+                OnActionsTrigger.getYVector(1, player.getXRot()),
+                OnActionsTrigger.getZVector(2, player.getYRot()));
+    }
+
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+        player.getCapability(ModCapabilities.MISTSPLITTER_DEFENCE).ifPresent(context -> {
+            context.setDefenseModeFlag(!context.isDefenseModeOn());
+            context.setDefenceType(player.getRandom().nextBoolean() ? "fire" : "earth");
+        });
+    }
+
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
         if (equipmentSlot == EquipmentSlot.MAINHAND) {
@@ -61,13 +86,13 @@ public class MistsplitterReforged extends SwordLikeItem {
                     timer++;
                 else {
                     if (entity.level() instanceof ServerLevel serverLevel){
-                        ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(),serverLevel,0.8f,true,false,5, WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(),"cycle");
+                        ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(),serverLevel,0.8f,true,false,5, WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(),"cycle");
                         particleEntity.moveTo(new Vec3(entity.getX(),entity.getY() +1,entity.getZ()));
                         entity.level().addFreshEntity(particleEntity);
                     }
                     for (int i = 0; i < 360; i++) {
                         if (i % 20 == 0) {
-                            level.addParticle(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(), player.getX(), player.getY() + 1, player.getZ(), Math.cos(i) * 0.4d, 0.25d, Math.sin(i) * 0.4d);
+                            level.addParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), player.getX(), player.getY() + 1, player.getZ(), Math.cos(i) * 0.4d, 0.25d, Math.sin(i) * 0.4d);
                         }
                     }
                     damageBoost++;

@@ -27,7 +27,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
@@ -36,21 +35,42 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEnchants;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.antlr.v4.runtime.misc.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class PhantomLancer extends SwordLikeItem implements IClientItemExtensions {
+public class PhantomLancer extends SwordLikeItem {
     public PhantomLancer(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+        Triple<Float,Float,Float> colorSet = player.getRandom().nextBoolean() ? new Triple<>(0f,0f,1f) : new Triple<>(1f,0.945f,0.4f);
+        WaveParticleOption option = new WaveParticleOption(player.getYRot(), 3f, colorSet.a, colorSet.b, colorSet.c);
+        player.level().addParticle(option, player.getX(), player.getY() + 4f, player.getZ(),
+                OnActionsTrigger.getXVector(1.25f, player.getYRot()),
+                OnActionsTrigger.getYVector(1f, player.getXRot()),
+                OnActionsTrigger.getZVector(1.25f, player.getYRot()));
+    }
+
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+
     }
 
     @Override
@@ -65,34 +85,24 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
             return;
         var f = getPowerForTime(i);
         if (!((double) f < 0.75D)) {
-            WrathyArmament.LOGGER.debug("sweep Attack");
             entity.playSound(SoundEvents.PHANTOM_SWOOP);
             double d0 = -Mth.sin(entity.getYRot() * ((float) Math.PI / 180F));
             double d1 = Mth.cos(entity.getYRot() * ((float) Math.PI / 180F));
             int tmp;
-            int Int = stack.getEnchantmentLevel(WrathyArmamentEnchants.PHANTOM_FURY.get());
+            int Int = stack.getEnchantmentLevel(WrathyArmamentMiscRegistries.PHANTOM_FURY.get());
             if (Int > 0)
                 tmp = Int;
             else
                 tmp = 1;
             float scaling = 0;
             for (int i1 = 0; i1 < 15 + tmp * 3; i1++) {
-                if (!level.getBlockState(new BlockPos(
-                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX(),
-                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY(),
-                                level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()))
-                        .canOcclude())
+                BlockPos pos = level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos();
+                if (!level.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ())).canOcclude())
                     scaling = scaling + 1;
-                level.addParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(),
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()), d0,
-                        0.1, d1);
-                final Vec3 _center = new Vec3(
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY()),
-                        (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()));
-                List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(_center, _center).inflate((1.5 + tmp) / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(_center))).toList();
+                BlockPos pos1 = level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos();
+                level.addParticle(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), pos1.getX(), pos1.getY(), pos1.getZ(), d0, 0.1, d1);
+                final Vec3 center = new Vec3(pos1.getX(), pos1.getY(), pos1.getZ());
+                List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate((1.5 + tmp) / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(center))).toList();
                 for (Entity entityiterator : entityList) {
                     if (!(entityiterator == entity)) {
                         if (entityiterator instanceof LivingEntity livingEntity) {
@@ -105,7 +115,7 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
                                     return Component.translatable("death.attack.wrathy_armament.phantom_shock_message");
                                 }
                             }, damage);
-                            WrathyArmament.LOGGER.debug("Damage:" + damage);
+                            WrathyArmament.LOGGER.debug("Phantom Lancer damage:{}", damage);
                             Player player = (Player) entity;
                             player.getCooldowns().addCooldown(stack.getItem(), Mth.randomBetweenInclusive(RandomSource.create(), 60, 120));
                         }
@@ -165,7 +175,7 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player entity, InteractionHand hand) {
         entity.startUsingItem(hand);
-        return new InteractionResultHolder(InteractionResult.SUCCESS, entity.getItemInHand(hand));
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, entity.getItemInHand(hand));
     }
 
     private static float getPowerForTime(int i) {
@@ -195,60 +205,4 @@ public class PhantomLancer extends SwordLikeItem implements IClientItemExtension
         return UseAnim.CUSTOM;
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private static final HumanoidModel.ArmPose STRIKE_POSE = HumanoidModel.ArmPose.create("STRIKE", false, (model, entity, arm) -> {
-                if (arm == HumanoidArm.LEFT) {
-                    model.leftArm.xRot = -0.75f;
-                    model.leftArm.yRot = -0.3f;
-                    model.leftArm.zRot = -0.15f;
-                } else {
-                    model.rightArm.xRot = -0.75f;
-                    model.rightArm.yRot = 0.3f;
-                    model.rightArm.zRot = 0.15f;
-                }
-            });
-            @Override
-            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
-                if (!itemStack.isEmpty()) {
-                    if (!(entityLiving.isUsingItem()) && !entityLiving.swinging)
-                        return HumanoidModel.ArmPose.ITEM;
-                    if (entityLiving.isUsingItem())
-                        return STRIKE_POSE;
-                    if (entityLiving.swinging)
-                        return HumanoidModel.ArmPose.ITEM;
-                }
-                return IClientItemExtensions.super.getArmPose(entityLiving, hand, itemStack);
-            }
-
-            @Override
-            public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
-                int k = arm == HumanoidArm.RIGHT ? 1 : -1;
-                poseStack.translate(k * 0.56F, -0.52F, -0.72F);
-                if (player.isUsingItem()) {
-                    poseStack.translate((float) k * -0.28F, 0.15F, 0.158F);
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-14F));
-                    poseStack.mulPose(Axis.YP.rotationDegrees((float) k * 65F));
-                    poseStack.mulPose(Axis.ZP.rotationDegrees((float) k * -10F));
-                    float f8 = (float) itemInHand.getUseDuration() - ((float) player.getUseItemRemainingTicks() - partialTick + 1.0F);
-                    float f12 = f8 / 20.0F;
-                    f12 = (f12 * f12 + f12 * 2.0F) / 3.0F;
-                    if (f12 > 1.0F) {
-                        f12 = 1.0F;
-                    }
-                    if (f12 > 0.1F) {
-                        float f15 = Mth.sin((f8 - 0.1F) * 1.3F);
-                        float f18 = f12 - 0.1F;
-                        float f20 = f15 * f18;
-                        poseStack.translate(0.0F, f20 * 0.004F, 0.0F);
-                    }
-                    poseStack.translate(0.0F, 0.0F, f12 * 0.04F);
-                    poseStack.scale(1.0F, 1.0F, 1.0F + f12 * 0.2F);
-                    poseStack.mulPose(Axis.YN.rotationDegrees((float) k * 75.0F));
-                }
-                return !player.swinging;
-            }
-        });
-    }
 }

@@ -18,14 +18,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.ResetAngerTargetGoal;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -83,7 +82,7 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
         return false;
     }
     public void spawnParticle(Level world, double x, double y, double z, float modifier) {
-        spawnParticle(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(), world, x, y, z, modifier);
+        spawnParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), world, x, y, z, modifier);
     }
 
     @Override

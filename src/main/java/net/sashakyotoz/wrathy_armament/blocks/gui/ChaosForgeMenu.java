@@ -22,7 +22,7 @@ import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.blocks.ChaosForge;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMenus;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class ChaosForgeMenu extends ItemCombinerMenu {
     public final Level level;
     private final DataSlot cost = DataSlot.standalone();
     public ChaosForgeMenu(int id, Inventory inventory, ContainerLevelAccess access) {
-        super(WrathyArmamentMenus.CHAOS_FORGE.get(), id, inventory, access);
+        super(WrathyArmamentMiscRegistries.CHAOS_FORGE.get(), id, inventory, access);
         this.addDataSlot(this.cost);
         this.level = inventory.player.level();
         WrathyArmament.LOGGER.debug(getPos(level, inventory.player) + " ");

@@ -3,6 +3,7 @@ package net.sashakyotoz.wrathy_armament.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.CommonComponents;
@@ -12,26 +13,21 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 
 import java.util.Comparator;
@@ -42,6 +38,46 @@ public class MasterSword extends SwordLikeItem {
 
     public MasterSword(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+        if (player.getRandom().nextBoolean()) {
+            if (player.getRandom() instanceof ServerLevel serverLevel) {
+                LightningBolt entityToSpawn = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                entityToSpawn.moveTo(Vec3.atBottomCenterOf(BlockPos.containing(player.getX(), player.getY(), player.getZ())));
+                serverLevel.addFreshEntity(entityToSpawn);
+                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), serverLevel, 0.2f, true, false, 2,
+                        ParticleTypes.ELECTRIC_SPARK, "semicycle");
+                particleEntity.moveTo(new Vec3(player.getX(), player.getY() + 1, player.getZ()));
+                serverLevel.addFreshEntity(particleEntity);
+            }
+        } else {
+            if (!player.level().isClientSide()) {
+                player.setSecondsOnFire(15);
+            }
+            if (player.level() instanceof ServerLevel serverLevel) {
+                int tmp = RandomSource.create().nextInt(5, 11) + 3;
+                for (int i = 0; i < tmp; i++) {
+                    serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, player.getX() + OnActionsTrigger.getXVector(i, player.getYRot()), player.getY() + 1, player.getZ() + OnActionsTrigger.getZVector(i, player.getYRot()), 27, 1 + OnActionsTrigger.getXVector(i, player.getYRot()), 1, 1 + OnActionsTrigger.getZVector(i, player.getYRot()), 1);
+                }
+            }
+        }
+    }
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+        WrathyArmament.LOGGER.debug("Coordinate: {}", stack.getOrCreateTag().getDouble("playerX"));
+        this.timerToRerecord = 240;
+        OnActionsTrigger.addParticles(ParticleTypes.END_ROD, player.level(), player.getX(), player.getY(), player.getZ(), 4);
+        player.teleportTo(stack.getOrCreateTag().getDouble("playerX"), stack.getOrCreateTag().getDouble("playerY"), stack.getOrCreateTag().getDouble("playerZ"));
+        stack.getOrCreateTag().putDouble("playerX", 0);
+        player.getCooldowns().addCooldown(stack.getItem(),20);
+        stack.onStopUsing(player,20);
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+
     }
 
     @Override
@@ -83,14 +119,6 @@ public class MasterSword extends SwordLikeItem {
     }
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int i) {
-        if (!entity.isCrouching() && stack.getOrCreateTag().getDouble("playerX") != 0) {
-            WrathyArmament.LOGGER.debug("Coordinate: " + stack.getOrCreateTag().getDouble("playerX"));
-            this.timerToRerecord = 240;
-            OnActionsTrigger.addParticles(ParticleTypes.END_ROD, entity.level(), entity.getX(), entity.getY(), entity.getZ(), 4);
-            entity.teleportTo(stack.getOrCreateTag().getDouble("playerX"), stack.getOrCreateTag().getDouble("playerY"), stack.getOrCreateTag().getDouble("playerZ"));
-            stack.getOrCreateTag().putDouble("playerX", 0);
-            stack.onStopUsing(entity,i);
-        }
         if (i > 20 && entity.isCrouching() && entity instanceof Player player) {
             if (level instanceof ServerLevel serverLevel){
                 serverLevel.sendParticles(new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.GLOWSTONE.defaultBlockState()),

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.MobCopyOwnerTargetGoal;
 import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
 import net.sashakyotoz.wrathy_armament.entities.technical.OwnerableMob;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 
 import java.util.EnumSet;
@@ -147,7 +147,7 @@ public class LichMyrmidon extends OwnerableMob {
         } else if (this.timeToVanish() <= 0 || this.isOnFire()) {
             this.despawn.start(this.tickCount);
             if (this.level() instanceof ServerLevel level)
-                level.sendParticles(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(), this.getZ(), this.getY(), this.getZ(), 18, 1, -1, 1, 0.5f);
+                level.sendParticles(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), this.getZ(), this.getY(), this.getZ(), 18, 1, -1, 1, 0.5f);
             OnActionsTrigger.queueServerWork(10, this::discard);
         }
         if (this.getPose() == Pose.ROARING)
@@ -160,7 +160,7 @@ public class LichMyrmidon extends OwnerableMob {
             this.despawn.start(this.tickCount);
         if (deathTime == 19) {
             if (this.level() instanceof ServerLevel level)
-                level.sendParticles(WrathyArmamentParticleTypes.FROST_SOUL_RAY.get(), this.getZ(), this.getY(), this.getZ(), 18, 1, -1, 1, 0.5f);
+                level.sendParticles(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), this.getZ(), this.getY(), this.getZ(), 18, 1, -1, 1, 0.5f);
         }
         super.tickDeath();
     }

@@ -17,8 +17,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -28,10 +26,10 @@ import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozFlyMoveGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.SashaKYotozRandomStrollGoal;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -104,7 +102,7 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
                     for (int i = 0; i < 2; i++) {
                         int finalI = i;
                         OnActionsTrigger.queueServerWork(30 * i, () -> {
-                            spawnParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(), this.level(), this.getX(), this.getY(), this.getZ(), 1 + finalI);
+                            spawnParticle(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), this.level(), this.getX(), this.getY(), this.getZ(), 1 + finalI);
                             hitNearbyMobs(Component.translatable("death.attack.wrathy_armament.phantom_shock_message"), 10, 4 * finalI);
                         });
                     }
@@ -187,7 +185,7 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
                             this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getZ()))
                     .canOcclude())
                 scaling = scaling + 1;
-            this.level().addParticle(WrathyArmamentParticleTypes.PHANTOM_RAY.get(),
+            this.level().addParticle(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getX()),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getY()),
                     (this.level().clip(new ClipContext(this.getEyePosition(1f), this.getEyePosition(1f).add(this.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this)).getBlockPos().getZ()), d0,

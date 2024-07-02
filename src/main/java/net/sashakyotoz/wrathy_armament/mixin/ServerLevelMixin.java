@@ -16,7 +16,7 @@ public abstract class ServerLevelMixin {
     @Unique
     private final SashaKYotozSpawner wrathy_armament$sashaKYotozSpawner = new SashaKYotozSpawner();
     @Inject(method = "tickCustomSpawners", at = @At("RETURN"))
-    private void tickSpawner(boolean p_8800_, boolean p_8801_, CallbackInfo ci){
-        wrathy_armament$sashaKYotozSpawner.tick(getLevel(), p_8800_, p_8801_);
+    private void tickSpawner(boolean pSpawnEnemies, boolean pSpawnFriendlies, CallbackInfo ci){
+        wrathy_armament$sashaKYotozSpawner.tick(getLevel(), pSpawnEnemies, pSpawnFriendlies);
     }
 }

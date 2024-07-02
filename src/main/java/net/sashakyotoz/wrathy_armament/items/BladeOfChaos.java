@@ -21,7 +21,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
@@ -32,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentParticleTypes;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -42,6 +41,22 @@ public class BladeOfChaos extends SwordLikeItem {
     public BladeOfChaos(Properties properties) {
         super(properties);
     }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+
+    }
+
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
         if (equipmentSlot == EquipmentSlot.MAINHAND) {
@@ -95,7 +110,7 @@ public class BladeOfChaos extends SwordLikeItem {
                             level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()))
                     .canOcclude())
                 scaling = scaling + 1;
-            level.addParticle(WrathyArmamentParticleTypes.FIRE_TRAIL.get(),
+            level.addParticle(WrathyArmamentMiscRegistries.FIRE_TRAIL.get(),
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getX()),
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getY() + 1),
                     (level.clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos().getZ()), d0,

@@ -282,7 +282,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
         if (this.getKnightPose() != KnightPose.DYING)
             this.setKnightPose(KnightPose.DYING);
         if (deathTime == 19)
-            this.spawnParticle(WrathyArmamentParticleTypes.FIRE_TRAIL.get(), this.level(), this.getX(), this.getY(), this.getZ(), 2);
+            this.spawnParticle(WrathyArmamentMiscRegistries.FIRE_TRAIL.get(), this.level(), this.getX(), this.getY(), this.getZ(), 2);
         super.tickDeath();
     }
 

@@ -41,7 +41,7 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, zenithEntity.yRotO, zenithEntity.getYRot()) - 90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, zenithEntity.xRotO, zenithEntity.getXRot())));
         if(this.model != null)
-            this.model.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1f);
+            this.model.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 0.5f);
         else
             this.zenith.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1f);
         poseStack.popPose();

@@ -30,7 +30,7 @@ public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - entity.getYRot()));
             poseStack.scale(-f1, -f1, f1);
-            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.1D : 0.6, 0.0D);
+            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.05D : 0.75, 0.0D);
             poseStack.scale(0.5F, 0.5F, 0.5F);
             this.model.setupAnim(entity, f, 0.0F, 0.0F, entity.getYRot(), entity.getXRot());
             VertexConsumer vertexconsumer = multiBufferSource.getBuffer(this.model.renderType(TEXTURE_LOCATION));

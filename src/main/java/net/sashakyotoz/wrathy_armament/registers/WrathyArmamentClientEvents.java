@@ -2,12 +2,17 @@ package net.sashakyotoz.wrathy_armament.registers;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.blocks.renderers.ChaosForgeBlockEntityRenderer;
 import net.sashakyotoz.wrathy_armament.blocks.renderers.MythrilAnvilBlockEntityRenderer;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.*;
 import net.sashakyotoz.wrathy_armament.client.models.technical.*;
+import net.sashakyotoz.wrathy_armament.client.particles.FireTrailParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.FrostSoulParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.PhantomRayParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.ZenithWayParticle;
 import net.sashakyotoz.wrathy_armament.client.renderer.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.JohannesKnightRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.LichKingRenderer;
@@ -46,5 +51,13 @@ public class WrathyArmamentClientEvents {
         event.registerLayerDefinition(DaggerProjectileModel.LAYER_LOCATION, DaggerProjectileModel::createBodyLayer);
         event.registerLayerDefinition(HugeSwordModel.LAYER_LOCATION, HugeSwordModel::createBodyLayer);
         event.registerLayerDefinition(CycleFlameModel.LAYER_LOCATION, CycleFlameModel::createBodyLayer);
+        event.registerLayerDefinition(TransparentHumanoidLayerModel.LAYER_LOCATION,TransparentHumanoidLayerModel::createBodyLayer);
+    }
+    @SubscribeEvent
+    public static void onParticleSetup(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), PhantomRayParticle::provider);
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.ZENITH_WAY.get(), ZenithWayParticle::provider);
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.FIRE_TRAIL.get(), FireTrailParticle::provider);
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), FrostSoulParticle::provider);
     }
 }

@@ -1,4 +1,4 @@
-package net.sashakyotoz.wrathy_armament.client.layers;
+package net.sashakyotoz.wrathy_armament.client.renderer.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

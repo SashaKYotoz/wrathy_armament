@@ -1,14 +1,14 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="GPL-3.0"
+license="${mod_license}"
 
 [[mods]]
 modId="wrathy_armament"
-version="0.1.5"
+version="${mod_version}"
 displayName="Wrathy Armament"
 logoFile=""
 authors="SashaKYotoz"
-description="Weapony of games' galaxy"
+description="${mod_description}"
 
 [[dependencies.wrathy_armament]]
 modId="minecraft"
@@ -16,6 +16,12 @@ mandatory=true
 versionRange="[1.20.1]"
 ordering="NONE"
 side="BOTH"
+[[dependencies.wrathy_armament]]
+modId = "anitexlib"
+mandatory = true
+versionRange = "[0.3,)"
+ordering = "AFTER"
+side = "BOTH"
 
 
 

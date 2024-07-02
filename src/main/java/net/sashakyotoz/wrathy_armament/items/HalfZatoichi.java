@@ -15,7 +15,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.antlr.v4.runtime.misc.Triple;
 
 import java.util.List;
 
@@ -24,6 +27,26 @@ public class HalfZatoichi extends SwordLikeItem {
     public HalfZatoichi(Properties properties) {
         super(properties);
     }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+        WaveParticleOption option = new WaveParticleOption(player.getYRot(), 2f, 1, 1, 1);
+        player.level().addParticle(option, player.getX(), player.getY() + 4f, player.getZ(),
+                OnActionsTrigger.getXVector(1, player.getYRot()),
+                OnActionsTrigger.getYVector(1, player.getXRot()),
+                OnActionsTrigger.getZVector(1, player.getYRot()));
+    }
+
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int i, boolean variable) {
         charge = stack.getOrCreateTag().getInt("charge");

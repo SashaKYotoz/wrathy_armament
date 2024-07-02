@@ -18,8 +18,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
+import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
@@ -30,6 +32,57 @@ public class JohannesSword extends SwordLikeItem {
     public JohannesSword(Properties properties) {
         super(properties);
     }
+
+    @Override
+    public void leftClickAttack(Player player, ItemStack stack) {
+
+    }
+
+    @Override
+    public void rightClick(Player player, ItemStack stack) {
+        double speed = 1.5;
+        double Yaw = player.getYRot();
+        RandomSource random = RandomSource.create();
+        player.setDeltaMovement(0, 0.25, 0);
+        player.getCooldowns().addCooldown(stack.getItem(), 50);
+        if (player.level() instanceof ServerLevel level){
+            for (int i = 0; i < 3; i++) {
+                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,9,"axe");
+                projectile.setOwner(player);
+                projectile.setProjectileType("axe");
+                projectile.moveTo(
+                        player.getX() + OnActionsTrigger.getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2),
+                        player.getY() + 1 + i,
+                        player.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2));
+                level.addFreshEntity(projectile);
+            }
+        }
+        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, Yaw), (player.getXRot() * (-0.025)) + 0.25, OnActionsTrigger.getZVector(speed, Yaw))));
+
+    }
+
+    @Override
+    public void rightClickOnShiftClick(Player player, ItemStack stack) {
+        player.setDeltaMovement(0, 0.25, 0);
+        player.getCooldowns().addCooldown(stack.getItem(), 70);
+        double speed = 2;
+        double Yaw = player.getYRot();
+        if (player.level() instanceof ServerLevel level){
+            for (int i = 0; i < 4; i++) {
+                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,7,"dagger");
+                projectile.setOwner(player);
+                projectile.setProjectileType("dagger");
+                projectile.moveTo(
+                        player.getX() + OnActionsTrigger.getXVector(speed + i, Yaw),
+                        player.getY(),
+                        player.getZ() + OnActionsTrigger.getZVector(speed + i, Yaw));
+                level.addFreshEntity(projectile);
+            }
+        }
+        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, -Yaw), 0.25, -OnActionsTrigger.getZVector(speed, Yaw))));
+
+    }
+
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
         if (equipmentSlot == EquipmentSlot.MAINHAND) {
@@ -57,59 +110,26 @@ public class JohannesSword extends SwordLikeItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        player.startUsingItem(hand);
-        if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())){
-            if (!player.isCrouching())
-                johannesSwordDash(player,player.getItemInHand(hand));
-            else
-                johannesSwordBackwardsDash(player,player.getItemInHand(hand));
-        }
-        return super.use(level, player, hand);
-    }
-
-    @Override
     public int getUseDuration(ItemStack stack) {
         return 72000;
     }
 
-    private void johannesSwordDash(Player player, ItemStack stack) {
-        double speed = 1.5;
-        double Yaw = player.getYRot();
-        RandomSource random = RandomSource.create();
-        player.setDeltaMovement(0, 0.25, 0);
-        player.getCooldowns().addCooldown(stack.getItem(), 50);
-        if (player.level() instanceof ServerLevel level){
-            for (int i = 0; i < 3; i++) {
-                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,9,"axe");
-                projectile.setOwner(player);
-                projectile.setProjectileType("axe");
-                projectile.moveTo(
-                        player.getX() + OnActionsTrigger.getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2),
-                        player.getY() + 1 + i,
-                        player.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2));
-                level.addFreshEntity(projectile);
+    @Override
+    public void rightClickBlock(Player player, ItemStack stack) {
+        if (!player.getCooldowns().isOnCooldown(stack.getItem()) && player.level() instanceof ServerLevel level ){
+            double yaw = player.getYRot();
+            double d0 = OnActionsTrigger.getXVector(3, yaw);
+            double d1 = player.getXRot() * (-0.025);
+            double d2 = OnActionsTrigger.getZVector(3, yaw);
+            for (int l = 0; l < 16; ++l) {
+                createSpellEntity(level, player, d0, d1, d2, l);
             }
+            player.getCooldowns().addCooldown(stack.getItem(),20);
         }
-        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, Yaw), (player.getXRot() * (-0.025)) + 0.25, OnActionsTrigger.getZVector(speed, Yaw))));
     }
-    private void johannesSwordBackwardsDash(Player player, ItemStack stack){
-        player.setDeltaMovement(0, 0.25, 0);
-        player.getCooldowns().addCooldown(stack.getItem(), 70);
-        double speed = 2;
-        double Yaw = player.getYRot();
-        if (player.level() instanceof ServerLevel level){
-            for (int i = 0; i < 4; i++) {
-                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,7,"dagger");
-                projectile.setOwner(player);
-                projectile.setProjectileType("dagger");
-                projectile.moveTo(
-                        player.getX() + OnActionsTrigger.getXVector(speed + i, Yaw),
-                        player.getY(),
-                        player.getZ() + OnActionsTrigger.getZVector(speed + i, Yaw));
-                level.addFreshEntity(projectile);
-            }
-        }
-        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, -Yaw), 0.25, -OnActionsTrigger.getZVector(speed, Yaw))));
+
+    private void createSpellEntity(ServerLevel level, Player player, double vx, double vy, double vz, int i) {
+        level.addFreshEntity(new JohannesSpearEntity(level, player.getX() + vx * i, player.getY() + vy, player.getZ() + vz * i, 0, i, player));
+        level.gameEvent(GameEvent.ENTITY_PLACE, new Vec3(player.getX() + vx * i, player.getY() + vy, player.getZ() + vz * i), GameEvent.Context.of(player));
     }
 }
