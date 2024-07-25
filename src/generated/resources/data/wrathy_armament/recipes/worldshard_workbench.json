@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": {
+      "item": "wrathy_armament:shard_of_clear_mythril"
+    },
+    "B": {
+      "item": "wrathy_armament:shard_of_orichalcum"
+    },
+    "C": {
+      "item": "wrathy_armament:shard_of_mechanvil"
+    },
+    "D": {
+      "item": "wrathy_armament:shard_of_netherness"
+    },
+    "H": {
+      "item": "minecraft:heart_of_the_sea"
+    }
+  },
+  "pattern": [
+    "A B",
+    " H ",
+    "C D"
+  ],
+  "result": {
+    "item": "wrathy_armament:worldshard_workbench"
+  },
+  "show_notification": true
+}

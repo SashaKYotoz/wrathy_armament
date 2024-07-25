@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
@@ -29,7 +30,6 @@ import java.util.List;
 
 public class Zenith extends SwordLikeItem {
     private int timer;
-    private int zenithIndex = 0;
 
     public Zenith(Properties properties) {
         super(properties);
@@ -48,17 +48,19 @@ public class Zenith extends SwordLikeItem {
     @Override
     public void rightClick(Player player, ItemStack stack) {
         if (player.level() instanceof ServerLevel serverLevel && !player.getCooldowns().isOnCooldown(stack.getItem())) {
-            zenithAbility(player, serverLevel);
-            if (zenithIndex > 3) {
-                stack.getOrCreateTag().putDouble("CustomModelData", 0);
+            if (stack.getOrCreateTag().getInt("ZenithIndex") > 2) {
+                stack.getOrCreateTag().putDouble("CustomModelData",0);
+                stack.getOrCreateTag().putInt("ZenithIndex", 0);
                 player.getCooldowns().addCooldown(stack.getItem(), 60);
             } else {
-                zenithIndex++;
+                zenithAbility(player,stack, serverLevel);
+                stack.getOrCreateTag().putDouble("CustomModelData",1);
+                stack.getOrCreateTag().putInt("ZenithIndex",stack.getOrCreateTag().getInt("ZenithIndex")+1);
                 timer = 30;
-                stack.getOrCreateTag().putDouble("CustomModelData", zenithIndex > 0 ? 1 : 0);
                 player.getCooldowns().addCooldown(stack.getItem(), 10);
             }
         }
+            OnActionsTrigger.playPlayerAnimation(player.level(),player,"zenith_in_hand_rolling");
     }
 
     @Override
@@ -79,29 +81,23 @@ public class Zenith extends SwordLikeItem {
 
     }
 
-    private void zenithAbility(Player player, ServerLevel level) {
-        if (zenithIndex > 3)
-            zenithIndex = 0;
-        else
-            zenithIndex++;
-        WrathyArmament.LOGGER.debug("{} \r", zenithIndex);
-        ZenithEntity zenith = new ZenithEntity(level, player, zenithIndex);
+    private void zenithAbility(Player player,ItemStack stack, ServerLevel level) {
+        WrathyArmament.LOGGER.debug("Zenith index: {} \r", stack.getOrCreateTag().getInt("ZenithIndex"));
+        ZenithEntity zenith = new ZenithEntity(level, player, stack.getOrCreateTag().getInt("ZenithIndex"));
         zenith.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 3.0F, 1.0F);
         level.addFreshEntity(zenith);
     }
-
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-            builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 17.5, AttributeModifier.Operation.ADDITION));
-            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.8, AttributeModifier.Operation.ADDITION));
+            builder.putAll(super.getAttributeModifiers(slot,stack));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 15, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.8, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
-        return super.getDefaultAttributeModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot,stack);
     }
-
     @Override
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, world, list, flag);

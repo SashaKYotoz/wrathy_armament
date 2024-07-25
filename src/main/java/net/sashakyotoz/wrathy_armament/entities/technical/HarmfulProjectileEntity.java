@@ -6,11 +6,12 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
@@ -29,7 +30,8 @@ public class HarmfulProjectileEntity extends VanishableLikeEntity {
     private static final EntityDataAccessor<String> PROJECTILE_TYPE = SynchedEntityData.defineId(HarmfulProjectileEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> DAMAGE = SynchedEntityData.defineId(HarmfulProjectileEntity.class, EntityDataSerializers.INT);
     private Vec3 vec3 = null;
-    public static final EntityDimensions HUGE_SIZE = EntityDimensions.fixed(2.5F, 2.5F);
+    public static final EntityDimensions LARGE_SIZE = EntityDimensions.fixed(2.5F, 2.5F);
+    public static final EntityDimensions HUGE_SIZE = EntityDimensions.fixed(3F, 3F);
 
     public HarmfulProjectileEntity(EntityType<?> type, Level level, int damage, String s) {
         super(type, level);
@@ -63,13 +65,22 @@ public class HarmfulProjectileEntity extends VanishableLikeEntity {
 
     @Override
     public EntityDimensions getDimensions(Pose pose) {
-        return this.getProjectileType().equals("huge_sword") ? HUGE_SIZE : super.getDimensions(pose);
+        return switch (this.getProjectileType()){
+            default -> super.getDimensions(pose);
+            case "huge_sword" -> LARGE_SIZE;
+            case "shield_dash" -> HUGE_SIZE;
+        };
     }
 
     private void onHitEntity(EntityHitResult hitResult) {
         Entity entity = hitResult.getEntity();
         if (entity instanceof LivingEntity livingEntity && this.owner != null) {
             livingEntity.hurt(this.owner.damageSources().mobAttack(this.owner), this.getDamage());
+            if (this.getProjectileType().equals("shield_dash")) {
+                livingEntity.setDeltaMovement(this.getXVector(this.getYRot()), this.getYVector(this.getXRot()) + 0.25f, this.getZVector(this.getYRot()));
+                if (!this.level().isClientSide())
+                    this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4, Level.ExplosionInteraction.NONE);
+            }
             this.discard();
         }
     }
@@ -94,15 +105,21 @@ public class HarmfulProjectileEntity extends VanishableLikeEntity {
             this.timeToVanish++;
         else if (this.timeToVanish < 200 && this.getProjectileType().equals("huge_sword"))
             this.timeToVanish++;
+        else if (this.timeToVanish < 30 && this.getProjectileType().equals("shield_dash"))
+            this.timeToVanish++;
         else
             discard();
-        if (this.timeToVanish > 20) {
+        if (this.timeToVanish > 15) {
             this.refreshDimensions();
             this.move(MoverType.SELF, this.getDeltaMovement());
-            if (this.owner == null && (this.getProjectileType().equals("dagger") || this.getProjectileType().equals("axe")))
+            if (this.owner == null && (this.getProjectileType().equals("dagger") || this.getProjectileType().equals("axe") || this.getProjectileType().equals("shield_dash")))
                 this.owner = this.getNearestPlayer();
             if (this.owner == null && (this.getProjectileType().equals("knight_dagger") || this.getProjectileType().equals("knight_axe")))
                 this.owner = this.getNearestKnight();
+            if (this.tickCount % 5 == 0){
+                Vec3 vec31 = this.getDeltaMovement();
+                this.level().addParticle(ParticleTypes.CRIT, this.getX() - vec31.x, this.getY() - vec31.y + 0.5D, this.getZ() - vec31.z, 0.0D, 0.0D, 0.0D);
+            }
             HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             boolean flag = false;
             if (hitresult.getType() == HitResult.Type.BLOCK) {
@@ -128,6 +145,15 @@ public class HarmfulProjectileEntity extends VanishableLikeEntity {
                         this.vec3 = new Vec3(this.getXVector(this.owner.getYRot()), -0.16D, this.getZVector(this.owner.getYRot()));
                     if (this.vec3 != null)
                         this.setDeltaMovement(vec3);
+                }
+                case "shield_dash"->{
+                    if (this.vec3 == null && this.owner != null)
+                        this.vec3 = new Vec3(this.getXVector(this.owner.getYRot()), 0, this.getZVector(this.owner.getYRot()));
+                    if (this.vec3 != null) {
+                        this.setDeltaMovement(vec3);
+                        if (this.tickCount % 10 == 0 && this.level() instanceof ServerLevel level)
+                            level.sendParticles(ParticleTypes.END_ROD,this.getX(),this.getY(),this.getZ(),3,this.getXVector(-this.getYRot()),this.getYVector(this.getXRot()),this.getZVector(-this.getYRot()),1.5f);
+                    }
                 }
                 case "dagger", "knight_dagger" -> {
                     if (this.vec3 == null && this.owner != null)

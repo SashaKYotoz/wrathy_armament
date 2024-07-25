@@ -7,11 +7,11 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 
 public class DaggerProjectileModel <T extends HarmfulProjectileEntity> extends EntityModel<T> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "daggerprojectilemodel"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("dagger_projectile_model"), "main");
     private final ModelPart blade;
     private final ModelPart handle;
 

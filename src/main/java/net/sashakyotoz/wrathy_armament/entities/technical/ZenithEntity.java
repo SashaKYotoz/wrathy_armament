@@ -20,6 +20,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 
 import javax.annotation.Nullable;
 
@@ -38,9 +39,10 @@ public class ZenithEntity extends AbstractArrow {
         timer = 120;
     }
 
-    public ZenithEntity(EntityType<ZenithEntity> type, Level world) {
-        super(type, world);
+    public ZenithEntity(EntityType<ZenithEntity> type, Level level) {
+        super(type, level);
         timer = 120;
+        this.setNoGravity(true);
     }
     public int getIndex(){
         return this.entityData.get(INDEX);
@@ -58,8 +60,7 @@ public class ZenithEntity extends AbstractArrow {
         int i = this.entityData.get(RETURNING_SPEED);
         if(timer > 50){
             double speed = 1.5;
-            double Yaw = this.getYRot();
-            this.level().addParticle(WrathyArmamentMiscRegistries.ZENITH_WAY.get(),this.getX(),this.getY(),this.getZ(),(speed * Math.cos((Yaw + 90) * (Math.PI / 180))),(this.getXRot() * (-0.025)),(speed * Math.sin((Yaw + 90) * (Math.PI / 180))));
+            this.level().addParticle(WrathyArmamentMiscRegistries.ZENITH_WAY.get(),this.getX(),this.getY(),this.getZ(), OnActionsTrigger.getXVector(speed,this.getYRot()),OnActionsTrigger.getYVector(speed,this.getXRot()),OnActionsTrigger.getZVector(speed,this.getYRot()));
         }
         if (entity != null && timer < 105) {
             if (!this.isAcceptibleReturnOwner()) {
@@ -74,7 +75,7 @@ public class ZenithEntity extends AbstractArrow {
                 double d0 = 0.05D * (double) i;
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.95D).add(vec3.normalize().scale(d0)));
                 if (this.clientSideReturnBladeTickCount == 0) {
-                    this.playSound(SoundEvents.ELYTRA_FLYING, 3.0F, 0.5F);
+                    this.playSound(SoundEvents.ELYTRA_FLYING, 2.0F, 0.5F);
                 }
                 ++this.clientSideReturnBladeTickCount;
             }
@@ -106,18 +107,17 @@ public class ZenithEntity extends AbstractArrow {
 
     protected void onHitEntity(EntityHitResult hitResult) {
         Entity entity = hitResult.getEntity();
-        float f = 15f;
+        float f = 15f + getIndex();
         Entity owner = this.getOwner();
-        DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
+        DamageSource damagesource = this.damageSources().thrown(this, owner == null ? this : owner);
         this.dealtDamage = true;
         if (entity.hurt(damagesource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
             if (entity instanceof LivingEntity livingEntity) {
-                if (owner instanceof LivingEntity) {
+                if (owner instanceof LivingEntity)
                     entity.hurt(this.damageSources().magic(),f);
-                }
                 this.doPostHurtEffects(livingEntity);
             }
         }
@@ -138,7 +138,7 @@ public class ZenithEntity extends AbstractArrow {
         }
     }
     protected float getWaterInertia() {
-        return 0.99F;
+        return 1.1F;
     }
 
     public boolean shouldRender(double pX, double pY, double pZ) {

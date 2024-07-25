@@ -11,9 +11,10 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 
 public class LancerBackModel<T extends LivingEntity> extends AgeableListModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "lancer_back_model"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("lancer_back_model"), "main");
 	private final ModelPart Body;
 
 	public LancerBackModel(ModelPart root) {

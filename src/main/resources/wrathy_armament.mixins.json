@@ -8,6 +8,8 @@
     "ServerLevelMixin"
   ],
   "client": [
+    "ItemInHandRendererMixin",
+    "ItemRendererMixin",
     "OverBossHealthBarMixin"
   ],
   "injectors": {

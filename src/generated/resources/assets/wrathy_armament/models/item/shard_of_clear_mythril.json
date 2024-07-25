@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "wrathy_armament:item/materials/shard_of_clear_mythril"
+  }
+}

@@ -1,0 +1,431 @@
+{
+  "name": "blade_ability_switch",
+  "author": "SashaKYotoz",
+  "description": "Blade of Chaos ability switch",
+  "emote": {
+    "isLoop": "false",
+    "returnTick": 0,
+    "beginTick": 10,
+    "endTick": 20,
+    "stopTick": 30,
+    "degrees": false,
+    "moves": [
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "yaw": 0.0872664600610733
+        }
+      },
+      {
+        "tick": 9,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "yaw": 0.13089969754219055
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "yaw": -0.0
+        }
+      },
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "roll": 0.13089969754219055
+        }
+      },
+      {
+        "tick": 9,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "roll": 0.0872664600610733
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "roll": -0.0
+        }
+      },
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "pitch": -0.6981316804885864
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "pitch": -2.356194496154785
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "pitch": 0.39269909262657166
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightArm": {
+          "pitch": -0.0
+        }
+      },
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "roll": -0.13089969754219055
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "roll": -0.0872664600610733
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "roll": -0.0
+        }
+      },
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "yaw": -0.0872664600610733
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "yaw": -0.13089969754219055
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "yaw": -0.0
+        }
+      },
+      {
+        "tick": 3,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "pitch": -0.6981316804885864
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "pitch": -2.356194496154785
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "pitch": 0.39269909262657166
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftArm": {
+          "pitch": -0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "x": 1.2000000476837158
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "x": 0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "z": -6.800000190734863
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "z": 0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "y": 6.400000095367432
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "y": -3.200000047683716
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "y": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "pitch": 4.71238899230957
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "pitch": 3.1415927410125732
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "pitch": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "yaw": 0.1745329201221466
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "yaw": 0.0
+        }
+      },
+      {
+        "tick": 12,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "yaw": 1.5707963705062866
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "yaw": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "roll": -0.0872664600610733
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "rightItem": {
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "roll": 0.0872664600610733
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "x": -1.2000000476837158
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "x": 0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "y": 6.400000095367432
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "y": -3.200000047683716
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "y": 0.0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "z": -6.800000190734863
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "z": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "pitch": 4.71238899230957
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "pitch": 3.1415927410125732
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "pitch": 0.0
+        }
+      },
+      {
+        "tick": 7,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "yaw": -0.1745329201221466
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "yaw": 0.0
+        }
+      },
+      {
+        "tick": 12,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "yaw": -1.5707963705062866
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "EASEINOUTQUAD",
+        "turn": 0,
+        "leftItem": {
+          "yaw": 0.0
+        }
+      }
+    ]
+  }
+}

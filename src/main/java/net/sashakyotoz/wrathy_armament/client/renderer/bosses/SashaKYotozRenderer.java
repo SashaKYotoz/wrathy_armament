@@ -16,13 +16,13 @@ public class SashaKYotozRenderer extends FixedDeathAnimationMobRenderer<SashaKYo
         this.addLayer(new EyesLayer<>(this) {
             @Override
             public RenderType renderType() {
-                return RenderType.eyes(new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/sashakyotoz_glowing_eyes.png"));
+                return RenderType.eyes(WrathyArmament.createWALocation("textures/entity/bosses/glowing_eyes/sashakyotoz_glowing_eyes.png"));
             }
         });
     }
 
     @Override
     public ResourceLocation getTextureLocation(SashaKYotoz sashaKYotoz) {
-        return new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/sashakyotoz.png");
+        return WrathyArmament.createWALocation("textures/entity/bosses/sashakyotoz.png");
     }
 }

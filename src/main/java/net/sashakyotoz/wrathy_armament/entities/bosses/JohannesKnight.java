@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.JohannesKnightAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
@@ -35,7 +36,7 @@ import javax.annotation.Nullable;
 
 public class JohannesKnight extends BossLikePathfinderMob implements RangedAttackMob {
     private static final EntityDataAccessor<Boolean> IS_IN_SECOND_PHASE = SynchedEntityData.defineId(JohannesKnight.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<KnightPose> DATA_KNIGHT_POSE = SynchedEntityData.defineId(JohannesKnight.class, WrathyArmamentEntityDataSerializer.KNIGHT_POSE.get());
+    private static final EntityDataAccessor<KnightPose> DATA_KNIGHT_POSE = SynchedEntityData.defineId(JohannesKnight.class, WrathyArmamentMiscRegistries.KNIGHT_POSE.get());
     private final ServerBossEvent bossEvent = new ServerBossEvent(Component.translatable("boss.wrathy_armament.johannes_knight"), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_10);
     public static final EntityDimensions KNIGHT_DIMENSIONS = EntityDimensions.fixed(0.8F, 1.9f);
     public static final EntityDimensions FOUNTAIN_DIMENSIONS = EntityDimensions.fixed(1.5F, 2.6F);
@@ -282,7 +283,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
         if (this.getKnightPose() != KnightPose.DYING)
             this.setKnightPose(KnightPose.DYING);
         if (deathTime == 19)
-            this.spawnParticle(WrathyArmamentMiscRegistries.FIRE_TRAIL.get(), this.level(), this.getX(), this.getY(), this.getZ(), 2);
+            this.spawnParticle(ModParticleTypes.SPARK_LIKE_PARTICLE.get(), this.level(), this.getX(), this.getY(), this.getZ(), 2);
         super.tickDeath();
     }
 

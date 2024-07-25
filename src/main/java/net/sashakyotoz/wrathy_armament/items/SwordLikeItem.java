@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,12 +17,16 @@ import net.minecraft.world.item.Vanishable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.anitexlib.client.renderer.IParticleItem;
+import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
+import net.sashakyotoz.wrathy_armament.utils.capabilities.items.XPTiers;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public abstract class SwordLikeItem extends Item implements Vanishable {
+public abstract class SwordLikeItem extends Item implements Vanishable, IParticleItem {
     public SwordLikeItem(Properties properties) {
         super(properties);
     }
@@ -52,9 +57,20 @@ public abstract class SwordLikeItem extends Item implements Vanishable {
 
     public boolean hurtEnemy(ItemStack stack, LivingEntity livingEntity, LivingEntity entity) {
         stack.hurtAndBreak(1, entity, (entity1) -> entity1.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            if (getCurrentSparkles(stack) < 6 && getStoredXP(stack) < XPTiers.XP_FOR_FIFTH_TIER.getNeededXP() *1.5f)
+                setStoredXP(stack,getStoredXP(stack)+entity.getRandom().nextInt(1,11));
         return true;
     }
 
+    public int getCurrentSparkles(ItemStack stack){
+        return stack.getOrCreateTag().getInt("Sparkles");
+    }
+    public int getStoredXP(ItemStack stack){
+        return stack.getOrCreateTag().getInt("CombatExperience");
+    }
+    public void setStoredXP(ItemStack stack,int value){
+        stack.getOrCreateTag().putInt("CombatExperience",value);
+    }
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
@@ -64,5 +80,11 @@ public abstract class SwordLikeItem extends Item implements Vanishable {
         MutableComponent sparkleOnItem = Component.literal("❇".repeat(Math.max(0, sparkles))).withStyle(ChatFormatting.GOLD).append(Component.literal("❇".repeat(Math.max(0,5- sparkles))).withStyle(ChatFormatting.DARK_GRAY));
         pTooltipComponents.add(sparkleOnItem);
         pTooltipComponents.add(CommonComponents.EMPTY);
+    }
+
+    @Override
+    public void addParticles(Level level, ItemEntity itemEntity) {
+        if (getStoredXP(itemEntity.getItem()) > XPTiers.values()[getCurrentSparkles(itemEntity.getItem())].getNeededXP() && itemEntity.tickCount % 5 == 0)
+            OnActionsTrigger.addParticles(ModParticleTypes.SPARK_LIKE_PARTICLE.get(),level,itemEntity.getOnPos().getCenter().x,itemEntity.getY()+1,itemEntity.getOnPos().getCenter().z,2f);
     }
 }

@@ -13,7 +13,7 @@ import net.sashakyotoz.wrathy_armament.client.models.technical.JohannesSpearsMod
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
 
 public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(WrathyArmament.MODID,"textures/entity/projectile_like/johannes_spear.png");
+    private static final ResourceLocation TEXTURE_LOCATION = WrathyArmament.createWALocation("textures/entity/projectile_like/johannes_spear.png");
     private final JohannesSpearsModel<JohannesSpearEntity> model;
 
     public JohannesSpearRenderer(EntityRendererProvider.Context context) {
@@ -30,8 +30,8 @@ public class JohannesSpearRenderer extends EntityRenderer<JohannesSpearEntity> {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - entity.getYRot()));
             poseStack.scale(-f1, -f1, f1);
-            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.05D : 0.75, 0.0D);
-            poseStack.scale(0.5F, 0.5F, 0.5F);
+            poseStack.translate(0.0D, entity.lifeTicks < 11 ? -0.875D : -0.5D, 0.0D);
+            poseStack.scale(0.5f,0.5f,0.5f);
             this.model.setupAnim(entity, f, 0.0F, 0.0F, entity.getYRot(), entity.getXRot());
             VertexConsumer vertexconsumer = multiBufferSource.getBuffer(this.model.renderType(TEXTURE_LOCATION));
             this.model.renderToBuffer(poseStack, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);

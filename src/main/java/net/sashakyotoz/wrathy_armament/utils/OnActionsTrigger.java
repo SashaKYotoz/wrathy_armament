@@ -1,9 +1,10 @@
 package net.sashakyotoz.wrathy_armament.utils;
 
+import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
+import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
-import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.client.Minecraft;
@@ -17,8 +18,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -30,33 +32,35 @@ import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.items.Frostmourne;
+import net.sashakyotoz.wrathy_armament.entities.technical.BladeOfChaosEntity;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.*;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.HalfZatoichiAbilityCapability;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.MistsplitterDefenseCapability;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
+import org.antlr.v4.runtime.misc.Triple;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Mod.EventBusSubscriber
 public class OnActionsTrigger {
-    public static int shakingTime = 0;
-    public static int rollingTime = 0;
-    public static Vec3 vec3 = new Vec3(0,-256,0);
+    public static HashMap<String, Triple<Integer, Integer, Integer>> playerCameraData = new HashMap<>();
+    public static Vec3 vec3 = new Vec3(0, -256, 0);
+    private static final UUID HEALTH_MODIFIER = UUID.fromString("2656de64-a009-47c8-8d53-cc0919b59bc9");
     private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
 
     public static void queueServerWork(int tick, Runnable action) {
         workQueue.add(new AbstractMap.SimpleEntry<>(action, tick));
     }
+
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
@@ -70,25 +74,70 @@ public class OnActionsTrigger {
             workQueue.removeAll(actions);
         }
     }
+
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-        if (event.phase == TickEvent.Phase.END){
-            if (shakingTime > 0)
-                shakingTime--;
-            if (rollingTime > 0)
-                rollingTime-=10;
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        Player player = event.player;
+        if (event.phase == TickEvent.Phase.END) {
+            player.getCapability(ModCapabilities.HALF_ZATOICHI_ABILITIES).ifPresent(context -> {
+                if (player.getAttribute(Attributes.MAX_HEALTH) != null) {
+                    if (context.isInAdrenalinMode() && (player.getAttribute(Attributes.MAX_HEALTH).getModifier(HEALTH_MODIFIER) == null))
+                        player.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(
+                                new AttributeModifier(HEALTH_MODIFIER, "Weapon debuff", -7 +
+                                        player.getMainHandItem().getOrCreateTag().getInt("Sparkles"), AttributeModifier.Operation.ADDITION));
+                    else if (!context.isInAdrenalinMode() && player.getAttribute(Attributes.MAX_HEALTH).getModifier(HEALTH_MODIFIER) != null)
+                        player.getAttribute(Attributes.MAX_HEALTH).removeModifier(HEALTH_MODIFIER);
+                }
+            });
+            playerCameraData.forEach((uuid, triple) -> {
+                int shakingTime = triple.a;
+                int rollingTime = triple.b;
+                int rotatingTime = triple.c;
+
+                if (shakingTime > 0) shakingTime--;
+                if (rollingTime > 0) rollingTime -= 15;
+                if (rotatingTime > 0) rotatingTime -= 15;
+
+                playerCameraData.put(uuid, new Triple<>(shakingTime, rollingTime, rotatingTime));
+            });
         }
     }
+
     @SubscribeEvent
-    public static void onPlayerAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof Player player && player.getMainHandItem().getItem() instanceof SwordLikeItem swordLikeItem)
-            swordLikeItem.leftClickAttack(player,player.getMainHandItem());
+    public static void onPlayerAttack(AttackEntityEvent event) {
+        Player player = event.getEntity();
+        ItemStack stack = player.getMainHandItem();
+        if (stack.getItem() instanceof SwordLikeItem swordLikeItem)
+            swordLikeItem.leftClickAttack(player, stack);
+        if (stack.is(WrathyArmamentItems.MISTSPLITTER_REFORGED.get())) {
+            if (event.getEntity().isAlive() && event.getTarget() instanceof LivingEntity target) {
+                player.getCapability(ModCapabilities.MISTSPLITTER_DEFENCE).ifPresent(context -> {
+                    if (context.isDefenseModeOn()) {
+                        if (target.getMobType() == MobType.UNDEAD && context.getDefenceType().equals("earth"))
+                            target.hurt(player.damageSources().playerAttack(player), 1 + stack.getOrCreateTag().getInt("Sparkles"));
+                        if (target.getMobType() == MobType.WATER && context.getDefenceType().equals("water"))
+                            target.hurt(player.damageSources().playerAttack(player), 1 + stack.getOrCreateTag().getInt("Sparkles"));
+                        if (target instanceof FlyingMob && context.getDefenceType().equals("air"))
+                            target.hurt(player.damageSources().playerAttack(player), 1 + stack.getOrCreateTag().getInt("Sparkles"));
+                        if (target.fireImmune() && context.getDefenceType().equals("fire"))
+                            target.hurt(player.damageSources().playerAttack(player), 1 + stack.getOrCreateTag().getInt("Sparkles"));
+                        if (target.getMobType() == MobType.UNDEFINED && context.getDefenceType().equals("elemental"))
+                            target.hurt(player.damageSources().playerAttack(player), 1 + stack.getOrCreateTag().getInt("Sparkles"));
+                        stack.hurtAndBreak(2, player, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+                        if (player.getRandom().nextFloat() > 0.875)
+                            context.setDefenseModeFlag(false);
+                    }
+                });
+            }
+        }
     }
+
     @SubscribeEvent
-    public static void onPlayerLeftClick(PlayerInteractEvent.LeftClickEmpty event){
+    public static void onPlayerLeftClick(PlayerInteractEvent.LeftClickEmpty event) {
         if (event.getItemStack().getItem() instanceof SwordLikeItem item)
-            item.leftClickAttack(event.getEntity(),event.getItemStack());
+            item.leftClickAttack(event.getEntity(), event.getItemStack());
     }
+
     @SubscribeEvent
     public static void onEntityDiesEvent(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
@@ -97,7 +146,7 @@ public class OnActionsTrigger {
                     player.getMainHandItem().getOrCreateTag().putInt("charge", player.getMainHandItem().getOrCreateTag().getInt("charge") + 1);
                 player.addEffect(new MobEffectInstance(MobEffects.HEAL, 10, 1 + player.getMainHandItem().getOrCreateTag().getInt("charge")));
             }
-            if (player.getMainHandItem().is(WrathyArmamentItems.FROSTMOURNE.get())){
+            if (player.getMainHandItem().is(WrathyArmamentItems.FROSTMOURNE.get())) {
                 if (player.getMainHandItem().getOrCreateTag().getInt("charge") < 5)
                     player.getMainHandItem().getOrCreateTag().putInt("charge", player.getMainHandItem().getOrCreateTag().getInt("charge") + 1);
             }
@@ -108,20 +157,33 @@ public class OnActionsTrigger {
     public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
-        if (stack.getItem() instanceof SwordLikeItem swordLikeItem){
+        if (stack.getItem() instanceof SwordLikeItem swordLikeItem) {
             if (!event.getEntity().isCrouching())
-                swordLikeItem.rightClick(player,stack);
+                swordLikeItem.rightClick(player, stack);
             else
-                swordLikeItem.rightClickOnShiftClick(player,stack);
+                swordLikeItem.rightClickOnShiftClick(player, stack);
+        }
+        if (stack.is(WrathyArmamentItems.BLADE_OF_CHAOS.get())) {
+            if (player.isCrouching()) {
+                playPlayerAnimation(player.level(), player, "blade_ability_switch");
+                player.setPose(Pose.FALL_FLYING);
+            } else {
+                String behavior = BladeOfChaosEntity.PossibleBehavior.values()[stack.getOrCreateTag().getInt("StateIndex")].behaviorName;
+                if (behavior.equals(BladeOfChaosEntity.PossibleBehavior.CRUSH.behaviorName))
+                    playPlayerAnimation(player.level(), player, "nemean_crush");
+                else if (behavior.equals(BladeOfChaosEntity.PossibleBehavior.CYCLONE.behaviorName))
+                    playPlayerAnimation(player.level(), player, "crooked_throw_of_blades");
+            }
         }
     }
+
     @SubscribeEvent
     public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
         Level level = event.getLevel();
         if (stack.getItem() instanceof SwordLikeItem swordLikeItem)
-            swordLikeItem.rightClickBlock(player,stack);
+            swordLikeItem.rightClickBlock(player, stack);
         if (stack.getEnchantmentLevel(WrathyArmamentMiscRegistries.PHANTOQUAKE.get()) > 0 && event.getHand() == InteractionHand.MAIN_HAND && event.getLevel().getBlockState(event.getPos().above(3)).isAir() && !event.getEntity().getCooldowns().isOnCooldown(event.getItemStack().getItem())) {
             player.setDeltaMovement(0, 0.5, 0);
             player.playSound(SoundEvents.PHANTOM_BITE);
@@ -140,12 +202,19 @@ public class OnActionsTrigger {
             }
         }
     }
+
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.getCameraEntity() instanceof Player player && !player.isSpectator()){
-            if (player.distanceToSqr(vec3) < 12){
+        if (minecraft.getCameraEntity() instanceof Player player && !player.isSpectator()) {
+            String playerUUID = player.getUUID().toString();
+            playerCameraData.computeIfAbsent(playerUUID, k -> new Triple<>(0, 0, 0));
+            Triple<Integer, Integer, Integer> cameraData = playerCameraData.get(playerUUID);
+            int shakingTime = cameraData.a;
+            int rollingTime = cameraData.b;
+            int rotatingTime = cameraData.c;
+            if (player.distanceToSqr(vec3) < 16) {
                 float delta = Minecraft.getInstance().getFrameTime();
                 float ticksExistedDelta = player.tickCount + delta;
                 float intensity = 0.025f;
@@ -155,17 +224,21 @@ public class OnActionsTrigger {
                     event.setRoll((float) (event.getRoll() + intensity * Math.cos(ticksExistedDelta * 4) * 25));
                 }
             }
-            if (!minecraft.isPaused() && player.level().isClientSide() && rollingTime > 0 && player.getMainHandItem().getItem() instanceof Frostmourne) {
-                if (minecraft.options.getCameraType().isFirstPerson())
+            if (!minecraft.isPaused() && player.level().isClientSide()) {
+                if (minecraft.options.getCameraType().isFirstPerson() && rollingTime > 0)
                     event.setPitch(-(event.getPitch() + rollingTime));
+                if (minecraft.options.getCameraType().isFirstPerson() && rotatingTime > 0)
+                    event.setYaw(event.getYaw() + rotatingTime);
             }
         }
     }
+
     @SubscribeEvent
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
         event.register(HalfZatoichiAbilityCapability.class);
         event.register(MistsplitterDefenseCapability.class);
     }
+
     @SubscribeEvent
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player player) {
@@ -173,6 +246,7 @@ public class OnActionsTrigger {
                 event.addCapability(new ResourceLocation(WrathyArmament.MODID, "properties"), new ModCapabilities());
         }
     }
+
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
@@ -180,10 +254,12 @@ public class OnActionsTrigger {
             event.getOriginal().getCapability(ModCapabilities.HALF_ZATOICHI_ABILITIES).ifPresent(oldStore -> event.getOriginal().getCapability(ModCapabilities.HALF_ZATOICHI_ABILITIES).ifPresent(newStore -> newStore.copyFrom(oldStore)));
         }
     }
+
     public static double getXVector(double speed, double yaw) {
         return speed * Math.cos((yaw + 90) * (Math.PI / 180));
     }
-    public static double getYVector(double speed,double pitch){
+
+    public static double getYVector(double speed, double pitch) {
         return pitch * (-0.025) * speed;
     }
 
@@ -191,23 +267,33 @@ public class OnActionsTrigger {
         return speed * Math.sin((yaw + 90) * (Math.PI / 180));
     }
 
-    public static void addParticles(ParticleOptions type, Level world, double x, double y, double z, float modifier) {
+    public static void addParticles(ParticleOptions type, Level level, double x, double y, double z, float modifier) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0)
-                world.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
+                level.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
         }
     }
-    public static void addParticlesWithDelay(ParticleOptions type, Level level, double x, double y, double z, float modifier,int delay) {
+
+    public static void addParticlesWithDelay(ParticleOptions type, Level level, double x, double y, double z, float modifier, int delay) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0) {
                 int finalI = i;
-                queueServerWork(finalI * 5 + delay,()-> level.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(finalI) * 0.25d * modifier, 0.2d, Math.sin(finalI) * 0.25d * modifier));
+                queueServerWork(finalI * 5 + delay, () -> level.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(finalI) * 0.25d * modifier, 0.2d, Math.sin(finalI) * 0.25d * modifier));
             }
         }
     }
-    public static void playPlayerAnimation(Player player,String path){
-        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(new ResourceLocation(WrathyArmament.MODID, "animation"));
-        if (animation != null)
-            animation.setAnimation(new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation(new ResourceLocation(WrathyArmament.MODID, path))));
+
+    public static void playPlayerAnimation(Level level, Player player, String path) {
+        if (level.isClientSide()) {
+            var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(WrathyArmament.createWALocation("animation"));
+            if (animation != null)
+                animation.setAnimation(new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation(WrathyArmament.createWALocation(path))).setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL).setFirstPersonConfiguration(new FirstPersonConfiguration(true, true, true, true)));
+        }
+    }
+
+    public static float getPowerForTime(int i) {
+        float f = (float) i / 20.0F;
+        f = (f * f + f * 2.0F) / 3.0F;
+        return f;
     }
 }

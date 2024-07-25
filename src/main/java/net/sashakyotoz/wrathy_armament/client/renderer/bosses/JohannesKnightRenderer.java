@@ -14,8 +14,8 @@ import net.sashakyotoz.wrathy_armament.client.models.mobs.JohannesKnightModel;
 import net.sashakyotoz.wrathy_armament.entities.bosses.JohannesKnight;
 
 public class JohannesKnightRenderer extends FixedDeathAnimationMobRenderer<JohannesKnight, HierarchicalModel<JohannesKnight>>{
-    private final ResourceLocation KNIGHT = new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/johannes_knight.png");
-    private final ResourceLocation FOUNTAIN = new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/johannes_fountain.png");
+    private final ResourceLocation KNIGHT = WrathyArmament.createWALocation("textures/entity/bosses/johannes_knight.png");
+    private final ResourceLocation FOUNTAIN = WrathyArmament.createWALocation("textures/entity/bosses/johannes_fountain.png");
     private final JohannesKnightModel<JohannesKnight> knightModel;
     private final JohannesFountainModel<JohannesKnight> fountainModel;
     public JohannesKnightRenderer(EntityRendererProvider.Context context) {

@@ -334,7 +334,7 @@ public class LichKing extends BossLikePathfinderMob implements RangedAttackMob {
         if (this.level() instanceof ServerLevel level) {
             OnActionsTrigger.queueServerWork(20, () -> {
                 this.setPose(Pose.STANDING);
-                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 1f, true, true, 6,
+                ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), level, 1f, true, true, 4,
                         ParticleTypes.SOUL, "lich_rain");
                 particleEntity.moveTo(new Vec3(this.getX(), this.getY() + 1f, this.getZ()));
                 level.addFreshEntity(particleEntity);

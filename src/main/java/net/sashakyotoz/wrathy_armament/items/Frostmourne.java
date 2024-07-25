@@ -38,6 +38,7 @@ import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.antlr.v4.runtime.misc.Triple;
 
 import java.util.Comparator;
 import java.util.List;
@@ -68,15 +69,15 @@ public class Frostmourne extends SwordLikeItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-            builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 19, AttributeModifier.Operation.ADDITION));
-            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.8, AttributeModifier.Operation.ADDITION));
+            builder.putAll(super.getAttributeModifiers(slot,stack));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 16.5 + getCurrentSparkles(stack)/2f, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.8, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
-        return super.getDefaultAttributeModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot,stack);
     }
 
     @Override
@@ -103,12 +104,12 @@ public class Frostmourne extends SwordLikeItem {
         int i = this.getUseDuration(stack) - timeLeft;
         if (i < 0)
             return;
-        var f = getPowerForTime(i);
+        var f = OnActionsTrigger.getPowerForTime(i);
         if (!pLivingEntity.isShiftKeyDown()) {
             if (f > 0.9D) {
                 pLivingEntity.playSound(SoundEvents.SOUL_ESCAPE);
                 if (level instanceof ServerLevel serverLevel) {
-                    ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), serverLevel, 0.6f, false, false, 6,
+                    ParticleLikeEntity particleEntity = new ParticleLikeEntity(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), serverLevel, 0.6f, false, false, 4,
                             ParticleTypes.SOUL, "rain");
                     particleEntity.setOwner(pLivingEntity);
                     particleEntity.moveTo(new Vec3(pLivingEntity.getX(), pLivingEntity.getY() + 1.5f, pLivingEntity.getZ()));
@@ -116,14 +117,20 @@ public class Frostmourne extends SwordLikeItem {
                 }
             } else {
                 if (pLivingEntity instanceof Player player && !player.getCooldowns().isOnCooldown(stack.getItem())) {
-                    if (player.level().isClientSide())
-                        OnActionsTrigger.playPlayerAnimation(player, "frostmourne_somersault");
-                    OnActionsTrigger.rollingTime += 180;
+                    OnActionsTrigger.playPlayerAnimation(player.level(),player, "frostmourne_somersault");
+                    OnActionsTrigger.playerCameraData.computeIfAbsent(player.getStringUUID(), k -> new Triple<>(0, 0, 0));
+                    OnActionsTrigger.playerCameraData.put(player.getStringUUID(), new Triple<>(
+                            OnActionsTrigger.playerCameraData.get(player.getStringUUID()).a,
+                            OnActionsTrigger.playerCameraData.get(player.getStringUUID()).b + 180,
+                            OnActionsTrigger.playerCameraData.get(player.getStringUUID()).c
+                    ));
+                    player.setDeltaMovement(0f,0.4f,0f);
+                    OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(0f,0.35f,0f));
                     OnActionsTrigger.queueServerWork(20, () -> {
                         float scaling = 0;
                         double d0 = -Mth.sin(player.getYRot() * ((float) Math.PI / 180F));
                         double d1 = Mth.cos(player.getYRot() * ((float) Math.PI / 180F));
-                        for (int j = 0; j < 4 + stack.getOrCreateTag().getInt("Sparkle") * 2; j++) {
+                        for (int j = 0; j < 4 + getCurrentSparkles(stack) * 2; j++) {
                             BlockPos pos = level.clip(new ClipContext(player.getEyePosition(1f), player.getEyePosition(1f).add(player.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos();
                             if (!level.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ())).canOcclude())
                                 scaling++;
@@ -138,14 +145,15 @@ public class Frostmourne extends SwordLikeItem {
                             for (Entity entity : entityList) {
                                 if (entity != player) {
                                     if (entity instanceof LivingEntity livingEntity) {
-                                        livingEntity.hurt(player.damageSources().mobAttack(player), 8 + stack.getOrCreateTag().getInt("Sparkle"));
-                                        livingEntity.setTicksFrozen(200);
+                                        livingEntity.hurt(player.damageSources().mobAttack(player), 8 + getCurrentSparkles(stack));
+                                        livingEntity.setTicksFrozen(200 + getCurrentSparkles(stack)*20);
                                     }
                                 }
                             }
                         }
+                        OnActionsTrigger.addParticlesWithDelay(new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(player.getOnPos().below(2))),level,player.getX(),player.getY() + 1.5f,player.getZ(),3,7);
                     });
-                    player.getCooldowns().addCooldown(stack.getItem(), 70);
+                    player.getCooldowns().addCooldown(stack.getItem(), 70 - this.getCurrentSparkles(stack)*5);
                 }
             }
         }
@@ -161,10 +169,9 @@ public class Frostmourne extends SwordLikeItem {
         entity.startUsingItem(hand);
         return new InteractionResultHolder(InteractionResult.SUCCESS, entity.getItemInHand(hand));
     }
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int pRemainingUseDuration) {
-        if (pRemainingUseDuration % 4 == 0 && level instanceof ServerLevel serverLevel)
+        if (pRemainingUseDuration % 4 == 0 && level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(),
                     entity.getX() + OnActionsTrigger.getXVector(-2, entity.getYRot()),
                     entity.getY() + 2,
@@ -175,23 +182,15 @@ public class Frostmourne extends SwordLikeItem {
                     OnActionsTrigger.getZVector(2, entity.getYRot()),
                     0.5f
             );
-        if (entity.level().isClientSide() && entity instanceof AbstractClientPlayer player && player.tickCount % 20 == 0) {
+        }
+        if (entity instanceof Player player && player.tickCount % 20 == 0) {
             int i = this.getUseDuration(stack) - pRemainingUseDuration;
-            var f = getPowerForTime(i);
+            var f = OnActionsTrigger.getPowerForTime(i);
             if (!entity.isShiftKeyDown()) {
                 if (f > 0.9D)
-                    OnActionsTrigger.playPlayerAnimation(player, "rain_casting");
+                    OnActionsTrigger.playPlayerAnimation(player.level(),player, "rain_casting");
             }
         }
         super.onUseTick(level, entity, stack, pRemainingUseDuration);
-    }
-
-    private static float getPowerForTime(int i) {
-        float f = (float) i / 20.0F;
-        f = (f * f + f * 2.0F) / 3.0F;
-        if (f > 1.0F) {
-            f = 1.0F;
-        }
-        return f;
     }
 }

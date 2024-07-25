@@ -10,9 +10,10 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 
 public class TransparentHumanoidLayerModel<T extends LivingEntity> extends HumanoidModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "transparent_humanoid_layer_model"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("transparent_humanoid_layer_model"), "main");
 	private final ModelPart body;
 	private final ModelPart rightArm;
 	private final ModelPart leftArm;

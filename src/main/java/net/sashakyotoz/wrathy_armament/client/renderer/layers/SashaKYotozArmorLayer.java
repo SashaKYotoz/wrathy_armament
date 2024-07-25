@@ -11,7 +11,7 @@ import net.sashakyotoz.wrathy_armament.client.models.mobs.SashaKYotozModel;
 import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 
 public class SashaKYotozArmorLayer extends EnergySwirlLayer<SashaKYotoz, SashaKYotozModel<SashaKYotoz>> {
-    private static final ResourceLocation SASHAKYOTOZ_ARMOR_LAYER = new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/sashakyotoz_layer.png");
+    private static final ResourceLocation SASHAKYOTOZ_ARMOR_LAYER = WrathyArmament.createWALocation("textures/entity/bosses/sashakyotoz_layer.png");
     private final SashaKYotozModel<SashaKYotoz> model;
 
     public SashaKYotozArmorLayer(RenderLayerParent<SashaKYotoz, SashaKYotozModel<SashaKYotoz>> layerParent, EntityModelSet modelSet) {

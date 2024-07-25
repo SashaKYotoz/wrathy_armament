@@ -9,7 +9,7 @@ import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.wrathy_armament.client.particles.shaders.ParticleShaders;
+import net.sashakyotoz.anitexlib.client.particles.parents.rendertypes.FluidParticleRenderType;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -38,7 +38,7 @@ public class WaveParticle extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleShaders.PARTICLE_SHEET_ADDITIVE_MULTIPLY;
+        return FluidParticleRenderType.INSTANCE;
     }
 
     @Override

@@ -29,14 +29,13 @@ import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.antlr.v4.runtime.misc.Triple;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 public class Murasama extends SwordLikeItem {
-    private int timer = 0;
-    private float speedBoost;
     public static final UUID SWIFTNESS = UUID.fromString("91AEAA56-376B-4498-935B-2F7F68070635");
 
     public Murasama(Properties properties) {
@@ -46,10 +45,6 @@ public class Murasama extends SwordLikeItem {
     @Override
     public void leftClickAttack(Player player, ItemStack stack) {
         if (!player.isCrouching()) {
-            if (speedBoost < 0.3) {
-                speedBoost += 0.1F;
-                timer += 100;
-            }
             WaveParticleOption option = new WaveParticleOption(player.getYRot(), 2f, 0.75f, 0, 0);
             player.level().addParticle(option, player.getX(), player.getY() + 4f, player.getZ(),
                     OnActionsTrigger.getXVector(2, player.getYRot()),
@@ -71,7 +66,7 @@ public class Murasama extends SwordLikeItem {
                 for (Entity entity : entityList) {
                     if (entity != player) {
                         if (entity instanceof LivingEntity livingEntity) {
-                            livingEntity.hurt(player.damageSources().mobAttack(player), 5 + stack.getOrCreateTag().getInt("Sparkle"));
+                            livingEntity.hurt(player.damageSources().mobAttack(player), 5 + getCurrentSparkles(stack));
                             livingEntity.setDeltaMovement(new Vec3(
                                     OnActionsTrigger.getXVector(2, player.getYRot()),
                                     1,
@@ -89,10 +84,17 @@ public class Murasama extends SwordLikeItem {
 
     @Override
     public void rightClick(Player player, ItemStack stack) {
-        if (!player.getCooldowns().isOnCooldown(stack.getItem())){
-            if (player.level().isClientSide())
-                OnActionsTrigger.playPlayerAnimation(player,"zenith_turn");
-            OnActionsTrigger.queueServerWork(20, () -> OnActionsTrigger.addParticlesWithDelay(ParticleTypes.FLAME, player.level(), player.getX(), player.getY() + 1, player.getZ(), 2, 5));
+        if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
+            OnActionsTrigger.playPlayerAnimation(player.level(), player, "zenith_turn");
+            OnActionsTrigger.queueServerWork(20, () -> {
+                OnActionsTrigger.playerCameraData.computeIfAbsent(player.getStringUUID(), k -> new Triple<>(0, 0, 0));
+                OnActionsTrigger.playerCameraData.put(player.getStringUUID(), new Triple<>(
+                        OnActionsTrigger.playerCameraData.get(player.getStringUUID()).a,
+                        OnActionsTrigger.playerCameraData.get(player.getStringUUID()).b,
+                        OnActionsTrigger.playerCameraData.get(player.getStringUUID()).c + 360
+                ));
+                OnActionsTrigger.addParticlesWithDelay(ParticleTypes.FLAME, player.level(), player.getX(), player.getY() + 1, player.getZ(), 2, 5);
+            });
             final Vec3 center = new Vec3(player.getX(), player.getY(), player.getZ());
             for (int i = 0; i < 2; i++) {
                 List<Entity> entityList = player.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(6d), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(center))).toList();
@@ -103,7 +105,7 @@ public class Murasama extends SwordLikeItem {
                     }
                 }
             }
-            player.getCooldowns().addCooldown(stack.getItem(),45);
+            player.getCooldowns().addCooldown(stack.getItem(), 45);
         }
     }
 
@@ -113,16 +115,23 @@ public class Murasama extends SwordLikeItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-            builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
+            builder.putAll(super.getAttributeModifiers(slot, stack));
             builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 12.5, AttributeModifier.Operation.ADDITION));
             builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -1.8, AttributeModifier.Operation.ADDITION));
-            builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(SWIFTNESS, "Weapon modifier", speedBoost, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(SWIFTNESS, "Weapon modifier", stack.getOrCreateTag().getFloat("RestSpeed"), AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
-        return super.getDefaultAttributeModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot, stack);
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (!player.isCrouching() && stack.getOrCreateTag().getFloat("RestSpeed") < 0.3)
+            stack.getOrCreateTag().putFloat("RestSpeed", stack.getOrCreateTag().getFloat("RestSpeed") + 0.1f);
+        return super.onLeftClickEntity(stack, player, entity);
     }
 
     @Override
@@ -138,18 +147,13 @@ public class Murasama extends SwordLikeItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int pSlotId, boolean pIsSelected) {
-        if (timer > 0)
-            timer--;
-        else {
-            if (speedBoost >= 0.1)
-                speedBoost -= 0.1f;
-            if (speedBoost < 0)
-                speedBoost = 0;
-            timer += 100;
-            if (entity instanceof Player player)
-                player.getInventory().setChanged();
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int pSlotId, boolean pIsSelected) {
+        if (entity.tickCount % 100 == 0) {
+            if (stack.getOrCreateTag().getFloat("RestSpeed") >= 0.1f)
+                stack.getOrCreateTag().putFloat("RestSpeed", stack.getOrCreateTag().getFloat("RestSpeed") - 0.1f);
+            if (stack.getOrCreateTag().getFloat("RestSpeed") < 0)
+                stack.getOrCreateTag().putFloat("RestSpeed", 0);
         }
-        itemStack.getOrCreateTag().putDouble("CustomModelData", itemStack.getHoverName().getString().contains("Muramasa") ? 1 : 0);
+        stack.getOrCreateTag().putDouble("CustomModelData", stack.getHoverName().getString().contains("Muramasa") ? 1 : 0);
     }
 }

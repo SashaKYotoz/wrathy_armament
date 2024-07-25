@@ -16,14 +16,17 @@ import net.minecraft.world.entity.player.Player;
 import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.client.models.technical.TransparentHumanoidLayerModel;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
 import org.antlr.v4.runtime.misc.Triple;
 
 public class TransparentFireLayer <T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private final TransparentHumanoidLayerModel<T> humanoidLayerModel;
+    private final TransparentHumanoidLayerModel<T> shadeHumanoidLayerModel;
     public TransparentFireLayer(RenderLayerParent<T, M> pRenderer, EntityModelSet modelSet) {
         super(pRenderer);
         humanoidLayerModel = new TransparentHumanoidLayerModel<>(modelSet.bakeLayer(TransparentHumanoidLayerModel.LAYER_LOCATION));
+        shadeHumanoidLayerModel = new TransparentHumanoidLayerModel<>(modelSet.bakeLayer(TransparentHumanoidLayerModel.LAYER_LOCATION));
     }
 
     @Override
@@ -36,9 +39,11 @@ public class TransparentFireLayer <T extends LivingEntity, M extends EntityModel
             if (flags[0] && !flags[1]){
                 player.getCapability(ModCapabilities.MISTSPLITTER_DEFENCE).ifPresent(mistsplitterDefenseCapability -> {
                     switch (mistsplitterDefenseCapability.getDefenceType()){
-                        case "fire" -> colors[0] = new Triple<>(1f,0f,0f);
-                        case "earth" -> colors[0] = new Triple<>(0.15f,1f,0.15f);
+                        case "air" -> colors[0] = new Triple<>(1f,1f,1f);
+                        case "earth" -> colors[0] = new Triple<>(0.2f,0.9f,0.15f);
                         case "elemental" -> colors[0] = new Triple<>(1f,0f,1f);
+                        case "water" -> colors[0] = new Triple<>(0f,0f,1f);
+                        default -> colors[0] = new Triple<>(1f,0.25f,0f);
                     }
                 });
             }else if (!flags[0] && flags[1])
@@ -51,6 +56,22 @@ public class TransparentFireLayer <T extends LivingEntity, M extends EntityModel
             VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.entityTranslucentEmissive(resourcelocation,true));
             this.humanoidLayerModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, colors[0].a, colors[0].b, colors[0].c, 0.75F);
             pPoseStack.popPose();
+            if (flags[1]){
+                pPoseStack.pushPose();
+                pPoseStack.translate(-OnActionsTrigger.getXVector(0.25f,90-player.getYRot()),OnActionsTrigger.getYVector(0.125f,player.getXRot()),-OnActionsTrigger.getZVector(0.25f,90-player.getYRot()));
+                ModelFollowingRenderer.followBodyRotations(pLivingEntity, (HumanoidModel<LivingEntity>) this.shadeHumanoidLayerModel);
+                this.getParentModel().copyPropertiesTo(this.shadeHumanoidLayerModel);
+                this.shadeHumanoidLayerModel.setupAnim(pLivingEntity,pLimbSwing,pLimbSwingAmount,pAgeInTicks,pNetHeadYaw,pHeadPitch);
+                this.shadeHumanoidLayerModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 0,0,0, 0.675F);
+                pPoseStack.popPose();
+                pPoseStack.pushPose();
+                pPoseStack.translate(-OnActionsTrigger.getXVector(0.375f,90-player.getYRot()),OnActionsTrigger.getYVector(0.25f,player.getXRot()),-OnActionsTrigger.getZVector(0.375f,90-player.getYRot()));
+                ModelFollowingRenderer.followBodyRotations(pLivingEntity, (HumanoidModel<LivingEntity>) this.shadeHumanoidLayerModel);
+                this.getParentModel().copyPropertiesTo(this.shadeHumanoidLayerModel);
+                this.shadeHumanoidLayerModel.setupAnim(pLivingEntity,pLimbSwing,pLimbSwingAmount,pAgeInTicks,pNetHeadYaw,pHeadPitch);
+                this.shadeHumanoidLayerModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 0,0,0, 0.5F);
+                pPoseStack.popPose();
+            }
         }
     }
     public boolean shouldRender(Player player) {

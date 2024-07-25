@@ -49,7 +49,7 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
             default -> this.model = this.copperSword;
             case 1 -> this.model = this.terrablade;
             case 2 -> this.model = this.meowmere;
-            case 3,4-> this.model = this.zenith;
+            case 3-> this.model = this.zenith;
         }
         super.render(zenithEntity, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
     }
@@ -66,7 +66,7 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
             case 2 ->{
                 return meowmereTexture;
             }
-            case 3,4->{
+            case 3->{
                 return zenithTexture;
             }
         }

@@ -9,11 +9,12 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.alive.LichMyrmidon;
 import net.sashakyotoz.wrathy_armament.entities.animations.LichMyrmidonAnimations;
 
 public class LichMyrmidonModel <T extends LichMyrmidon> extends HierarchicalModel<T> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "lich_myrmidon_model"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("lich_myrmidon_model"), "main");
     private final ModelPart Head;
     private final ModelPart Body;
     private final ModelPart RightArm;

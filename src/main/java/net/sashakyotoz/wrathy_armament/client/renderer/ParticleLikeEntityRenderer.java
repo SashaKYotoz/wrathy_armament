@@ -13,14 +13,12 @@ import net.sashakyotoz.wrathy_armament.client.models.technical.ParticleLikeEntit
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 
 public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntity> {
-    private static final ResourceLocation FIRE_CYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_cycle.png");
-    private static final ResourceLocation FIRE_SEMICYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_semicycle.png");
-    private static final ResourceLocation LIGHT_CYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_cycle.png");
-    private static final ResourceLocation PURPLE_CYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/purple_cycle.png");
-    private static final ResourceLocation SOUL_CYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/soul_cycle.png");
-    private static final ResourceLocation ZENITH_SEMICYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/zenith_semicycle.png");
-    private static final ResourceLocation LIGHT_SEMICYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_semicycle.png");
-    private static final ResourceLocation RED_SEMICYCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/red_semicycle.png");
+    private static final ResourceLocation FIRE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_circle.png");
+    private static final ResourceLocation FIRE_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_semicycle.png");
+    private static final ResourceLocation LIGHT_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_cycle.png");
+    private static final ResourceLocation PURPLE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/purple_cycle.png");
+    private static final ResourceLocation SOUL_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/soul_cycle.png");
+    private static final ResourceLocation ZENITH_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/zenith_semicycle.png");
     private final ParticleLikeEntityModel<ParticleLikeEntity> model;
 
     public ParticleLikeEntityRenderer(EntityRendererProvider.Context context) {
@@ -36,6 +34,8 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
         }
         float f7 = this.getBob(entity, partialTicks);
         this.scale(entity, stack, partialTicks);
+        if (entity.getParticleType().equals("lich_rain") || entity.getParticleType().equals("rain"))
+            stack.mulPose(Axis.YP.rotationDegrees((entity.tickCount % 360)*2.5f));
         this.model.setupAnim(entity, 0, 0.0F, f7, entity.getYRot(), entity.getXRot());
         VertexConsumer vertexconsumer = source.getBuffer(this.model.renderType(getTextureLocation(entity)));
         if (entity.timeToVanish > 10)
@@ -53,28 +53,22 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
     public ResourceLocation getTextureLocation(ParticleLikeEntity entity) {
         switch (entity.getIdOfColor()){
             default -> {
-                return FIRE_CYCLE;
+                return FIRE_CIRCLE;
             }
             case 1 ->{
-                return FIRE_SEMICYCLE;
+                return FIRE_SEMICIRCLE;
             }
             case 2 ->{
-                return LIGHT_CYCLE;
+                return LIGHT_CIRCLE;
             }
             case 3->{
-                return LIGHT_SEMICYCLE;
+                return PURPLE_CIRCLE;
             }
             case 4->{
-                return RED_SEMICYCLE;
+                return SOUL_CIRCLE;
             }
             case 5->{
-                return PURPLE_CYCLE;
-            }
-            case 6->{
-                return SOUL_CYCLE;
-            }
-            case 7->{
-                return ZENITH_SEMICYCLE;
+                return ZENITH_SEMICIRCLE;
             }
         }
     }

@@ -10,10 +10,11 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 
 
 public class MeowmereModel<T extends Entity> extends EntityModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "meowmere_model"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("meowmere_model"), "main");
 	private final ModelPart blade;
 	private final ModelPart handle;
 	private final ModelPart bb_main;

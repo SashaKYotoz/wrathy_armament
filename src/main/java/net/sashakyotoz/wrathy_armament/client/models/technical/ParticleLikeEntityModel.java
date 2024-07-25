@@ -9,10 +9,11 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 
 public class ParticleLikeEntityModel<T extends ParticleLikeEntity> extends EntityModel<T> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "particle_like_entity_model"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("particle_like_entity_model"), "main");
     private final ModelPart cycle;
 
     public ParticleLikeEntityModel(ModelPart root) {

@@ -5,12 +5,14 @@ import com.google.common.collect.Multimap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -55,7 +57,7 @@ public class PhantomLancer extends SwordLikeItem {
 
     @Override
     public void leftClickAttack(Player player, ItemStack stack) {
-        Triple<Float,Float,Float> colorSet = player.getRandom().nextBoolean() ? new Triple<>(0f,0f,1f) : new Triple<>(1f,0.945f,0.4f);
+        Triple<Float, Float, Float> colorSet = player.getRandom().nextBoolean() ? new Triple<>(0f, 0f, 1f) : new Triple<>(1f, 0.945f, 0.4f);
         WaveParticleOption option = new WaveParticleOption(player.getYRot(), 3f, colorSet.a, colorSet.b, colorSet.c);
         player.level().addParticle(option, player.getX(), player.getY() + 4f, player.getZ(),
                 OnActionsTrigger.getXVector(1.25f, player.getYRot()),
@@ -83,7 +85,7 @@ public class PhantomLancer extends SwordLikeItem {
         int i = this.getUseDuration(stack) - timeLeft;
         if (i < 0)
             return;
-        var f = getPowerForTime(i);
+        var f = OnActionsTrigger.getPowerForTime(i);
         if (!((double) f < 0.75D)) {
             entity.playSound(SoundEvents.PHANTOM_SWOOP);
             double d0 = -Mth.sin(entity.getYRot() * ((float) Math.PI / 180F));
@@ -103,9 +105,9 @@ public class PhantomLancer extends SwordLikeItem {
                 level.addParticle(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), pos1.getX(), pos1.getY(), pos1.getZ(), d0, 0.1, d1);
                 final Vec3 center = new Vec3(pos1.getX(), pos1.getY(), pos1.getZ());
                 List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate((1.5 + tmp) / 2d), e -> true).stream().sorted(Comparator.comparingDouble(_entcnd -> _entcnd.distanceToSqr(center))).toList();
-                for (Entity entityiterator : entityList) {
-                    if (!(entityiterator == entity)) {
-                        if (entityiterator instanceof LivingEntity livingEntity) {
+                for (Entity entityIterator : entityList) {
+                    if (!(entityIterator == entity)) {
+                        if (entityIterator instanceof LivingEntity livingEntity) {
                             float damage = livingEntity.getMaxHealth() - livingEntity.getHealth() + 2;
                             if (damage > 100)
                                 damage = damage / 4;
@@ -143,6 +145,17 @@ public class PhantomLancer extends SwordLikeItem {
     }
 
     @Override
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int pRemainingUseDuration) {
+        if (entity instanceof Player player && player.tickCount % 15 == 0) {
+            int i = this.getUseDuration(stack) - pRemainingUseDuration;
+            var f = OnActionsTrigger.getPowerForTime(i);
+            if (f < 0.75D)
+                OnActionsTrigger.playPlayerAnimation(player.level(), player, "phantom_lancer_swinging");
+        }
+        super.onUseTick(level, entity, stack, pRemainingUseDuration);
+    }
+
+    @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int i1) {
         Player player = (Player) entity;
         final Vec3 center = new Vec3(entity.getX(), entity.getY(), entity.getZ());
@@ -152,12 +165,7 @@ public class PhantomLancer extends SwordLikeItem {
                 if (player.getItemBySlot(EquipmentSlot.MAINHAND).is(stack.getItem()) && !player.getCooldowns().isOnCooldown(stack.getItem())) {
                     player.playSound(WrathyArmamentSounds.ITEM_LANCER_SHOT);
                     player.swing(InteractionHand.MAIN_HAND);
-                    for (int i = 0; i < 360; i++) {
-                        if (i % 20 == 0) {
-                            entity.level().addParticle(ParticleTypes.SONIC_BOOM, entity.getX(), entity.getY() + 0.5, entity.getZ(),
-                                    Math.cos(i) * 0.15d, 0.15d, Math.sin(i) * 0.15d);
-                        }
-                    }
+                    OnActionsTrigger.addParticles(ParticleTypes.SONIC_BOOM, entity.level(), entity.getX(), entity.getY() + 1, entity.getZ(), 1.25f);
                     float damage = player.getHealth() / 2;
                     if (damage <= 0.5)
                         damage = 4;
@@ -178,21 +186,13 @@ public class PhantomLancer extends SwordLikeItem {
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, entity.getItemInHand(hand));
     }
 
-    private static float getPowerForTime(int i) {
-        float f = (float) i / 20.0F;
-        f = (f * f + f * 2.0F) / 3.0F;
-        if (f > 1.0F) {
-            f = 1.0F;
-        }
-        return f;
-    }
 
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
         if (equipmentSlot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
             builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 9, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 7.5, AttributeModifier.Operation.ADDITION));
             builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.4, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }

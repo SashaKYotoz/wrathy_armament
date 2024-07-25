@@ -15,13 +15,13 @@ public class LichKingRenderer extends FixedDeathAnimationMobRenderer<LichKing, L
         this.addLayer(new EyesLayer<>(this) {
             @Override
             public RenderType renderType() {
-                return RenderType.eyes(new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/lich_king_glowing_eyes.png"));
+                return RenderType.eyes(WrathyArmament.createWALocation("textures/entity/bosses/glowing_eyes/lich_king_glowing_eyes.png"));
             }
         });
     }
 
     @Override
     public ResourceLocation getTextureLocation(LichKing king) {
-        return new ResourceLocation(WrathyArmament.MODID,"textures/entity/bosses/lich_king.png");
+        return WrathyArmament.createWALocation("textures/entity/bosses/lich_king.png");
     }
 }

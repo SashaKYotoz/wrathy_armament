@@ -159,7 +159,7 @@ public class ParticleLikeEntity extends VanishableLikeEntity {
                     if (entityIterator != this && entityIterator != this.lich && !(entityIterator instanceof LichMyrmidon)) {
                         if (entityIterator instanceof LivingEntity livingEntity) {
                             livingEntity.setTicksFrozen(160);
-                            livingEntity.hurt(this.damageSources().magic(),5);
+                            livingEntity.hurt(this.damageSources().magic(),6);
                         }
                     }
                 }

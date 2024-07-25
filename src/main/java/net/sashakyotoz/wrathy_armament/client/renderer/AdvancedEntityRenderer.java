@@ -9,20 +9,21 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
 
 import java.util.List;
 @OnlyIn(Dist.CLIENT)
-public abstract class AdvancedEntityRenderer <T extends ZenithEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
+public abstract class AdvancedEntityRenderer <T extends Projectile, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
     protected M model;
     protected final List<RenderLayer<T, M>> layers = Lists.newArrayList();
 
-    public AdvancedEntityRenderer(EntityRendererProvider.Context context, M model, float p_174291_) {
+    public AdvancedEntityRenderer(EntityRendererProvider.Context context, M model, float shadowSize) {
         super(context);
         this.model = model;
-        this.shadowRadius = p_174291_;
+        this.shadowRadius = shadowSize;
     }
 
     public final boolean addLayer(RenderLayer<T, M> renderLayer) {
@@ -50,8 +51,8 @@ public abstract class AdvancedEntityRenderer <T extends ZenithEntity, M extends 
     }
 
 
-    protected float getBob(T entity, float p_115306_) {
-        return (float)entity.tickCount + p_115306_;
+    protected float getBob(T entity, float v) {
+        return (float)entity.tickCount + v;
     }
 
 

@@ -10,11 +10,12 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.animations.LichKingAnimations;
 import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
 
 public class LichKingModel<T extends LichKing> extends HierarchicalModel<T> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "lichkingmodel"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("lich_king_model"), "main");
     private final ModelPart Head;
     private final ModelPart body;
     private final ModelPart cloak;

@@ -9,17 +9,21 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -31,6 +35,10 @@ import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.antlr.v4.runtime.misc.Triple;
+
+import java.util.Comparator;
+import java.util.List;
 
 public class HandlerStoneBlock extends Block {
     public static final IntegerProperty SWORD_INDEX =IntegerProperty.create("sword_index",0,3);
@@ -72,9 +80,21 @@ public class HandlerStoneBlock extends Block {
         if (state.getValue(CONTAINS_KEEPER) && level.getBlockState(pos.above()).isAir()){
             switch (state.getValue(SWORD_INDEX)){
                 case 1 -> {
-                    player.spawnAtLocation(WrathyArmamentItems.MASTER_SWORD.get());
-                    provokeCollapse(level,pos,7,2);
-                    OnActionsTrigger.shakingTime += 100;
+                    ItemStack stack = WrathyArmamentItems.MASTER_SWORD.get().getDefaultInstance();
+                    player.getCooldowns().addCooldown(stack.getItem(),200);
+                    player.spawnAtLocation(stack);
+                    provokeCollapse(level,pos,16,18);
+                    List<Entity> entityList = level.getEntitiesOfClass(Entity.class, new AABB(pos.getCenter(), pos.getCenter()).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(pos.getCenter()))).toList();
+                    for (Entity entity : entityList) {
+                        if (entity instanceof Player player1){
+                            OnActionsTrigger.playerCameraData.computeIfAbsent(player1.getStringUUID(), k -> new Triple<>(0, 0, 0));
+                            OnActionsTrigger.playerCameraData.put(player1.getStringUUID(),new Triple<>(
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).a + 100,
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).b,
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).c
+                            ));
+                        }
+                    }
                     OnActionsTrigger.vec3 = pos.getCenter();
                     OnActionsTrigger.queueServerWork(20,()-> waveFlaming(level,pos));
                     OnActionsTrigger.queueServerWork(100,()-> OnActionsTrigger.vec3 = new Vec3(0,-256,0));
@@ -106,28 +126,26 @@ public class HandlerStoneBlock extends Block {
         return super.use(state, level, pos, player, hand, result);
     }
     private void provokeCollapse(Level level,BlockPos pos,int radius, int yOffset){
-        int x,y,z;
-        y = -radius + yOffset;
-        for (int i = 0; i < radius; i++) {
-            x = -radius;
-            for (int j = 0; j < radius; j++) {
-                z = -radius;
-                for (int k = 0; k < radius; k++) {
-                    if (level.getBlockState(BlockPos.containing(pos.getX() + x,pos.getY()+y,pos.getZ()+z)).canOcclude() && level.getBlockState(pos.offset(x,y-1,z)).isAir() && level instanceof ServerLevel serverLevel){
-                        BlockPos pos1 = BlockPos.containing(pos.getX() + x,pos.getY()+y,pos.getZ()+z);
-                        WrathyArmament.LOGGER.debug(level.getBlockState(pos1).toString());
-                        if (RandomSource.create().nextBoolean()){
-                            level.addParticle(new BlockParticleOption(ParticleTypes.FALLING_DUST,level.getBlockState(pos1)),pos1.getX(),pos1.getY() -1,pos1.getZ(),0,-1,0);
-                        }else
-                            FallingBlockEntity.fall(serverLevel,pos1,level.getBlockState(pos1));
-                    }
-                    z = z+1;
+        for (int y = -radius+yOffset; y < radius-yOffset/3; y++) {
+            for (int x = -radius; x < radius; x++) {
+                for (int z = -radius; z < radius; z++) {
+                    int finalX = x;
+                    int finalY = y;
+                    int finalZ = z;
+                    OnActionsTrigger.queueServerWork(10,()->{
+                        if (level.getBlockState(pos.offset(finalX,finalY,finalZ)).canOcclude() && level instanceof ServerLevel serverLevel){
+                            BlockPos pos1 = pos.offset(finalX,finalY,finalZ);
+                            if (level.random.nextBoolean()){
+                                level.addParticle(new BlockParticleOption(ParticleTypes.FALLING_DUST,level.getBlockState(pos1)),pos1.getX(),pos1.getY() -1,pos1.getZ(),0,-1,0);
+                            }else
+                                FallingBlockEntity.fall(serverLevel,pos1,level.getBlockState(pos1));
+                        }
+                    });
                 }
-                x = x+1;
             }
-            y = y+1;
         }
     }
+
     private void waveFlaming(Level level, BlockPos pos){
         for (int i = 0; i < 3; i++) {
             int finalI = i;

@@ -23,8 +23,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sashakyotoz.anitexlib.utils.TextureAnimator;
-import net.sashakyotoz.wrathy_armament.blocks.gui.ChaosForgeScreen;
-import net.sashakyotoz.wrathy_armament.blocks.gui.MythrilAnvilScreen;
+import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
 import net.sashakyotoz.wrathy_armament.client.renderer.layers.PhantomLancerOnBackLayer;
 import net.sashakyotoz.wrathy_armament.client.renderer.layers.TransparentFireLayer;
 import net.sashakyotoz.wrathy_armament.registers.*;
@@ -38,7 +37,6 @@ public class WrathyArmament {
     public WrathyArmament() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         WrathyArmamentItems.ITEMS.register(modEventBus);
-        WrathyArmamentEntityDataSerializer.SERIALIZER.register(modEventBus);
         WrathyArmamentBlocks.BLOCKS.register(modEventBus);
         WrathyArmamentMiscRegistries.register(modEventBus);
         WrathyArmamentBlockEntities.BLOCK_ENTITIES.register(modEventBus);
@@ -49,23 +47,26 @@ public class WrathyArmament {
             modEventBus.addListener(this::clientLoad);
         }
         TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/layers/transparent_fire", "transparent_fire_overlay");
+        TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/particle_like/shield_dash", "shield_dash");
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     @OnlyIn(Dist.CLIENT)
     public void clientLoad(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            MenuScreens.register(WrathyArmamentMiscRegistries.CHAOS_FORGE.get(), ChaosForgeScreen::new);
-            MenuScreens.register(WrathyArmamentMiscRegistries.MYTHRIL_ANVIL.get(), MythrilAnvilScreen::new);
-        });
+        event.enqueueWork(() -> MenuScreens.register(WrathyArmamentMiscRegistries.WORLDSHARD_WORKBENCH.get(), WorldshardWorkbenchScreen::new));
         PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
-                new ResourceLocation(MODID, "animation"),
-                40,
+                createWALocation("animation"), 40,
                 WrathyArmament::registerPlayerAnimation);
     }
+
+    public static ResourceLocation createWALocation(String path) {
+        return new ResourceLocation(MODID, path);
+    }
+
     private static IAnimation registerPlayerAnimation(AbstractClientPlayer player) {
         return new ModifierLayer<>();
     }
+
     @OnlyIn(Dist.CLIENT)
     private void registerLayer(EntityRenderersEvent.AddLayers event) {
         EntityModelSet entityModels = event.getEntityModels();

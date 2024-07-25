@@ -9,9 +9,10 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 
 public class JohannesSpearsModel<T extends Entity> extends EntityModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("wrathy_armament", "johannes_spear_smodel"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("johannes_spear_model"), "main");
 	private final ModelPart bone;
 	private final ModelPart bone2;
 

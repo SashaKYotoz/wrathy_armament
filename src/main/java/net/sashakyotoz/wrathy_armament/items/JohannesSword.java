@@ -3,6 +3,7 @@ package net.sashakyotoz.wrathy_armament.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -43,22 +44,27 @@ public class JohannesSword extends SwordLikeItem {
         double speed = 1.5;
         double Yaw = player.getYRot();
         RandomSource random = RandomSource.create();
-        player.setDeltaMovement(0, 0.25, 0);
+        player.setDeltaMovement(0, 0.325, 0);
+        for (int j = 0; j < 15; j++) {
+            OnActionsTrigger.queueServerWork(5*j,()->{
+                Vec3 vec31 = player.getDeltaMovement();
+                player.level().addParticle(ParticleTypes.END_ROD, player.getX() - vec31.x, player.getY() - vec31.y + 0.5D, player.getZ() - vec31.z, 0.0D, 0.0D, 0.0D);
+            });
+        }
         player.getCooldowns().addCooldown(stack.getItem(), 50);
         if (player.level() instanceof ServerLevel level){
-            for (int i = 0; i < 3; i++) {
-                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,9,"axe");
+            for (int i = -1 -Math.round(getCurrentSparkles(stack)/2f); i < 2+Math.round(getCurrentSparkles(stack)/2f); i++) {
+                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,9 + getCurrentSparkles(stack),"axe");
                 projectile.setOwner(player);
                 projectile.setProjectileType("axe");
                 projectile.moveTo(
-                        player.getX() + OnActionsTrigger.getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2),
-                        player.getY() + 1 + i,
-                        player.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2,2));
+                        player.getX() + OnActionsTrigger.getXVector(speed, Yaw) + i,
+                        player.getY() + 1.5f + i,
+                        player.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + i);
                 level.addFreshEntity(projectile);
             }
         }
-        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, Yaw), (player.getXRot() * (-0.025)) + 0.25, OnActionsTrigger.getZVector(speed, Yaw))));
-
+        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, Yaw), OnActionsTrigger.getYVector(1.5,player.getXRot())-player.getXRot() > -30 ? 0.25f : 0, OnActionsTrigger.getZVector(speed, Yaw))));
     }
 
     @Override
@@ -69,30 +75,29 @@ public class JohannesSword extends SwordLikeItem {
         double Yaw = player.getYRot();
         if (player.level() instanceof ServerLevel level){
             for (int i = 0; i < 4; i++) {
-                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,7,"dagger");
+                HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(),level,7 + getCurrentSparkles(stack),"dagger");
                 projectile.setOwner(player);
                 projectile.setProjectileType("dagger");
                 projectile.moveTo(
                         player.getX() + OnActionsTrigger.getXVector(speed + i, Yaw),
-                        player.getY(),
+                        player.getY()+0.5f,
                         player.getZ() + OnActionsTrigger.getZVector(speed + i, Yaw));
                 level.addFreshEntity(projectile);
             }
         }
-        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, -Yaw), 0.25, -OnActionsTrigger.getZVector(speed, Yaw))));
-
+        OnActionsTrigger.queueServerWork(10,()->player.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, -Yaw), 0.325, -OnActionsTrigger.getZVector(speed, Yaw))));
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-            builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 15.5, AttributeModifier.Operation.ADDITION));
+            builder.putAll(super.getAttributeModifiers(slot,stack));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 13 + stack.getOrCreateTag().getInt("Sparkles")/2f, AttributeModifier.Operation.ADDITION));
             builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.8, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
-        return super.getDefaultAttributeModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot,stack);
     }
     @Override
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
@@ -121,7 +126,7 @@ public class JohannesSword extends SwordLikeItem {
             double d0 = OnActionsTrigger.getXVector(3, yaw);
             double d1 = player.getXRot() * (-0.025);
             double d2 = OnActionsTrigger.getZVector(3, yaw);
-            for (int l = 0; l < 16; ++l) {
+            for (int l = 0; l < 15 + stack.getOrCreateTag().getInt("Sparkles"); ++l) {
                 createSpellEntity(level, player, d0, d1, d2, l);
             }
             player.getCooldowns().addCooldown(stack.getItem(),20);
