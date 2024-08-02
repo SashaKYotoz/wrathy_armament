@@ -24,8 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.JohannesKnightAttackGoal;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
+import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.JohannesKnightAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
 import net.sashakyotoz.wrathy_armament.registers.*;
@@ -48,7 +48,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
     public final AnimationState daggerAttackFountain = new AnimationState();
     public final AnimationState deathFountain = new AnimationState();
 
-    public JohannesKnight(EntityType<? extends PathfinderMob> type, Level level) {
+    public JohannesKnight(EntityType<? extends JohannesKnight> type, Level level) {
         super(type, level);
         this.setMaxUpStep(1.5f);
         this.xpReward = 50;
@@ -85,6 +85,10 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
 
     private void createSpellEntity(ServerLevel level, double vx, double vy, double vz, int i) {
         level.addFreshEntity(new JohannesSpearEntity(level, this.getX() + vx * i, this.getY() + vy, this.getZ() + vz * i, 0, i, this));
+        level.addFreshEntity(new JohannesSpearEntity(level, this.getX() + vx * i + 1, this.getY() + vy, this.getZ() + vz * i + 1, 0, i, this));
+        level.addFreshEntity(new JohannesSpearEntity(level, this.getX() + vx * i - 1, this.getY() + vy, this.getZ() + vz * i - 1, 0, i, this));
+        level.addFreshEntity(new JohannesSpearEntity(level, this.getX() + vx * i + 1, this.getY() + vy, this.getZ() + vz * i + 1, 0, i, this));
+        level.addFreshEntity(new JohannesSpearEntity(level, this.getX() + vx * i + 1, this.getY() + vy, this.getZ() + vz * i - 1, 0, i, this));
         level.gameEvent(GameEvent.ENTITY_PLACE, new Vec3(this.getX() + vx * i, this.getY() + vy, this.getZ() + vz * i), GameEvent.Context.of(this));
     }
 
@@ -283,7 +287,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
         if (this.getKnightPose() != KnightPose.DYING)
             this.setKnightPose(KnightPose.DYING);
         if (deathTime == 19)
-            this.spawnParticle(ModParticleTypes.SPARK_LIKE_PARTICLE.get(), this.level(), this.getX(), this.getY(), this.getZ(), 2);
+            this.spawnParticle(new ColorableParticleOption("sparkle",1f,0.5f,0.1f), this.level(), this.getX(), this.getY(), this.getZ(), 2);
         super.tickDeath();
     }
 
@@ -352,7 +356,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
     }
 
     @Override
-    public void performRangedAttack(LivingEntity entity, float p_33318_) {
+    public void performRangedAttack(LivingEntity pTarget, float pVelocity) {
         setRandomPose();
     }
 

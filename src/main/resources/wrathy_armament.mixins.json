@@ -8,6 +8,7 @@
     "ServerLevelMixin"
   ],
   "client": [
+    "FogRendererMixin",
     "ItemInHandRendererMixin",
     "ItemRendererMixin",
     "OverBossHealthBarMixin"

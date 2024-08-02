@@ -7,6 +7,10 @@
     {
       "structure": "wrathy_armament:muddy_temple",
       "weight": 1
+    },
+    {
+      "structure": "wrathy_armament:king_castle",
+      "weight": 1
     }
   ],
   "placement": {

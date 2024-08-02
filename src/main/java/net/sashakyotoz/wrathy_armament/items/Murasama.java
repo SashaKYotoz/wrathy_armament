@@ -26,7 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.antlr.v4.runtime.misc.Triple;

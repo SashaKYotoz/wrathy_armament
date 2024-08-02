@@ -19,7 +19,7 @@ public class WARecipeProvider extends RecipeProvider implements IConditionBuilde
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, WrathyArmamentBlocks.WORLDSHARD_WORKBENCH.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, WrathyArmamentBlocks.WORLDSHARD_WORKBENCH.get())
                 .define('A', WrathyArmamentItems.SHARD_OF_CLEAR_MYTHRIL.get())
                 .define('B', WrathyArmamentItems.SHARD_OF_ORICHALCUM.get())
                 .define('C', WrathyArmamentItems.SHARD_OF_MECHANVIL.get())
@@ -29,6 +29,14 @@ public class WARecipeProvider extends RecipeProvider implements IConditionBuilde
                 .pattern(" H ")
                 .pattern("C D")
                 .unlockedBy("has_item", has(WrathyArmamentItems.MYTHRIL_INGOT.get()))
+                .save(recipeConsumer);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, WrathyArmamentItems.COPPER_SWORD.get())
+                .define('A', Items.STICK)
+                .define('B', Items.COPPER_INGOT)
+                .pattern(" B ")
+                .pattern(" B ")
+                .pattern(" A ")
+                .unlockedBy("has_item", has(Items.COPPER_INGOT))
                 .save(recipeConsumer);
     }
 }

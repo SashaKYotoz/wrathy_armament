@@ -1,7 +1,8 @@
 package net.sashakyotoz.wrathy_armament.mixin;
 
 import net.minecraft.server.level.ServerLevel;
-import net.sashakyotoz.wrathy_armament.entities.bosses.spawner.SashaKYotozSpawner;
+import net.sashakyotoz.wrathy_armament.entities.spawners.GuideSpawner;
+import net.sashakyotoz.wrathy_armament.entities.spawners.SashaKYotozSpawner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,8 +16,12 @@ public abstract class ServerLevelMixin {
     @Shadow public abstract ServerLevel getLevel();
     @Unique
     private final SashaKYotozSpawner wrathy_armament$sashaKYotozSpawner = new SashaKYotozSpawner();
-    @Inject(method = "tickCustomSpawners", at = @At("RETURN"))
+
+    @Unique
+    private final GuideSpawner wrathy_armament$guideSpawner = new GuideSpawner();
+    @Inject(method = "tickCustomSpawners", at = @At("HEAD"))
     private void tickSpawner(boolean pSpawnEnemies, boolean pSpawnFriendlies, CallbackInfo ci){
         wrathy_armament$sashaKYotozSpawner.tick(getLevel(), pSpawnEnemies, pSpawnFriendlies);
+        wrathy_armament$guideSpawner.tick(getLevel(),pSpawnEnemies,pSpawnFriendlies);
     }
 }

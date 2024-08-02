@@ -17,10 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
-import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
 
@@ -48,7 +48,7 @@ public class HalfZatoichi extends SwordLikeItem {
     public void rightClick(Player player, ItemStack stack) {
         if (stack.getOrCreateTag().getInt("charge") > 0) {
             for (int i = -3; i < 3; i++) {
-                player.level().addParticle(ModParticleTypes.SPARK_LIKE_PARTICLE.get(), player.getX() + i / 2f, player.getY() + 1 + i / 2f, player.getZ() + i / 2f,
+                player.level().addParticle(new ColorableParticleOption("sparkle",0.1f,0.1f,0.1f), player.getX() + i / 2f, player.getY() + 1 + i / 2f, player.getZ() + i / 2f,
                         OnActionsTrigger.getXVector(3, player.getYRot()), 0.125f, OnActionsTrigger.getZVector(3, player.getYRot()));
             }
             player.setDeltaMovement(OnActionsTrigger.getXVector(3, player.getYRot()), 0.125f, OnActionsTrigger.getZVector(3, player.getYRot()));

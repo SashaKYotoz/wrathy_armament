@@ -56,5 +56,17 @@ public class WorldshardWorkbenchRecipes {
               Items.STICK.getDefaultInstance(),
               WrathyArmamentItems.MURASAMA.get().getDefaultInstance()
       ));
+      WorldshardWorkbenchBlockEntity.addRecipe("zatoichi_recipe",List.of(
+              Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE.getDefaultInstance(),
+              Items.STICK.getDefaultInstance(),
+              Items.ANCIENT_DEBRIS.getDefaultInstance(),
+              Items.NETHERITE_INGOT.getDefaultInstance(),
+              Items.NETHERITE_INGOT.getDefaultInstance(),
+              Items.NETHERITE_INGOT.getDefaultInstance(),
+              Items.ECHO_SHARD.getDefaultInstance(),
+              WrathyArmamentItems.SHARD_OF_MECHANVIL.get().getDefaultInstance(),
+              Items.STICK.getDefaultInstance(),
+              WrathyArmamentItems.HALF_ZATOICHI.get().getDefaultInstance()
+      ));
   }
 }

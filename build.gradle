@@ -94,7 +94,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:anitexlib-1011434:5482698")
+    implementation fg.deobf("curse.maven:anitexlib-1011434:5572038")
     implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     runtimeOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424")

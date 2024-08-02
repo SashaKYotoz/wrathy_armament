@@ -24,6 +24,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
 import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
@@ -146,6 +147,29 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
             return;
         ItemStack mainStack = blockEntity.itemHandler.getStackInSlot(0);
         boolean isCraftingAction = mainStack.getItem() instanceof SmithingTemplateItem;
+        float[] colors = new float[3];
+        switch (this.getModelVariantForRecipe()) {
+            case 0 -> {
+                colors[0] = 0.1f;
+                colors[1] = 1f;
+                colors[2] = 0f;
+            }
+            case 1 -> {
+                colors[0] = 0.1f;
+                colors[1] = 0.1f;
+                colors[2] = 0.1f;
+            }
+            case 2 -> {
+                colors[0] = 1f;
+                colors[1] = 0f;
+                colors[2] = 0.75f;
+            }
+            case 3 -> {
+                colors[0] = 0.25f;
+                colors[1] = 0.1f;
+                colors[2] = 0.1f;
+            }
+        }
         if (getRecipe() != null || (!isCraftingAction && mainStack.getItem() instanceof SwordLikeItem)) {
             if (isCraftingAction) {
                 if (RandomSource.create().nextBoolean())
@@ -157,7 +181,7 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
                 }
             }
             if (blockEntity.progress % 2 == 0 && level instanceof ServerLevel serverLevel)
-                serverLevel.sendParticles(ModParticleTypes.SPARK_LIKE_PARTICLE.get(), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 3, 0, 1, 0, 0.5f);
+                serverLevel.sendParticles(new ColorableParticleOption("sparkle",colors[0],colors[1],colors[2]), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 2, Math.sin(blockEntity.progress % 180 * Math.PI / 10), 0, Math.cos(blockEntity.progress % 180 * Math.PI / 10), 0.5f);
             setChanged(level, pos, state);
             if (blockEntity.progress >= blockEntity.maxProgress) {
                 if (isCraftingAction)

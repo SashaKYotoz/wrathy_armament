@@ -17,6 +17,7 @@ import net.minecraft.world.item.Vanishable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
 import net.sashakyotoz.anitexlib.client.renderer.IParticleItem;
 import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
@@ -85,6 +86,6 @@ public abstract class SwordLikeItem extends Item implements Vanishable, IParticl
     @Override
     public void addParticles(Level level, ItemEntity itemEntity) {
         if (getStoredXP(itemEntity.getItem()) > XPTiers.values()[getCurrentSparkles(itemEntity.getItem())].getNeededXP() && itemEntity.tickCount % 5 == 0)
-            OnActionsTrigger.addParticles(ModParticleTypes.SPARK_LIKE_PARTICLE.get(),level,itemEntity.getOnPos().getCenter().x,itemEntity.getY()+1,itemEntity.getOnPos().getCenter().z,2f);
+            OnActionsTrigger.addParticles(new ColorableParticleOption("sparkle",1f,1f,1f),level,itemEntity.getOnPos().getCenter().x,itemEntity.getY()-0.25f,itemEntity.getOnPos().getCenter().z,2f);
     }
 }

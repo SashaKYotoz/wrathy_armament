@@ -1,17 +1,26 @@
 package net.sashakyotoz.wrathy_armament.registers;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -21,10 +30,11 @@ import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;
-import net.sashakyotoz.wrathy_armament.enchants.NightmareJumping;
-import net.sashakyotoz.wrathy_armament.enchants.PhantomFury;
-import net.sashakyotoz.wrathy_armament.enchants.Phantoquake;
+import net.sashakyotoz.wrathy_armament.miscs.enchants.NightmareJumping;
+import net.sashakyotoz.wrathy_armament.miscs.enchants.PhantomFury;
+import net.sashakyotoz.wrathy_armament.miscs.enchants.Phantoquake;
 import net.sashakyotoz.wrathy_armament.entities.bosses.JohannesKnight;
+import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.utils.data.loot.AddItemModifier;
 import net.sashakyotoz.wrathy_armament.utils.data.loot.AddSusSandItemModifier;
 
@@ -56,6 +66,10 @@ public class WrathyArmamentMiscRegistries {
     //entity data serializers
     public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZER = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, WrathyArmament.MODID);
     public static final RegistryObject<EntityDataSerializer<JohannesKnight.KnightPose>> KNIGHT_POSE = SERIALIZER.register("knight_pose",()-> EntityDataSerializer.simpleEnum(JohannesKnight.KnightPose.class));
+    public static final RegistryObject<EntityDataSerializer<MoonLord.LordPose>> LORD_POSE = SERIALIZER.register("lord_pose",()-> EntityDataSerializer.simpleEnum(MoonLord.LordPose.class));
+    //mob effects
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS,WrathyArmament.MODID);
+    public static final RegistryObject<MobEffect> BRIGHTNESS = EFFECTS.register("brightness",()->new MobEffect(MobEffectCategory.HARMFUL,0xffffff).setFactorDataFactory(() -> new MobEffectInstance.FactorData(22)));
     //loot table modifiers
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, WrathyArmament.MODID);
@@ -90,6 +104,7 @@ public class WrathyArmamentMiscRegistries {
     public static void register(IEventBus bus){
         PARTICLE_TYPES.register(bus);
         ENCHANTMENTS.register(bus);
+        EFFECTS.register(bus);
         MENUS.register(bus);
         CREATIVE_MODE_TABS.register(bus);
         SERIALIZER.register(bus);

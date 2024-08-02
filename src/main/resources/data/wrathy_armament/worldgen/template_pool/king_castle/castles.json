@@ -1,0 +1,14 @@
+{
+  "fallback": "wrathy_armament:king_castle/castles",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:king_castle/king_castle",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

@@ -8,8 +8,9 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.renderer.RenderType;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.entities.animations.MoonLordAnimations;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
     private final ModelPart finger4;
 
     public MoonLordModel(ModelPart root) {
+        super(RenderType::entityTranslucent);
         this.root = root;
         this.head = root.getChild("head");
         this.tencle3 = head.getChild("tencle3");
@@ -244,7 +246,7 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
 
         PartDefinition cube_r48 = finger5.addOrReplaceChild("cube_r48", CubeListBuilder.create().texOffs(0, 43).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -1.5F, 0.0F, -0.3054F, 0.0F, 0.0F));
 
-        PartDefinition finger4 = leftHand.addOrReplaceChild("finger4", CubeListBuilder.create(), PartPose.offset(1.4307F, -0.0686F, -0.7001F));
+        PartDefinition finger4 = leftHand.addOrReplaceChild("finger4", CubeListBuilder.create(), PartPose.offset(-0.9F, -4.5F, -10.7F));
 
         PartDefinition cube_r49 = finger4.addOrReplaceChild("cube_r49", CubeListBuilder.create().texOffs(0, 43).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.0F, -4.0F, 0.0F, 0.4363F, 0.0F, 0.2182F));
 
@@ -273,8 +275,14 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
     }
 
     @Override
-    public void setupAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-
+    public void setupAnim(MoonLord pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        this.root().getAllParts().forEach(ModelPart::resetPose);
+        this.head.yRot = pNetHeadYaw / (180F / (float) Math.PI);
+        this.head.xRot = pHeadPitch / (180F / (float) Math.PI);
+        this.animate(pEntity.death, MoonLordAnimations.DEATH,pAgeInTicks,0.5f);
+        this.animate(pEntity.meleeAttack, MoonLordAnimations.MELEEATTACK,pAgeInTicks);
+        this.animate(pEntity.eyeAttack, MoonLordAnimations.EYEATTACK,pAgeInTicks);
+        this.animate(pEntity.interactive,MoonLordAnimations.INTERACTIVE,pAgeInTicks,pEntity.getAnimationScaling());
     }
 
     public List<ModelPart> getHeartLayerModelParts() {

@@ -3,7 +3,6 @@ package net.sashakyotoz.wrathy_armament.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -24,9 +23,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.technical.BladeOfChaosEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
@@ -74,6 +71,7 @@ public class BladeOfChaos extends SwordLikeItem {
                                 OnActionsTrigger.getZVector(4, player.getYRot() - 22.5));
                         blade1.setDeltaMovement(OnActionsTrigger.getXVector(4, player.getYRot() + 22.5), OnActionsTrigger.getYVector(2, player.getXRot()),
                                 OnActionsTrigger.getZVector(4, player.getYRot() + 22.5));
+                        player.getCooldowns().addCooldown(stack.getItem(),10);
                     }
                     case "CYCLONE_OF_CHAOS" -> {
                         blade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 3, 0.5F);

@@ -1,0 +1,6 @@
+// 1.20.1	2024-07-29T12:36:48.2322786	Global Loot Modifiers : wrathy_armament
+79265221d7bffcd4644c55d63ef5d89f72e8f58f data/forge/loot_modifiers/global_loot_modifiers.json
+14922ce118005ecc12d8bfc25e98757e9004d255 data/wrathy_armament/loot_modifiers/shard_of_clear_mythril.json
+a8b068dfa2edf25b4dfefb4cbf2ea42ed7629f8a data/wrathy_armament/loot_modifiers/shard_of_mechanvil.json
+82e459d691fa2cd7a1f8196541d23fbdf5bebdd0 data/wrathy_armament/loot_modifiers/shard_of_netherness.json
+461cec1a118d6c146aaaaf9ea8e8739671ca9a5b data/wrathy_armament/loot_modifiers/shard_of_orichalcum.json

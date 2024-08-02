@@ -9,9 +9,16 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -23,6 +30,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -31,11 +39,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
@@ -89,6 +99,10 @@ public class OnActionsTrigger {
                         player.getAttribute(Attributes.MAX_HEALTH).removeModifier(HEALTH_MODIFIER);
                 }
             });
+            player.getCapability(ModCapabilities.MISTSPLITTER_DEFENCE).ifPresent(context -> {
+                if (context.isDefenseModeOn() && !player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) && !player.level().isClientSide())
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 110, 1));
+            });
             playerCameraData.forEach((uuid, triple) -> {
                 int shakingTime = triple.a;
                 int rollingTime = triple.b;
@@ -100,6 +114,10 @@ public class OnActionsTrigger {
 
                 playerCameraData.put(uuid, new Triple<>(shakingTime, rollingTime, rotatingTime));
             });
+//            if (player.tickCount % 5 == 0) {
+//                if (!player.hasEffect(MobEffects.DIG_SLOWDOWN) && !player.level().isClientSide() && isCloseToProtectedStructure(player))
+//                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 300, 1));
+//            }
         }
     }
 
@@ -203,6 +221,28 @@ public class OnActionsTrigger {
         }
     }
 
+    @SubscribeEvent
+    public static void onBlockRightClick(BlockEvent.BreakEvent event) {
+        Player player = event.getPlayer();
+        if (!player.level().isClientSide() && !player.isCreative() && isCloseToProtectedStructure(player)) {
+            player.displayClientMessage(Component.translatable("structure.wrathy_armament.protection"), true);
+            event.setCanceled(true);
+        }
+    }
+
+    private static boolean isCloseToProtectedStructure(Player player) {
+        if (player.level() instanceof ServerLevel serverLevel && !player.isCreative()) {
+            BlockPos pos = serverLevel.findNearestMapStructure(WrathyArmamentTags.Structures.VISIBLE_FOR_MASTER_SWORD, player.getOnPos(), 96, false);
+            if (pos != null) {
+                double distanceSquared = player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+                double normalizedDistance = Math.min(distanceSquared / 4613, 10.0);
+                double lightsValue = 10.0 - normalizedDistance;
+                return lightsValue > 8;
+            }
+        }
+        return false;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
@@ -231,6 +271,47 @@ public class OnActionsTrigger {
                     event.setYaw(event.getYaw() + rotatingTime);
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onFogColorSetup(ViewportEvent.ComputeFogColor event) {
+        if (event.getCamera().getEntity() instanceof LivingEntity entity && entity.hasEffect(WrathyArmamentMiscRegistries.BRIGHTNESS.get())) {
+            event.setRed(1);
+            event.setGreen(1);
+            event.setBlue(1);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal("get_manual").executes(arguments -> {
+            if (arguments.getSource().getEntity() instanceof Player player) {
+                ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
+                CompoundTag tag = new CompoundTag();
+                ListTag pages = new ListTag();
+                pages.add(StringTag.valueOf("{\"text\":\"Slot indexes:\\ncentral slot - 0\\nabove central slot \\u0020 clockwise, respectively 1-8\"}"));
+                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Zenith recipe:\\n0: \"},{\"text\":\"wild_armor_trim_smithing_template\",\"color\":\"dark_green\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"mythril_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" copper_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"netherite_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"diamond_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" meowmere\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" phantom_lancer\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" golden_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" mythril_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
+                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Blade of chaos recipe:\\n0: \"},{\"text\":\"shaper_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"chain\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" deepslate\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" chain\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
+                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Mistsplitter\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"eye_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"end_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"heart_of_the_sea\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"purpur_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" purpur_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" end_crystal\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" end_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
+                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Murasama\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"spire_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" redstone_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"ender_eye\",\"color\":\"dark_green\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" end_crystal\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" redstone_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
+                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Zatoichi\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"raiser_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" ancient_debris\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"dark_green\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" echo_shard\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" shard_of_mechanvil\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
+
+                tag.put("pages", pages);
+                tag.putString("title", "Wrathy Armament Manual");
+                tag.putString("author", "SashaKYotoz");
+                tag.putInt("generation", 1);
+                CompoundTag display = new CompoundTag();
+                ListTag lore = new ListTag();
+                lore.add(StringTag.valueOf("Helper to use worldshard workbench"));
+                display.put("Lore", lore);
+                tag.put("display", display);
+                book.setTag(tag);
+                if (!player.getInventory().contains(book))
+                    player.spawnAtLocation(book);
+            }
+            return 0;
+        }));
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package net.sashakyotoz.wrathy_armament.registers;
 
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -17,6 +18,9 @@ import net.sashakyotoz.wrathy_armament.client.renderer.bosses.JohannesKnightRend
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.LichKingRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.MoonLordRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.SashaKYotozRenderer;
+import net.sashakyotoz.wrathy_armament.client.renderer.livings.GuideRenderer;
+import net.sashakyotoz.wrathy_armament.client.renderer.livings.LichMyrmidonRenderer;
+import net.sashakyotoz.wrathy_armament.client.renderer.livings.TrueEyeOfCthulhuRenderer;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class WrathyArmamentClientEvents {
@@ -30,8 +34,11 @@ public class WrathyArmamentClientEvents {
         event.registerEntityRenderer(WrathyArmamentEntities.LICH_MYRMIDON.get(), LichMyrmidonRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_KNIGHT.get(), JohannesKnightRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.MOON_LORD.get(), MoonLordRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.TRUE_EYE_OF_CTHULHU.get(), TrueEyeOfCthulhuRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.THE_GUIDE.get(),(context)-> new GuideRenderer(context,false));
         event.registerEntityRenderer(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), ParticleLikeEntityRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(), HarmfulProjectileRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), ThrownItemRenderer::new);
         event.registerBlockEntityRenderer(WrathyArmamentBlockEntities.WORLDSHARD_WORKBENCH.get(), WorldshardWorkbenchEntityRenderer::new);
     }
     @SubscribeEvent
@@ -49,6 +56,7 @@ public class WrathyArmamentClientEvents {
         event.registerLayerDefinition(LichKingModel.LAYER_LOCATION, LichKingModel::createBodyLayer);
         event.registerLayerDefinition(LichMyrmidonModel.LAYER_LOCATION, LichMyrmidonModel::createBodyLayer);
         event.registerLayerDefinition(MoonLordModel.LAYER_LOCATION, MoonLordModel::createBodyLayer);
+        event.registerLayerDefinition(TrueEyeOfCthulhuModel.LAYER_LOCATION, TrueEyeOfCthulhuModel::createBodyLayer);
         event.registerLayerDefinition(ParticleLikeEntityModel.LAYER_LOCATION, ParticleLikeEntityModel::createBodyLayer);
         event.registerLayerDefinition(AxeProjectileModel.LAYER_LOCATION, AxeProjectileModel::createBodyLayer);
         event.registerLayerDefinition(DaggerProjectileModel.LAYER_LOCATION, DaggerProjectileModel::createBodyLayer);

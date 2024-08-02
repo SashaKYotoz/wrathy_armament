@@ -58,14 +58,14 @@ public class TransparentFireLayer <T extends LivingEntity, M extends EntityModel
             pPoseStack.popPose();
             if (flags[1]){
                 pPoseStack.pushPose();
-                pPoseStack.translate(-OnActionsTrigger.getXVector(0.25f,90-player.getYRot()),OnActionsTrigger.getYVector(0.125f,player.getXRot()),-OnActionsTrigger.getZVector(0.25f,90-player.getYRot()));
+                pPoseStack.translate(0f,OnActionsTrigger.getYVector(0.125f,player.getXRot()),0.125f);
                 ModelFollowingRenderer.followBodyRotations(pLivingEntity, (HumanoidModel<LivingEntity>) this.shadeHumanoidLayerModel);
                 this.getParentModel().copyPropertiesTo(this.shadeHumanoidLayerModel);
                 this.shadeHumanoidLayerModel.setupAnim(pLivingEntity,pLimbSwing,pLimbSwingAmount,pAgeInTicks,pNetHeadYaw,pHeadPitch);
                 this.shadeHumanoidLayerModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 0,0,0, 0.675F);
                 pPoseStack.popPose();
                 pPoseStack.pushPose();
-                pPoseStack.translate(-OnActionsTrigger.getXVector(0.375f,90-player.getYRot()),OnActionsTrigger.getYVector(0.25f,player.getXRot()),-OnActionsTrigger.getZVector(0.375f,90-player.getYRot()));
+                pPoseStack.translate(0f,OnActionsTrigger.getYVector(0.15f,player.getXRot()),0.25f);
                 ModelFollowingRenderer.followBodyRotations(pLivingEntity, (HumanoidModel<LivingEntity>) this.shadeHumanoidLayerModel);
                 this.getParentModel().copyPropertiesTo(this.shadeHumanoidLayerModel);
                 this.shadeHumanoidLayerModel.setupAnim(pLivingEntity,pLimbSwing,pLimbSwingAmount,pAgeInTicks,pNetHeadYaw,pHeadPitch);

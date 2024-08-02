@@ -125,7 +125,7 @@ public class HandlerStoneBlock extends Block {
         }
         return super.use(state, level, pos, player, hand, result);
     }
-    private void provokeCollapse(Level level,BlockPos pos,int radius, int yOffset){
+    public static void provokeCollapse(Level level,BlockPos pos,int radius, int yOffset){
         for (int y = -radius+yOffset; y < radius-yOffset/3; y++) {
             for (int x = -radius; x < radius; x++) {
                 for (int z = -radius; z < radius; z++) {

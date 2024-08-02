@@ -20,7 +20,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.client.particles.parents.types.WaveParticleOption;
+import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
@@ -89,7 +89,7 @@ public class MistsplitterReforged extends SwordLikeItem {
         if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
             builder.putAll(super.getAttributeModifiers(slot, stack));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 12.5 + stack.getOrCreateTag().getInt("RestPower") + getCurrentSparkles(stack) / 2f, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 12.5 + (stack.getOrCreateTag().getInt("RestPower") + getCurrentSparkles(stack)) / 2f, AttributeModifier.Operation.ADDITION));
             builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
@@ -117,11 +117,7 @@ public class MistsplitterReforged extends SwordLikeItem {
                     particleEntity.moveTo(new Vec3(entity.getX(), entity.getY() + 1, entity.getZ()));
                     entity.level().addFreshEntity(particleEntity);
                 }
-                for (int i = 0; i < 360; i++) {
-                    if (i % 20 == 0) {
-                        level.addParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), player.getX(), player.getY() + 1, player.getZ(), Math.cos(i) * 0.4d, 0.25d, Math.sin(i) * 0.4d);
-                    }
-                }
+                OnActionsTrigger.addParticles(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(),level,player.getX(),player.getY()+1,player.getZ(),2);
                 stack.getOrCreateTag().putInt("RestPower", stack.getOrCreateTag().getInt("RestPower") + 1);
             }
         }

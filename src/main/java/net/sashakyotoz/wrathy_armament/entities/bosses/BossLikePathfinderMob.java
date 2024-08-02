@@ -1,5 +1,6 @@
 package net.sashakyotoz.wrathy_armament.entities.bosses;
 
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -32,16 +33,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class BossLikePathfinderMob extends PathfinderMob implements Enemy,PersistentAngerMob {
+public abstract class BossLikePathfinderMob extends PathfinderMob implements Enemy, PersistentAngerMob {
     public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(BossLikePathfinderMob.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_REMAINING_ANGER_TIME = SynchedEntityData.defineId(BossLikePathfinderMob.class, EntityDataSerializers.INT);
     public int attackAnimationTimeout = 30;
     public final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(36000, 1080000);
     @Nullable
     public UUID persistentAngerTarget;
+
     public BossLikePathfinderMob(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
+
     @Override
     protected boolean shouldDespawnInPeaceful() {
         return false;
@@ -50,9 +53,10 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     @Override
     protected void defineSynchedData() {
         this.entityData.define(ATTACKING, false);
-        this.entityData.define(DATA_REMAINING_ANGER_TIME,0);
+        this.entityData.define(DATA_REMAINING_ANGER_TIME, 0);
         super.defineSynchedData();
     }
+
     @Override
     public int getRemainingPersistentAngerTime() {
         return this.entityData.get(DATA_REMAINING_ANGER_TIME);
@@ -61,35 +65,42 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     public void setRemainingPersistentAngerTime(int i) {
         this.entityData.set(DATA_REMAINING_ANGER_TIME, i);
     }
+
     public void startPersistentAngerTimer() {
         this.setRemainingPersistentAngerTime(PERSISTENT_ANGER_TIME.sample(this.random));
     }
+
     @Nullable
     public UUID getPersistentAngerTarget() {
         return this.persistentAngerTarget;
     }
+
     public void setPersistentAngerTarget(@Nullable UUID uuid) {
         this.persistentAngerTarget = uuid;
     }
+
     public void setAttacking(boolean tmp) {
         this.entityData.set(ATTACKING, tmp);
     }
+
     public boolean isAttacking() {
         return this.entityData.get(ATTACKING);
     }
+
     @Override
     public boolean removeWhenFarAway(double distance) {
         return false;
     }
+
     public void spawnParticle(Level world, double x, double y, double z, float modifier) {
         spawnParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), world, x, y, z, modifier);
     }
 
     @Override
     protected void registerGoals() {
-        this.targetSelector.addGoal(0, new ResetAngerTargetGoal<>(this, true));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, false, true));
-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(1, new ResetAngerTargetGoal<>(this, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
         super.registerGoals();
     }
 
@@ -105,16 +116,23 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
             this.noActionTime += 2;
         }
     }
+
+    protected boolean canRide(Entity pEntity) {
+        return false;
+    }
+
     public boolean shouldDropExperience() {
         return true;
     }
-    public void spawnParticle(SimpleParticleType type, Level world, double x, double y, double z, float modifier) {
+
+    public void spawnParticle(ParticleOptions type, Level world, double x, double y, double z, float modifier) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0)
                 world.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
         }
     }
-    public void hitNearbyMobs(Component customDeathName, float damage,int radius){
+
+    public void hitNearbyMobs(Component customDeathName, float damage, int radius) {
         List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(centerOfMob(), centerOfMob()).inflate(radius), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(centerOfMob()))).toList();
         for (Entity entityIterator : entityList) {
             if (!(entityIterator == this)) {
@@ -130,7 +148,8 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
             }
         }
     }
-    public void hitNearbyMobs(float damage, int radius){
+
+    public void hitNearbyMobs(float damage, int radius) {
         List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(centerOfMob(), centerOfMob()).inflate(radius), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(centerOfMob()))).toList();
         for (Entity entityIterator : entityList) {
             if (!(entityIterator == this)) {
@@ -141,29 +160,36 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
             }
         }
     }
-    private Vec3 centerOfMob(){
-        return new Vec3(this.getX(),this.getY(),this.getZ());
+
+    private Vec3 centerOfMob() {
+        return new Vec3(this.getX(), this.getY(), this.getZ());
     }
+
     @Override
     public void sendSystemMessage(Component component) {
         super.sendSystemMessage(component);
     }
+
     public abstract ServerBossEvent bossInfo();
+
     @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
         this.bossInfo().addPlayer(player);
     }
+
     @Override
     public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
         this.bossInfo().removePlayer(player);
     }
+
     @Override
     public void customServerAiStep() {
         super.customServerAiStep();
         this.bossInfo().setProgress(this.getHealth() / this.getMaxHealth());
     }
+
     public double getXVector(double speed, double yaw) {
         return speed * Math.cos((yaw + 90) * (Math.PI / 180));
     }
@@ -171,6 +197,7 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     public double getZVector(double speed, double yaw) {
         return speed * Math.sin((yaw + 90) * (Math.PI / 180));
     }
+
     public boolean isMoving() {
         return this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-6D;
     }

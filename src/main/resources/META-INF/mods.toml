@@ -19,7 +19,13 @@ side="BOTH"
 [[dependencies.wrathy_armament]]
 modId = "anitexlib"
 mandatory = true
-versionRange = "[0.3,)"
+versionRange = "[0.4,)"
+ordering = "AFTER"
+side = "BOTH"
+[[dependencies.wrathy_armament]]
+modId = "playeranimator"
+mandatory = true
+versionRange = "[1.0.2-rc1+1.20,)"
 ordering = "AFTER"
 side = "BOTH"
 
