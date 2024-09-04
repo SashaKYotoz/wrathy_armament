@@ -63,6 +63,7 @@ public class BladeOfChaos extends SwordLikeItem {
             String behavior = BladeOfChaosEntity.PossibleBehavior.values()[stack.getOrCreateTag().getInt("StateIndex")].behaviorName;
             BladeOfChaosEntity blade = new BladeOfChaosEntity(player.level(), stackInMainHand, player, behavior);
             BladeOfChaosEntity blade1 = new BladeOfChaosEntity(player.level(), stackInOffHand, player, behavior);
+            player.getCooldowns().addCooldown(stack.getItem(),10);
             OnActionsTrigger.queueServerWork(10,()->{
                 switch (behavior) {
                     case "NEMEAN_CRUSH" -> {

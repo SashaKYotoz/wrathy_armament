@@ -14,13 +14,11 @@ import net.sashakyotoz.wrathy_armament.client.particles.FrostSoulParticle;
 import net.sashakyotoz.wrathy_armament.client.particles.PhantomRayParticle;
 import net.sashakyotoz.wrathy_armament.client.particles.ZenithWayParticle;
 import net.sashakyotoz.wrathy_armament.client.renderer.*;
-import net.sashakyotoz.wrathy_armament.client.renderer.bosses.JohannesKnightRenderer;
-import net.sashakyotoz.wrathy_armament.client.renderer.bosses.LichKingRenderer;
-import net.sashakyotoz.wrathy_armament.client.renderer.bosses.MoonLordRenderer;
-import net.sashakyotoz.wrathy_armament.client.renderer.bosses.SashaKYotozRenderer;
+import net.sashakyotoz.wrathy_armament.client.renderer.bosses.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.GuideRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.LichMyrmidonRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.TrueEyeOfCthulhuRenderer;
+import net.sashakyotoz.wrathy_armament.entities.bosses.Habciak;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class WrathyArmamentClientEvents {
@@ -30,6 +28,7 @@ public class WrathyArmamentClientEvents {
         event.registerEntityRenderer(WrathyArmamentEntities.BLADE_OF_CHAOS.get(), BladeOfChaosRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_SPEAR.get(), JohannesSpearRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.SASHAKYOTOZ.get(), SashaKYotozRenderer::new);
+        event.registerEntityRenderer(WrathyArmamentEntities.HABCIAK.get(), HabciakRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.LICH_KING.get(), LichKingRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.LICH_MYRMIDON.get(), LichMyrmidonRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_KNIGHT.get(), JohannesKnightRenderer::new);

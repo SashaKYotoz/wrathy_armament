@@ -36,6 +36,7 @@ public class WrathyArmament {
 
     public WrathyArmament() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         WrathyArmamentItems.ITEMS.register(modEventBus);
         WrathyArmamentBlocks.BLOCKS.register(modEventBus);
         WrathyArmamentMiscRegistries.register(modEventBus);
@@ -48,7 +49,6 @@ public class WrathyArmament {
         }
         TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/layers/transparent_fire", "transparent_fire_overlay");
         TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/particle_like/shield_dash", "shield_dash");
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     @OnlyIn(Dist.CLIENT)

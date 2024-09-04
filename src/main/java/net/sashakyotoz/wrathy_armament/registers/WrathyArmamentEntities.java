@@ -13,11 +13,8 @@ import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.alive.Guide;
 import net.sashakyotoz.wrathy_armament.entities.alive.LichMyrmidon;
 import net.sashakyotoz.wrathy_armament.entities.alive.TrueEyeOfCthulhu;
-import net.sashakyotoz.wrathy_armament.entities.bosses.JohannesKnight;
-import net.sashakyotoz.wrathy_armament.entities.bosses.LichKing;
-import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
+import net.sashakyotoz.wrathy_armament.entities.bosses.*;
 import net.sashakyotoz.wrathy_armament.entities.technical.*;
-import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WrathyArmamentEntities {
@@ -28,6 +25,7 @@ public class WrathyArmamentEntities {
     public static final RegistryObject<EntityType<HarmfulProjectileEntity>> HARMFUL_PROJECTILE_ENTITY = register("harmful_projectile_entity", EntityType.Builder.<HarmfulProjectileEntity>of(HarmfulProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setUpdateInterval(20).setTrackingRange(12).sized(0.6f, 0.6f));
     public static final RegistryObject<EntityType<JohannesSpearEntity>> JOHANNES_SPEAR = register("johannes_spear", EntityType.Builder.<JohannesSpearEntity>of(JohannesSpearEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).setUpdateInterval(20).sized(0.7f, 1.9f));
     public static final RegistryObject<EntityType<SashaKYotoz>> SASHAKYOTOZ = register("sashakyotoz", EntityType.Builder.of(SashaKYotoz::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).sized(0.7f, 1.9f).fireImmune());
+    public static final RegistryObject<EntityType<Habciak>> HABCIAK = register("habciak", EntityType.Builder.of(Habciak::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).sized(0.7f, 1.9f).fireImmune());
     public static final RegistryObject<EntityType<LichKing>> LICH_KING = register("lich_king", EntityType.Builder.of(LichKing::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).sized(1.6f, 2.8f));
     public static final RegistryObject<EntityType<JohannesKnight>> JOHANNES_KNIGHT = register("johannes_knight", EntityType.Builder.of(JohannesKnight::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).sized(1.5f, 2.6f));
     public static final RegistryObject<EntityType<LichMyrmidon>> LICH_MYRMIDON = register("lich_myrmidon", EntityType.Builder.of(LichMyrmidon::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true).setTrackingRange(8).setUpdateInterval(20).sized(1f, 1.8f));
@@ -42,6 +40,7 @@ public class WrathyArmamentEntities {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(SASHAKYOTOZ.get(), SashaKYotoz.createAttributes().build());
+        event.put(HABCIAK.get(), Habciak.createAttributes().build());
         event.put(LICH_KING.get(), LichKing.createAttributes().build());
         event.put(JOHANNES_KNIGHT.get(), JohannesKnight.createAttributes().build());
         event.put(MOON_LORD.get(), MoonLord.createAttributes().build());

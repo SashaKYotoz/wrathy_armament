@@ -15,6 +15,7 @@ public class BossBarOverlayHooks {
     private static final ResourceLocation BOSSBAR_LICH_KING = new ResourceLocation(WrathyArmament.MODID,"textures/gui/bossbars/lich_king_bossbar.png");
     private static final ResourceLocation BOSSBAR_JOHANNES = new ResourceLocation(WrathyArmament.MODID,"textures/gui/bossbars/johannes_knight_bossbar.png");
     private static final ResourceLocation BOSSBAR_MOON_LORD = new ResourceLocation(WrathyArmament.MODID,"textures/gui/bossbars/moon_lord_bossbar.png");
+    private static final ResourceLocation BOSSBAR_HABCIAK = new ResourceLocation(WrathyArmament.MODID,"textures/gui/bossbars/habciak_bossbar.png");
 
     public BossBarOverlayHooks() {
     }
@@ -37,11 +38,13 @@ public class BossBarOverlayHooks {
     private static boolean shouldDisplayFrame(LerpingBossEvent info) {
         return info.getName().contains(Component.translatable("boss.wrathy_armament.lich_king")) || info.getName().contains(Component.translatable("boss.wrathy_armament.johannes_knight"))
                 || info.getName().contains(Component.translatable("boss.wrathy_armament.johannes_fountain")) || info.getName().contains(Component.translatable("boss.wrathy_armament.sashakyotoz")) ||
-                info.getName().contains(Component.translatable("entity.wrathy_armament.moon_lord"));
+                info.getName().contains(Component.translatable("entity.wrathy_armament.moon_lord")) || info.getName().contains(Component.translatable("boss.wrathy_armament.habciak"));
     }
     private static ResourceLocation getBossbarLocation(LerpingBossEvent info){
         if (info.getName().contains(Component.translatable("boss.wrathy_armament.sashakyotoz")))
             return BOSSBAR_SASHAKYOTOZ;
+        if (info.getName().contains(Component.translatable("boss.wrathy_armament.habciak")))
+            return BOSSBAR_HABCIAK;
         if (info.getName().contains(Component.translatable("boss.wrathy_armament.lich_king")))
             return BOSSBAR_LICH_KING;
         if (info.getName().contains(Component.translatable("boss.wrathy_armament.johannes_fountain"))

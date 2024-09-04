@@ -17,11 +17,11 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
-group = mod_version
-version = mod_group_id
+group = mod_group_id
+version = mod_version
 
 base {
-    archivesName = mod_id
+    archivesName = mod_id+mod_version+minecraft_version
 }
 
 java {
@@ -86,8 +86,10 @@ repositories {
         content {
             includeGroup "curse.maven"
         }
-        maven {name "KosmX's maven"
-            url 'https://maven.kosmx.dev/'}
+        maven {
+            name "KosmX's maven"
+            url 'https://maven.kosmx.dev/'
+        }
         maven { url "https://maven.shedaniel.me/" }
     }
 }

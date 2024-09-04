@@ -7,8 +7,10 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -22,7 +24,7 @@ import net.sashakyotoz.wrathy_armament.entities.technical.OwnerableMob;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 
 public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
-    private final CthulhuRangedAttackGoal<TrueEyeOfCthulhu> rangedAttackGoal = new CthulhuRangedAttackGoal<>(this, 1.0D, 24);
+    private final CthulhuRangedAttackGoal rangedAttackGoal = new CthulhuRangedAttackGoal(this);
     private final TrueEyeMeleeGoal meleeGoal = new TrueEyeMeleeGoal(this);
     private static final EntityDataAccessor<Boolean> IS_IN_ANGRY_MODE = SynchedEntityData.defineId(TrueEyeOfCthulhu.class, EntityDataSerializers.BOOLEAN);
     public final AnimationState interactive = new AnimationState();
@@ -30,6 +32,8 @@ public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
     public TrueEyeOfCthulhu(EntityType<? extends OwnerableMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.xpReward = XP_REWARD_MEDIUM;
+        this.navigation = new FlyingPathNavigation(this,this.level());
+        this.moveControl = new FlyingMoveControl(this,30,true);
     }
     @Override
     public int getMaxHeadXRot() {
@@ -97,7 +101,7 @@ public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
     @Override
     public void performRangedAttack(LivingEntity pTarget, float pVelocity) {
         EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(),this,this.level());
-        projectile.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 3.0F, 1.0F);
+        projectile.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 3.0F, 0.75F);
         this.level().addFreshEntity(projectile);
     }
 }

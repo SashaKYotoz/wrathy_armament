@@ -181,7 +181,7 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
                 }
             }
             if (blockEntity.progress % 2 == 0 && level instanceof ServerLevel serverLevel)
-                serverLevel.sendParticles(new ColorableParticleOption("sparkle",colors[0],colors[1],colors[2]), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 2, Math.sin(blockEntity.progress % 180 * Math.PI / 10), 0, Math.cos(blockEntity.progress % 180 * Math.PI / 10), 0.5f);
+                serverLevel.sendParticles(new ColorableParticleOption("sparkle",colors[0],colors[1],colors[2]), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 2, 0, 0, 0, 0.5f);
             setChanged(level, pos, state);
             if (blockEntity.progress >= blockEntity.maxProgress) {
                 if (isCraftingAction)

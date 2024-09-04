@@ -87,6 +87,9 @@ public class WALangProvider extends LanguageProvider {
         add("item.wrathy_armament.half_zatoichi_hint","- Hostage of weapon");
         add("item.wrathy_armament.half_zatoichi_attack","Hitting of enemy awards by regeneration, but switching of weapon takes it away");
         add("item.wrathy_armament.half_zatoichi_charge","Hits charge: ");
+        add("item.wrathy_armament.mirror_sword_hint","Sight of reflection");
+        add("item.wrathy_armament.mirror_sword_mirroring","Through the prism of sword, pierces hazards moving at player");
+        add("item.wrathy_armament.mirror_sword_charge","Damage keep: ");
         //game of origin
         add("item.wrathy_armament.game.master_sword","-Original from The Legend of Zelda series");
         add("item.wrathy_armament.game.johannes_sword","-Original from Rogue Legacy I");
@@ -106,6 +109,7 @@ public class WALangProvider extends LanguageProvider {
     }
     private void addBossDescriptions(){
         add("boss.wrathy_armament.sashakyotoz","SashaKYotoz, the Phantom Lancer Keeper");
+        add("boss.wrathy_armament.habciak","Habciak, the Mirror Sword Keeper");
         add("boss.wrathy_armament.lich_king","Lich King, the Frostmourne Keeper");
         add("boss.wrathy_armament.johannes_knight","Johannes, the Traitor");
         add("boss.wrathy_armament.johannes_fountain","Johannes, the Fountain");

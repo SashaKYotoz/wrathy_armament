@@ -8,6 +8,7 @@
         {
           "type": "minecraft:item",
           "name": "wrathy_armament:mythril_ingot",
+          "weight": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -37,7 +38,7 @@
         {
           "type": "minecraft:item",
           "name": "wrathy_armament:meowmere",
-          "weight": 2,
+          "weight": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -48,9 +49,6 @@
               }
             }
           ]
-        },
-        {
-          "type": "minecraft:empty"
         }
       ]
     }

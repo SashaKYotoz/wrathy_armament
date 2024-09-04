@@ -102,7 +102,7 @@ public class MistsplitterReforged extends SwordLikeItem {
         list.add(Component.translatable("item.wrathy_armament.game.mistsplitter").withStyle(WrathyArmamentItems.TITLE_FORMAT).withStyle(ChatFormatting.ITALIC));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
-        list.add(Component.translatable("item.wrathy_armament.right_hand").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.right_hand").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.mistsplitter_hint").withStyle(WrathyArmamentItems.PURPLE_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.mistsplitter_attack").withStyle(WrathyArmamentItems.TITLE_FORMAT));

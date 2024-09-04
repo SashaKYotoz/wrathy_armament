@@ -124,7 +124,7 @@ public class HalfZatoichi extends SwordLikeItem {
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.right_hand").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);
-        list.add(Component.translatable("item.wrathy_armament.half_zatoichi_hint").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.half_zatoichi_hint").withStyle(WrathyArmamentItems.GOLD_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.half_zatoichi_attack").withStyle(WrathyArmamentItems.TITLE_FORMAT));
         list.add(charge);
     }

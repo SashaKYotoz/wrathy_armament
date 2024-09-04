@@ -24,7 +24,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -109,8 +108,8 @@ public class PhantomLancer extends SwordLikeItem {
                                 }
                             }, damage);
                             WrathyArmament.LOGGER.debug("Phantom Lancer damage:{}", damage);
-                            Player player = (Player) entity;
-                            player.getCooldowns().addCooldown(stack.getItem(), Mth.randomBetweenInclusive(RandomSource.create(), 60, 120));
+                            if (entity instanceof Player player)
+                                player.getCooldowns().addCooldown(stack.getItem(), Mth.randomBetweenInclusive(RandomSource.create(), 60, 140));
                         }
                         if (stack.hurt(1, RandomSource.create(), null)) {
                             stack.shrink(1);
@@ -126,12 +125,12 @@ public class PhantomLancer extends SwordLikeItem {
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, world, list, flag);
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
-        list.add(Component.translatable("item.wrathy_armament.left_hand").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.left_hand").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);
-        list.add(Component.translatable("item.wrathy_armament.phantom_lancer_hint").withStyle(WrathyArmamentItems.RED_DESCRIPTION_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.phantom_lancer_hint").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.phantom_lancer_circular_attack").withStyle(WrathyArmamentItems.TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);
-        list.add(Component.translatable("item.wrathy_armament.phantom_lancer_hint1").withStyle(WrathyArmamentItems.RED_DESCRIPTION_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.phantom_lancer_hint1").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.phantom_lancer_sweep_attack").withStyle(WrathyArmamentItems.TITLE_FORMAT));
     }
 
@@ -148,19 +147,20 @@ public class PhantomLancer extends SwordLikeItem {
 
     @Override
     public void onStopUsing(ItemStack stack, LivingEntity entity, int i1) {
-        Player player = (Player) entity;
-        final Vec3 center = new Vec3(entity.getX(), entity.getY(), entity.getZ());
-        List<Entity> entities = player.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(6 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(entcnd -> entcnd.distanceToSqr(center))).toList();
-        for (Entity entityIterator : entities) {
-            if (entityIterator != null && entityIterator != entity) {
-                if (player.getItemBySlot(EquipmentSlot.MAINHAND).is(stack.getItem()) && !player.getCooldowns().isOnCooldown(stack.getItem())) {
-                    player.playSound(WrathyArmamentSounds.ITEM_LANCER_SHOT);
-                    player.swing(InteractionHand.MAIN_HAND);
-                    OnActionsTrigger.addParticles(ParticleTypes.SONIC_BOOM, entity.level(), entity.getX(), entity.getY() + 1, entity.getZ(), 1.25f);
-                    float damage = player.getHealth() / 2;
-                    if (damage <= 0.5)
-                        damage = 4;
-                    entityIterator.hurt(entityIterator.damageSources().generic(), damage);
+        if (entity instanceof Player player) {
+            final Vec3 center = new Vec3(entity.getX(), entity.getY(), entity.getZ());
+            List<Entity> entities = player.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(6 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(entcnd -> entcnd.distanceToSqr(center))).toList();
+            for (Entity entityIterator : entities) {
+                if (entityIterator != null && entityIterator != entity) {
+                    if (player.getItemBySlot(EquipmentSlot.MAINHAND).is(stack.getItem()) && !player.getCooldowns().isOnCooldown(stack.getItem())) {
+                        player.playSound(WrathyArmamentSounds.ITEM_LANCER_SHOT);
+                        player.swing(InteractionHand.MAIN_HAND);
+                        OnActionsTrigger.addParticles(ParticleTypes.SONIC_BOOM, entity.level(), entity.getX(), entity.getY() + 1, entity.getZ(), 1.25f);
+                        float damage = player.getHealth() / 2;
+                        if (damage <= 0.5)
+                            damage = 4;
+                        entityIterator.hurt(entityIterator.damageSources().generic(), damage);
+                    }
                 }
             }
         }
@@ -172,28 +172,20 @@ public class PhantomLancer extends SwordLikeItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player entity, InteractionHand hand) {
-        entity.startUsingItem(hand);
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, entity.getItemInHand(hand));
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        player.startUsingItem(hand);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 
-
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-            builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 7.5, AttributeModifier.Operation.ADDITION));
-            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -2.4, AttributeModifier.Operation.ADDITION));
+            builder.putAll(super.getAttributeModifiers(slot, stack));
+            builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 7.5 + getCurrentSparkles(stack) / 2f, AttributeModifier.Operation.ADDITION));
+            builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
             return builder.build();
         }
-        return super.getDefaultAttributeModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot, stack);
     }
-
-    //animations
-    @Override
-    public UseAnim getUseAnimation(ItemStack itemStack) {
-        return UseAnim.CUSTOM;
-    }
-
 }

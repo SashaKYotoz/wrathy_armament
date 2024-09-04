@@ -39,7 +39,8 @@ public class MoonLordTeleport extends Goal {
             }
             this.lord.getNavigation().stop();
         } else {
-            this.lord.getNavigation().moveTo(target, 0.5);
+            if (target != null)
+                this.lord.getNavigation().moveTo(target, 0.5);
         }
     }
 

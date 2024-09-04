@@ -97,7 +97,7 @@ public class MasterSword extends SwordLikeItem {
         list.add(Component.translatable("item.wrathy_armament.game.master_sword").withStyle(WrathyArmamentItems.TITLE_FORMAT).withStyle(ChatFormatting.ITALIC));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
-        list.add(Component.translatable("item.wrathy_armament.right_hand").withStyle(WrathyArmamentItems.PURPLE_TITLE_FORMAT));
+        list.add(Component.translatable("item.wrathy_armament.right_hand").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.master_sword_hint").withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.master_sword_attack").withStyle(WrathyArmamentItems.TITLE_FORMAT));

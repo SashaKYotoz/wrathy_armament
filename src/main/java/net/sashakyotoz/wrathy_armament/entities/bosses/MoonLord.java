@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.PartEntity;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordLasering;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordMeleeAttack;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordShooting;
@@ -37,6 +38,7 @@ import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -50,10 +52,12 @@ public class MoonLord extends BossLikePathfinderMob {
     private final MoonLordPart heart;
     private final MoonLordPart rightHandEye;
     private final MoonLordPart leftHandEye;
+    public final HashMap<String,Integer> damageTakenByPart = new HashMap<>();
     public final AnimationState death = new AnimationState();
     public final AnimationState meleeAttack = new AnimationState();
     public final AnimationState eyeAttack = new AnimationState();
     public final AnimationState interactive = new AnimationState();
+    public int deathTicks = 0;
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (entity) -> entity.getMobType() != MobType.UNDEAD && entity.attackable();
 
     public MoonLord(EntityType<? extends BossLikePathfinderMob> type, Level level) {
@@ -183,6 +187,12 @@ public class MoonLord extends BossLikePathfinderMob {
             this.subEntities[l].yOld = avec3[l].y;
             this.subEntities[l].zOld = avec3[l].z;
         }
+        if (this.tickCount % 10 == 0)
+            this.getMainParts().forEach(moonLordPart -> {
+                if (this.damageTakenByPart.get(moonLordPart.name) != null &&
+                        this.damageTakenByPart.get(moonLordPart.name) > 0)
+                    this.damageTakenByPart.put(moonLordPart.name,this.damageTakenByPart.get(moonLordPart.name)-1);
+            });
     }
 
     private void tickPart(MoonLordPart moonLordPart, double pOffsetX, double pOffsetY, double pOffsetZ) {
@@ -254,7 +264,7 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     protected float getStandingEyeHeight(Pose pPose, EntityDimensions pDimensions) {
-        return super.getStandingEyeHeight(pPose, pDimensions) + 2.75f;
+        return super.getStandingEyeHeight(pPose, pDimensions) + 2.8f;
     }
 
     @Override
@@ -290,6 +300,7 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     protected void tickDeath() {
+        this.deathTicks--;
         if (!this.death.isStarted())
             this.death.start(this.tickCount);
         if (deathTime == 10 && this.level() instanceof ServerLevel level) {
@@ -302,6 +313,7 @@ public class MoonLord extends BossLikePathfinderMob {
     @Override
     public void die(DamageSource source) {
         this.deathTime = -100;
+        this.deathTicks = 200;
         this.setDataLordPose(LordPose.DYING);
         super.die(source);
     }

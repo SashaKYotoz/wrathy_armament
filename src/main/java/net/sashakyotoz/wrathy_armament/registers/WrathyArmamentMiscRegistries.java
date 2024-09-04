@@ -1,26 +1,20 @@
 package net.sashakyotoz.wrathy_armament.registers;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -85,6 +79,7 @@ public class WrathyArmamentMiscRegistries {
             .displayItems((parameters, output) -> {
                 output.accept(WrathyArmamentBlocks.WORLDSHARD_WORKBENCH.get());
                 output.accept(WrathyArmamentItems.PHANTOM_LANCER.get());
+                output.accept(WrathyArmamentItems.MIRROR_SWORD.get());
                 output.accept(WrathyArmamentItems.ZENITH.get());
                 output.accept(WrathyArmamentItems.JOHANNES_SWORD.get());
                 output.accept(WrathyArmamentItems.MASTER_SWORD.get());

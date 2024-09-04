@@ -40,7 +40,7 @@ public class TrueEyeMeleeGoal extends Goal {
             double d0 = eyeOfCthulhu.distanceToSqr(livingentity);
             if (d0 < 24) {
                 Vec3 vec3d = livingentity.getEyePosition(1);
-                eyeOfCthulhu.getMoveControl().setWantedPosition(vec3d.x, vec3d.y, vec3d.z, 3);
+                eyeOfCthulhu.getMoveControl().setWantedPosition(vec3d.x, vec3d.y, vec3d.z, 4);
             }
         }
     }

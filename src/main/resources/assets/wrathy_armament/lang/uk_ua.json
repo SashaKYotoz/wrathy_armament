@@ -1,6 +1,6 @@
 {
   "block.wrathy_armament.handler_stone": "Камінь-зберігач",
-  "block.wrathy_armament.worldshard_workbench": "Світношматний верстат",
+  "block.wrathy_armament.worldshard_workbench": "Світошматний верстат",
   "boss.wrathy_armament.johannes_fountain": "Джоганес, Водограй",
   "boss.wrathy_armament.johannes_fountain.dying": "Сонце... вже забув як це",
   "boss.wrathy_armament.johannes_knight": "Джоганес, Зрадник",
@@ -77,6 +77,7 @@
   "item.wrathy_armament.master_sword_hint1": "- Керування часу",
   "item.wrathy_armament.material": "Матеріал",
   "item.wrathy_armament.meowmere": "Мяумур",
+  "item.wrathy_armament.mirror_sword": "Меч дзеркальності",
   "item.wrathy_armament.mistsplitter_attack": "Час відпочинку меча конвертується у силу наступної атаки",
   "item.wrathy_armament.mistsplitter_hint": "- Заряджання часом",
   "item.wrathy_armament.mistsplitter_reforged": "Перекований Містсплітер",

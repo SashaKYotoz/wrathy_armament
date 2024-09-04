@@ -59,6 +59,7 @@ public class MoonLordPart extends PartEntity<MoonLord> {
     public boolean hurt(DamageSource damageSource, float amount) {
         if (getHealthPoints() > 0){
             this.entityData.set(HEALTH_POINTS, getHealthPoints() - amount);
+            this.parentMob.damageTakenByPart.put(this.name,3);
             WrathyArmament.LOGGER.debug("Moon Lord's {} HPs: {}",this.name,getHealthPoints());
             return !this.isInvulnerableTo(damageSource);
         }

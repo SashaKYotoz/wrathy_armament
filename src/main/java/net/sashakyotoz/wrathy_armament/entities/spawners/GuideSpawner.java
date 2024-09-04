@@ -7,6 +7,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.CustomSpawner;
+import net.sashakyotoz.wrathy_armament.Config;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.alive.Guide;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
@@ -19,7 +20,6 @@ public class GuideSpawner implements CustomSpawner {
     public GuideSpawner() {
         WrathyArmament.LOGGER.debug("Guide's spawner was set up");
     }
-
     public int tick(ServerLevel pLevel, boolean pSpawnEnemies, boolean pSpawnFriendlies) {
         while (true) {
             List<ServerPlayer> players = pLevel.getPlayers(Player::onGround);
@@ -27,7 +27,7 @@ public class GuideSpawner implements CustomSpawner {
                 Iterable<BlockPos> posIterator = BlockPos.betweenClosed(player.getOnPos().offset(-16, -16, -16), player.getOnPos().offset(16, 16, 16));
                 for (BlockPos pos : posIterator) {
                     if (pLevel.getBlockState(pos).is(BlockTags.DOORS) && pLevel.getCurrentDifficultyAt(pos).getDifficulty() != Difficulty.PEACEFUL) {
-                        if (this.pastTick < 24000)
+                        if (this.pastTick < Config.TIME_TO_SPAWN_GUIDE.get())
                             pastTick++;
                         else {
                             Guide guide = WrathyArmamentEntities.THE_GUIDE.get().create(pLevel);

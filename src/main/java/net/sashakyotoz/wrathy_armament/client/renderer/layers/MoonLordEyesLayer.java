@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.MoonLordModel;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
+import net.sashakyotoz.wrathy_armament.entities.bosses.parts.MoonLordPart;
 
 public class MoonLordEyesLayer extends RenderLayer<MoonLord, MoonLordModel<MoonLord>> {
     private final ResourceLocation texture;
@@ -27,11 +28,19 @@ public class MoonLordEyesLayer extends RenderLayer<MoonLord, MoonLordModel<MoonL
                 moonLord.getMainParts().get(2).getHealthPoints() > 0 ||
                 moonLord.getMainParts().get(3).getHealthPoints() > 0) {
             pPoseStack.pushPose();
+            final float[] redModifier = new float[1];
+            for (MoonLordPart moonLordPart : moonLord.getMainParts()) {
+                if (moonLord.damageTakenByPart.get(moonLordPart.name) != null && moonLord.damageTakenByPart.get(moonLordPart.name) > 0) {
+                    redModifier[0] = 1;
+                    break;
+                } else
+                    redModifier[0] = 0;
+            }
             float alphaModifier = getAlphaModifier(moonLord);
             this.getParentModel().copyPropertiesTo(this.lordModel);
             this.lordModel.setupAnim(moonLord, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
             VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.entityTranslucentEmissive(texture));
-            this.lordModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alphaModifier);
+            this.lordModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F - redModifier[0], 1.0F - redModifier[0], alphaModifier);
             pPoseStack.popPose();
         }
     }
