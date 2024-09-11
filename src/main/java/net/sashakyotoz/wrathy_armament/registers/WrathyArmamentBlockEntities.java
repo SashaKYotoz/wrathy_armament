@@ -5,6 +5,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.blocks.blockentities.ParadiseBlockEntity;
 import net.sashakyotoz.wrathy_armament.blocks.blockentities.WorldshardWorkbenchBlockEntity;
 
 public class WrathyArmamentBlockEntities {
@@ -14,4 +15,8 @@ public class WrathyArmamentBlockEntities {
             BLOCK_ENTITIES.register("worldshard_workbench", () ->
                     BlockEntityType.Builder.of(WorldshardWorkbenchBlockEntity::new,
                             WrathyArmamentBlocks.WORLDSHARD_WORKBENCH.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ParadiseBlockEntity>> PARADISE_BLOCK =
+            BLOCK_ENTITIES.register("paradise_block", () ->
+                    BlockEntityType.Builder.of(ParadiseBlockEntity::new,
+                            WrathyArmamentBlocks.PARADISE_BLOCK.get()).build(null));
 }

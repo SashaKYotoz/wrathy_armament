@@ -32,6 +32,7 @@ public class Habciak extends BossLikePathfinderMob {
     private final HabciakBypassGoal jumpGoal = new HabciakBypassGoal(this);
     private final HabciakFloorAttackGoal floorAttackGoal = new HabciakFloorAttackGoal(this);
     private final HabciakMirrorCastingGoal mirrorCastingGoal = new HabciakMirrorCastingGoal(this);
+    public int backFlipRotation = 0;
 
     public Habciak(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -54,13 +55,17 @@ public class Habciak extends BossLikePathfinderMob {
             this.goalSelector.removeGoal(this.jumpGoal);
             this.goalSelector.removeGoal(this.floorAttackGoal);
             this.goalSelector.removeGoal(this.mirrorCastingGoal);
-            switch (i){
-                default -> this.goalSelector.addGoal(3,meleeGoal);
-                case 1 -> this.goalSelector.addGoal(3,jumpGoal);
+            switch (i) {
+                default -> this.goalSelector.addGoal(3, meleeGoal);
+                case 1 -> this.goalSelector.addGoal(3, jumpGoal);
                 case 2 -> this.goalSelector.addGoal(3, floorAttackGoal);
                 case 3 -> this.goalSelector.addGoal(3, mirrorCastingGoal);
             }
         }
+    }
+
+    public boolean doBackFlip() {
+        return !onGround() && this.goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof HabciakMirrorCastingGoal);
     }
 
     @Override
@@ -72,6 +77,10 @@ public class Habciak extends BossLikePathfinderMob {
     @Override
     public void tick() {
         super.tick();
+        if (!this.isFallFlying() && this.doBackFlip())
+            this.backFlip.startIfStopped(this.tickCount);
+        if (backFlipRotation > 0)
+            backFlipRotation--;
         if (this.tickCount % 5 == 0) {
             if (this.getTarget() instanceof Player player) {
                 if (this.goalSelector.getRunningGoals().noneMatch(goal -> goal.getGoal() instanceof HabciakBypassGoal))

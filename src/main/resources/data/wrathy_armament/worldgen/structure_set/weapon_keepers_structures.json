@@ -11,6 +11,10 @@
     {
       "structure": "wrathy_armament:king_castle",
       "weight": 1
+    },
+    {
+      "structure": "wrathy_armament:habciak_cuboids",
+      "weight": 1
     }
   ],
   "placement": {

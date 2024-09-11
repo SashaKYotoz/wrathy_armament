@@ -29,6 +29,7 @@ public class HabciakMirrorCastingGoal extends Goal {
                 attackTime = 0;
                 this.habciak.mirrorCasting.stop();
                 this.habciak.backFlip.start(this.habciak.tickCount);
+                this.habciak.backFlipRotation = 360;
                 this.habciak.setDeltaMovement(
                         OnActionsTrigger.getXVector(-2.5, habciak.getYRot()),
                         0.75,
@@ -60,8 +61,8 @@ public class HabciakMirrorCastingGoal extends Goal {
                         );
                     }
                 }
-                if (attackTime % 5 == 0 && !target.hasEffect(MobEffects.BLINDNESS)){
-                    target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,80,1));
+                if (attackTime % 5 == 0 && !target.hasEffect(MobEffects.CONFUSION)){
+                    target.addEffect(new MobEffectInstance(MobEffects.CONFUSION,80,1));
                     target.setSecondsOnFire(4);
                 }
                 if (this.habciak.distanceToSqr(target) > 9)

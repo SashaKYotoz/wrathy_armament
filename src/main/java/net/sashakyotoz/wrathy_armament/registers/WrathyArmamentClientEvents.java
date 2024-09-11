@@ -6,6 +6,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.sashakyotoz.wrathy_armament.blocks.renderers.ParadiseBlockEntityRenderer;
 import net.sashakyotoz.wrathy_armament.blocks.renderers.WorldshardWorkbenchEntityRenderer;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.*;
 import net.sashakyotoz.wrathy_armament.client.models.technical.*;
@@ -39,6 +40,7 @@ public class WrathyArmamentClientEvents {
         event.registerEntityRenderer(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(), HarmfulProjectileRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), ThrownItemRenderer::new);
         event.registerBlockEntityRenderer(WrathyArmamentBlockEntities.WORLDSHARD_WORKBENCH.get(), WorldshardWorkbenchEntityRenderer::new);
+        event.registerBlockEntityRenderer(WrathyArmamentBlockEntities.PARADISE_BLOCK.get(), ParadiseBlockEntityRenderer::new);
     }
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {

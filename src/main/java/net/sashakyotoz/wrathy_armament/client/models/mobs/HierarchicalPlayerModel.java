@@ -83,13 +83,13 @@ public class HierarchicalPlayerModel<E extends LivingEntity> extends PlayerModel
     @Override
     public void setupAnim(E pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         super.setupAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-        this.animateWalk(HabciakAnimations.WALK,pLimbSwing,pLimbSwingAmount,2.0F, 2.5F);
-        if (pEntity instanceof Habciak habciak){
-            this.animate(habciak.death,HabciakAnimations.DEATH,pAgeInTicks);
-            this.animate(habciak.jump,HabciakAnimations.JUMP_TELEPORT,pAgeInTicks);
-            this.animate(habciak.floorAttack,HabciakAnimations.FLOORS_ATTACK,pAgeInTicks);
-            this.animate(habciak.backFlip,HabciakAnimations.BACK_FLIP,pAgeInTicks);
-            this.animate(habciak.mirrorCasting,HabciakAnimations.MIRROR_CASTING,pAgeInTicks);
+        this.animateWalk(HabciakAnimations.WALK, pLimbSwing, pLimbSwingAmount, 2.0F, 2.5F);
+        if (pEntity instanceof Habciak habciak) {
+            this.animate(habciak.death, HabciakAnimations.DEATH, pAgeInTicks);
+            this.animate(habciak.jump, HabciakAnimations.JUMP_TELEPORT, pAgeInTicks);
+            this.animate(habciak.floorAttack, HabciakAnimations.FLOORS_ATTACK, pAgeInTicks);
+            this.animate(habciak.backFlip, HabciakAnimations.BACK_FLIP, pAgeInTicks);
+            this.animate(habciak.mirrorCasting, HabciakAnimations.MIRROR_CASTING, pAgeInTicks);
         }
     }
 }

@@ -42,15 +42,17 @@ public class HabciakRenderer extends FixedDeathAnimationMobRenderer<Habciak, Hie
 
     @Override
     public void render(Habciak habciak, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        super.render(habciak, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
         if (habciak.playerToRender() instanceof AbstractClientPlayer player) {
             if (player.getModelName().equals("slim"))
                 this.model = slimModel;
             else
                 this.model = normalModel;
         }
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(habciak.backFlipRotation));
         this.setModelProperties(habciak);
+        super.render(habciak, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }
+
     protected void scale(Habciak habciak, PoseStack pPoseStack, float pPartialTickTime) {
         float f = 0.9375F;
         pPoseStack.scale(f, f, f);
@@ -61,24 +63,26 @@ public class HabciakRenderer extends FixedDeathAnimationMobRenderer<Habciak, Hie
         super.setupRotations(habciak, pPoseStack, pAgeInTicks, pRotationYaw, pPartialTicks);
         if (habciak.isFallFlying()) {
             super.setupRotations(habciak, pPoseStack, pAgeInTicks, pRotationYaw, pPartialTicks);
-            float f1 = (float)habciak.getFallFlyingTicks() + pPartialTicks;
+            float f1 = (float) habciak.getFallFlyingTicks() + pPartialTicks;
             float f2 = Mth.clamp(f1 * f1 / 100.0F, 0.0F, 1.0F);
             if (!habciak.isAutoSpinAttack())
                 pPoseStack.mulPose(Axis.XP.rotationDegrees(f2 * (-90.0F - habciak.getXRot())));
             Vec3 vec3 = habciak.getViewVector(pPartialTicks);
-            Vec3 vec31 = getDeltaMovementLerped(habciak,pPartialTicks);
+            Vec3 vec31 = getDeltaMovementLerped(habciak, pPartialTicks);
             double d0 = vec31.horizontalDistanceSqr();
             double d1 = vec3.horizontalDistanceSqr();
             if (d0 > 0.0D && d1 > 0.0D) {
                 double d2 = (vec31.x * vec3.x + vec31.z * vec3.z) / Math.sqrt(d0 * d1);
                 double d3 = vec31.x * vec3.z - vec31.z * vec3.x;
-                pPoseStack.mulPose(Axis.YP.rotation((float)(Math.signum(d3) * Math.acos(d2))));
+                pPoseStack.mulPose(Axis.YP.rotation((float) (Math.signum(d3) * Math.acos(d2))));
             }
         }
     }
-    public Vec3 getDeltaMovementLerped(Habciak habciak,float pPatialTick) {
+
+    public Vec3 getDeltaMovementLerped(Habciak habciak, float pPatialTick) {
         return habciak.getDeltaMovement().lerp(habciak.getDeltaMovement(), pPatialTick);
     }
+
     private void setModelProperties(Habciak habciak) {
         HumanoidModel<Habciak> humanoidModel = this.getModel();
         humanoidModel.crouching = habciak.isCrouching();
@@ -102,25 +106,19 @@ public class HabciakRenderer extends FixedDeathAnimationMobRenderer<Habciak, Hie
         } else {
             if (habciak.getUsedItemHand() == pHand && habciak.getUseItemRemainingTicks() > 0) {
                 UseAnim useanim = itemstack.getUseAnimation();
-                if (useanim == UseAnim.BLOCK) {
+                if (useanim == UseAnim.BLOCK)
                     return HumanoidModel.ArmPose.BLOCK;
-                }
-
-                if (useanim == UseAnim.BOW) {
+                if (useanim == UseAnim.BOW)
                     return HumanoidModel.ArmPose.BOW_AND_ARROW;
-                }
 
-                if (useanim == UseAnim.SPEAR) {
+                if (useanim == UseAnim.SPEAR)
                     return HumanoidModel.ArmPose.THROW_SPEAR;
-                }
 
-                if (useanim == UseAnim.CROSSBOW && pHand == habciak.getUsedItemHand()) {
+                if (useanim == UseAnim.CROSSBOW && pHand == habciak.getUsedItemHand())
                     return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-                }
 
-                if (useanim == UseAnim.TOOT_HORN) {
+                if (useanim == UseAnim.TOOT_HORN)
                     return HumanoidModel.ArmPose.TOOT_HORN;
-                }
             } else if (!habciak.swinging && itemstack.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(itemstack)) {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
