@@ -20,29 +20,28 @@ public class GuideSpawner implements CustomSpawner {
     public GuideSpawner() {
         WrathyArmament.LOGGER.debug("Guide's spawner was set up");
     }
+
     public int tick(ServerLevel pLevel, boolean pSpawnEnemies, boolean pSpawnFriendlies) {
-        while (true) {
-            List<ServerPlayer> players = pLevel.getPlayers(Player::onGround);
-            for (ServerPlayer player : players) {
-                Iterable<BlockPos> posIterator = BlockPos.betweenClosed(player.getOnPos().offset(-16, -16, -16), player.getOnPos().offset(16, 16, 16));
-                for (BlockPos pos : posIterator) {
-                    if (pLevel.getBlockState(pos).is(BlockTags.DOORS) && pLevel.getCurrentDifficultyAt(pos).getDifficulty() != Difficulty.PEACEFUL) {
-                        if (this.pastTick < Config.TIME_TO_SPAWN_GUIDE.get())
-                            pastTick++;
-                        else {
-                            Guide guide = WrathyArmamentEntities.THE_GUIDE.get().create(pLevel);
-                            BlockPos blockpos1 = pos.relative(player.getDirection().getOpposite(), 1);
-                            if (guide != null && pLevel.getBlockState(blockpos1.below()).canOcclude() && pLevel.getBlockState(blockpos1.above()).isAir()) {
-                                guide.moveTo(blockpos1, 0.0F, 0.0F);
-                                pLevel.addFreshEntity(guide);
-                                pastTick = 0;
-                                break;
-                            }
+        List<ServerPlayer> players = pLevel.getPlayers(Player::onGround);
+        for (ServerPlayer player : players) {
+            Iterable<BlockPos> posIterator = BlockPos.betweenClosed(player.getOnPos().offset(-16, -16, -16), player.getOnPos().offset(16, 16, 16));
+            for (BlockPos pos : posIterator) {
+                if (pLevel.getBlockState(pos).is(BlockTags.DOORS) && pLevel.getCurrentDifficultyAt(pos).getDifficulty() != Difficulty.PEACEFUL) {
+                    if (this.pastTick < Config.TIME_TO_SPAWN_GUIDE.get())
+                        pastTick++;
+                    else {
+                        Guide guide = WrathyArmamentEntities.THE_GUIDE.get().create(pLevel);
+                        BlockPos blockpos1 = pos.relative(player.getDirection().getOpposite(), 1);
+                        if (guide != null && pLevel.getBlockState(blockpos1.below()).canOcclude() && pLevel.getBlockState(blockpos1.above()).isAir()) {
+                            guide.moveTo(blockpos1, 0.0F, 0.0F);
+                            pLevel.addFreshEntity(guide);
+                            pastTick = 0;
+                            break;
                         }
                     }
                 }
             }
-            return pastTick;
         }
+        return pastTick;
     }
 }

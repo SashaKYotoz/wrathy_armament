@@ -85,7 +85,6 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
         this.level().addFreshEntity(abstractarrow);
     }
     public void reassessWeaponGoal() {
-        this.level();
         if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.bowGoal);

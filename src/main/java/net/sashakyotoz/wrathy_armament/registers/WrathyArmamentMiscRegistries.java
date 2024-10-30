@@ -24,6 +24,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;
+import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 import net.sashakyotoz.wrathy_armament.miscs.enchants.NightmareJumping;
 import net.sashakyotoz.wrathy_armament.miscs.enchants.PhantomFury;
 import net.sashakyotoz.wrathy_armament.miscs.enchants.Phantoquake;
@@ -61,6 +62,7 @@ public class WrathyArmamentMiscRegistries {
     public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZER = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, WrathyArmament.MODID);
     public static final RegistryObject<EntityDataSerializer<JohannesKnight.KnightPose>> KNIGHT_POSE = SERIALIZER.register("knight_pose",()-> EntityDataSerializer.simpleEnum(JohannesKnight.KnightPose.class));
     public static final RegistryObject<EntityDataSerializer<MoonLord.LordPose>> LORD_POSE = SERIALIZER.register("lord_pose",()-> EntityDataSerializer.simpleEnum(MoonLord.LordPose.class));
+    public static final RegistryObject<EntityDataSerializer<SashaKYotoz.SashaKYotozPhase>> SASHAKYOTOZ_PHASE = SERIALIZER.register("sashakyotoz_phase",()-> EntityDataSerializer.simpleEnum(SashaKYotoz.SashaKYotozPhase.class));
     //mob effects
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS,WrathyArmament.MODID);
     public static final RegistryObject<MobEffect> BRIGHTNESS = EFFECTS.register("brightness",()->new MobEffect(MobEffectCategory.HARMFUL,0xffffff).setFactorDataFactory(() -> new MobEffectInstance.FactorData(22)));

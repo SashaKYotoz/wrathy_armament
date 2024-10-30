@@ -163,6 +163,7 @@ public class PhantomLancer extends SwordLikeItem {
                     }
                 }
             }
+            stack.hurtAndBreak(1,player,(entity1) -> entity1.broadcastBreakEvent(player.getUsedItemHand()));
         }
     }
 

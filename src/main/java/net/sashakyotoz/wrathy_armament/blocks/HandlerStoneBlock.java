@@ -42,6 +42,8 @@ public class HandlerStoneBlock extends Block {
     public static final IntegerProperty SWORD_INDEX = IntegerProperty.create("sword_index", 0, 4);
     public static final BooleanProperty CONTAINS_KEEPER = BooleanProperty.create("contains_keeper");
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    private static final VoxelShape BASE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+    private final VoxelShape SWORD_SHAPE = Shapes.or(BASE, new VoxelShape[]{box(4.0, 6.0, 4.0, 12.0, 16.0, 12.0)});
 
     public HandlerStoneBlock(Properties properties) {
         super(properties);
@@ -60,7 +62,7 @@ public class HandlerStoneBlock extends Block {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return box(0, 0, 0, 16, state.getValue(SWORD_INDEX) > 0 ? 16 : 8, 16);
+        return state.getValue(SWORD_INDEX) > 0 ? SWORD_SHAPE : BASE;
     }
 
     @Override

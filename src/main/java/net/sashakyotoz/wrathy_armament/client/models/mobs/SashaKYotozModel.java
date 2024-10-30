@@ -203,7 +203,6 @@ public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.root().getAllParts().forEach(ModelPart::resetPose);
-		float f = Math.min((float) entity.getDeltaMovement().lengthSqr() * 100.0F, 4.0F);
 		this.head.yRot = netHeadYaw / (180F / (float) Math.PI);
 		this.head.xRot = headPitch / (180F / (float) Math.PI);
 		this.animate(entity.idle, SashaKYotozAnimations.IDLE,ageInTicks);
@@ -214,8 +213,7 @@ public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T
 		this.animate(entity.takeOff,SashaKYotozAnimations.TAKEOFF,ageInTicks);
 		this.animate(entity.landing,SashaKYotozAnimations.LANDING,ageInTicks);
 		this.animate(entity.attackCycleOfPhantoms,SashaKYotozAnimations.ATTACKPHANTOMCYCLE,ageInTicks,0.5f);
-		this.animate(entity.walk,SashaKYotozAnimations.WALK,ageInTicks,f);
-		this.animate(entity.fly,SashaKYotozAnimations.FLY,ageInTicks);
+		this.animateWalk(entity.isInPhase(SashaKYotoz.SashaKYotozPhase.FLYING) ? SashaKYotozAnimations.FLY : SashaKYotozAnimations.WALK,limbSwing,limbSwingAmount,3,3);
 	}
 
 	@Override
