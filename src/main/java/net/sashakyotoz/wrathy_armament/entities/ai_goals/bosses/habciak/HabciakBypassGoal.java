@@ -43,6 +43,7 @@ public class HabciakBypassGoal extends Goal {
                         target.getX() + OnActionsTrigger.getXVector(-2, target.getYRot()),
                         target.getY(),
                         target.getZ() + OnActionsTrigger.getZVector(-2, target.getYRot()));
+                this.habciak.playSound(SoundEvents.ILLUSIONER_PREPARE_MIRROR);
                 this.habciak.reassessAttackGoal(this.habciak.getRandom().nextInt(4));
             } else if (attackTime < 50) {
                 attackTime++;

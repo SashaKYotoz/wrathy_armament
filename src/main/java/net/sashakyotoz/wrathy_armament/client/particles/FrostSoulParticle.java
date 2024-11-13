@@ -15,7 +15,7 @@ public class FrostSoulParticle extends WaveParticle {
 
     public FrostSoulParticle(ClientLevel world, double x, double y, double z, List<Float> movementVector, List<Float> colorList, SpriteSet spriteset) {
         super(world, x, y, z, movementVector, colorList, spriteset);
-        this.quadSize = Mth.randomBetween(RandomSource.create(),0.35f, 0.9f) +0.1f;
+        this.quadSize = Mth.randomBetween(RandomSource.create(),0.35f, 0.85f) +0.1f;
         this.hasPhysics = true;
         this.gravity = 0.25f;
         this.zRot = 12.5f;

@@ -19,12 +19,6 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("moon_lord_model"), "main");
     private final ModelPart root;
     private final ModelPart head;
-    private final ModelPart tencle3;
-    private final ModelPart tencle2;
-    private final ModelPart tencle1;
-    private final ModelPart tencle;
-    private final ModelPart tencle4;
-    private final ModelPart tencle5;
     private final ModelPart backTencles;
     private final ModelPart tencle6;
     private final ModelPart tencle7;
@@ -52,12 +46,6 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
         super(RenderType::entityTranslucent);
         this.root = root;
         this.head = root.getChild("head");
-        this.tencle3 = head.getChild("tencle3");
-        this.tencle2 = head.getChild("tencle2");
-        this.tencle1 = head.getChild("tencle1");
-        this.tencle = head.getChild("tencle");
-        this.tencle4 = head.getChild("tencle4");
-        this.tencle5 = head.getChild("tencle5");
         this.backTencles = head.getChild("backTencles");
         this.tencle6 = backTencles.getChild("tencle6");
         this.tencle7 = backTencles.getChild("tencle7");
@@ -280,7 +268,7 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
         this.head.yRot = pNetHeadYaw / (180F / (float) Math.PI);
         this.head.xRot = pHeadPitch / (180F / (float) Math.PI);
         this.animate(pEntity.death, MoonLordAnimations.DEATH,pAgeInTicks,0.5f);
-        this.animate(pEntity.meleeAttack, MoonLordAnimations.MELEEATTACK,pAgeInTicks);
+        this.animate(pEntity.eyeShooting, MoonLordAnimations.EYESHOOTING,pAgeInTicks);
         this.animate(pEntity.eyeAttack, MoonLordAnimations.EYEATTACK,pAgeInTicks);
         this.animate(pEntity.interactive,MoonLordAnimations.INTERACTIVE,pAgeInTicks,pEntity.getAnimationScaling());
     }

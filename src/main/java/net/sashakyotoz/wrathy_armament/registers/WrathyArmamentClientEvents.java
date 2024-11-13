@@ -10,10 +10,7 @@ import net.sashakyotoz.wrathy_armament.blocks.renderers.ParadiseBlockEntityRende
 import net.sashakyotoz.wrathy_armament.blocks.renderers.WorldshardWorkbenchEntityRenderer;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.*;
 import net.sashakyotoz.wrathy_armament.client.models.technical.*;
-import net.sashakyotoz.wrathy_armament.client.particles.FireSphereParticle;
-import net.sashakyotoz.wrathy_armament.client.particles.FrostSoulParticle;
-import net.sashakyotoz.wrathy_armament.client.particles.PhantomRayParticle;
-import net.sashakyotoz.wrathy_armament.client.particles.ZenithWayParticle;
+import net.sashakyotoz.wrathy_armament.client.particles.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.bosses.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.GuideRenderer;
@@ -67,6 +64,7 @@ public class WrathyArmamentClientEvents {
         event.registerLayerDefinition(SphereLikeEntityModel.LAYER_LOCATION, SphereLikeEntityModel::createBodyLayer);
         event.registerLayerDefinition(TransparentHumanoidLayerModel.LAYER_LOCATION,TransparentHumanoidLayerModel::createBodyLayer);
         event.registerLayerDefinition(ForgeModel.LAYER_LOCATION,ForgeModel::createBodyLayer);
+        event.registerLayerDefinition(BlackrazorModel.LAYER_LOCATION,BlackrazorModel::createBodyLayer);
     }
     @SubscribeEvent
     public static void onParticleSetup(RegisterParticleProvidersEvent event) {
@@ -74,5 +72,6 @@ public class WrathyArmamentClientEvents {
         event.registerSpriteSet(WrathyArmamentMiscRegistries.ZENITH_WAY.get(), ZenithWayParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.FIRE_SPHERE.get(), FireSphereParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), FrostSoulParticle::provider);
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.CAPTURED_SOUL.get(), CapturedSoulParticle::provider);
     }
 }

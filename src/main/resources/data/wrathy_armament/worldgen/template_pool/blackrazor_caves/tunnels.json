@@ -1,0 +1,32 @@
+{
+  "fallback": "wrathy_armament:blackrazor_caves/entrances",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:blackrazor_caves/blackrazor_caves_tunnel",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:blackrazor_caves/blackrazor_caves_tunnel1",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:blackrazor_caves/blackrazor_caves_tunnel2",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

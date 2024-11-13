@@ -90,6 +90,9 @@ public class WALangProvider extends LanguageProvider {
         add("item.wrathy_armament.mirror_sword_hint","Sight of reflection");
         add("item.wrathy_armament.mirror_sword_mirroring","Through the prism of sword, pierces hazards moving at player");
         add("item.wrathy_armament.mirror_sword_charge","Damage keep: ");
+        add("item.wrathy_armament.blackrazor_hint","Soul Hunter");
+        add("item.wrathy_armament.blackrazor_attack","Force and convert target's life into healing energy and a temporary boost of speed and strength for the wielder");
+        add("item.wrathy_armament.blackrazor_hungry_timer","Require new souls in: ");
         //game of origin
         add("item.wrathy_armament.game.master_sword","-Original from The Legend of Zelda series");
         add("item.wrathy_armament.game.johannes_sword","-Original from Rogue Legacy I");
@@ -99,6 +102,7 @@ public class WALangProvider extends LanguageProvider {
         add("item.wrathy_armament.game.murasama","-Original from Metal Gear");
         add("item.wrathy_armament.game.mistsplitter","-Original from Genshin Impact");
         add("item.wrathy_armament.game.half_zatoichi","-Original from Team Fortress 2");
+        add("item.wrathy_armament.game.blackrazor","-Original from D&D");
     }
     private void addDeathDescriptions(){
         add("death.attack.wrathy_armament.phantom_shock_message","Overshocked by phantoms");

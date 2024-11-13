@@ -23,6 +23,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
+import net.sashakyotoz.wrathy_armament.client.particles.options.CapturedSoulParticleOption;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 import net.sashakyotoz.wrathy_armament.miscs.enchants.NightmareJumping;
@@ -38,34 +39,37 @@ import java.util.function.Function;
 public class WrathyArmamentMiscRegistries {
     //particles
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, WrathyArmament.MODID);
-    public static final RegistryObject<SimpleParticleType> PHANTOM_RAY = PARTICLE_TYPES.register("phantom_ray",()->new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> ZENITH_WAY = PARTICLE_TYPES.register("zenith_way",()->new SimpleParticleType(true));
-    public static final RegistryObject<ParticleType<FireSphereParticleOption>> FIRE_SPHERE = registerParticle("fire_sphere",true, FireSphereParticleOption.DESERIALIZER,(fireSphereParticleType)-> FireSphereParticleOption.CODEC);
-    public static final RegistryObject<SimpleParticleType> FROST_SOUL_RAY = PARTICLE_TYPES.register("frostsoul_ray",()->new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> PHANTOM_RAY = PARTICLE_TYPES.register("phantom_ray", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> ZENITH_WAY = PARTICLE_TYPES.register("zenith_way", () -> new SimpleParticleType(true));
+    public static final RegistryObject<ParticleType<FireSphereParticleOption>> FIRE_SPHERE = registerParticle("fire_sphere", true, FireSphereParticleOption.DESERIALIZER, (fireSphereParticleType) -> FireSphereParticleOption.CODEC);
+    public static final RegistryObject<SimpleParticleType> FROST_SOUL_RAY = PARTICLE_TYPES.register("frostsoul_ray", () -> new SimpleParticleType(true));
+    public static final RegistryObject<ParticleType<CapturedSoulParticleOption>> CAPTURED_SOUL = registerParticle("captured_soul", true, CapturedSoulParticleOption.DESERIALIZER, (soul) -> CapturedSoulParticleOption.CODEC);
+
     public static <T extends ParticleOptions> RegistryObject<ParticleType<T>> registerParticle(String pKey, boolean pOverrideLimiter, ParticleOptions.Deserializer<T> pDeserializer, final Function<ParticleType<T>, Codec<T>> pCodecFactory) {
-        return PARTICLE_TYPES.register(pKey, () -> new ParticleType<T>(pOverrideLimiter, pDeserializer) {
+        return PARTICLE_TYPES.register(pKey, () -> new ParticleType<>(pOverrideLimiter, pDeserializer) {
             @Override
             public Codec<T> codec() {
                 return pCodecFactory.apply(this);
             }
         });
     }
+
     //enchantments
     public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, WrathyArmament.MODID);
-    public static final RegistryObject<Enchantment> PHANTOM_FURY = ENCHANTMENTS.register("phantom_fury",()-> new PhantomFury(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, EquipmentSlot.values()));
-    public static final RegistryObject<Enchantment> NIGHTMARE_JUMPING = ENCHANTMENTS.register("nightmare_jumping",()-> new NightmareJumping(Enchantment.Rarity.RARE,EnchantmentCategory.WEAPON, EquipmentSlot.values()));
-    public static final RegistryObject<Enchantment> PHANTOQUAKE = ENCHANTMENTS.register("phantoquake",()-> new Phantoquake(Enchantment.Rarity.RARE,EnchantmentCategory.WEAPON, EquipmentSlot.values()));
+    public static final RegistryObject<Enchantment> PHANTOM_FURY = ENCHANTMENTS.register("phantom_fury", () -> new PhantomFury(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, EquipmentSlot.values()));
+    public static final RegistryObject<Enchantment> NIGHTMARE_JUMPING = ENCHANTMENTS.register("nightmare_jumping", () -> new NightmareJumping(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, EquipmentSlot.values()));
+    public static final RegistryObject<Enchantment> PHANTOQUAKE = ENCHANTMENTS.register("phantoquake", () -> new Phantoquake(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, EquipmentSlot.values()));
     //menus
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, WrathyArmament.MODID);
     public static final RegistryObject<MenuType<WorldshardWorkbenchMenu>> WORLDSHARD_WORKBENCH = MENUS.register("worldshard_workbench", () -> IForgeMenuType.create(WorldshardWorkbenchMenu::new));
     //entity data serializers
     public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZER = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, WrathyArmament.MODID);
-    public static final RegistryObject<EntityDataSerializer<JohannesKnight.KnightPose>> KNIGHT_POSE = SERIALIZER.register("knight_pose",()-> EntityDataSerializer.simpleEnum(JohannesKnight.KnightPose.class));
-    public static final RegistryObject<EntityDataSerializer<MoonLord.LordPose>> LORD_POSE = SERIALIZER.register("lord_pose",()-> EntityDataSerializer.simpleEnum(MoonLord.LordPose.class));
-    public static final RegistryObject<EntityDataSerializer<SashaKYotoz.SashaKYotozPhase>> SASHAKYOTOZ_PHASE = SERIALIZER.register("sashakyotoz_phase",()-> EntityDataSerializer.simpleEnum(SashaKYotoz.SashaKYotozPhase.class));
+    public static final RegistryObject<EntityDataSerializer<JohannesKnight.KnightPose>> KNIGHT_POSE = SERIALIZER.register("knight_pose", () -> EntityDataSerializer.simpleEnum(JohannesKnight.KnightPose.class));
+    public static final RegistryObject<EntityDataSerializer<MoonLord.LordPose>> LORD_POSE = SERIALIZER.register("lord_pose", () -> EntityDataSerializer.simpleEnum(MoonLord.LordPose.class));
+    public static final RegistryObject<EntityDataSerializer<SashaKYotoz.SashaKYotozPhase>> SASHAKYOTOZ_PHASE = SERIALIZER.register("sashakyotoz_phase", () -> EntityDataSerializer.simpleEnum(SashaKYotoz.SashaKYotozPhase.class));
     //mob effects
-    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS,WrathyArmament.MODID);
-    public static final RegistryObject<MobEffect> BRIGHTNESS = EFFECTS.register("brightness",()->new MobEffect(MobEffectCategory.HARMFUL,0xffffff).setFactorDataFactory(() -> new MobEffectInstance.FactorData(22)));
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, WrathyArmament.MODID);
+    public static final RegistryObject<MobEffect> BRIGHTNESS = EFFECTS.register("brightness", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xffffff).setFactorDataFactory(() -> new MobEffectInstance.FactorData(22)));
     //loot table modifiers
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
             DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, WrathyArmament.MODID);
@@ -90,6 +94,7 @@ public class WrathyArmamentMiscRegistries {
                 output.accept(WrathyArmamentItems.MURASAMA.get());
                 output.accept(WrathyArmamentItems.MISTSPLITTER_REFORGED.get());
                 output.accept(WrathyArmamentItems.HALF_ZATOICHI.get());
+                output.accept(WrathyArmamentItems.BLACKRAZOR.get());
                 output.accept(WrathyArmamentItems.COPPER_SWORD.get());
                 output.accept(WrathyArmamentItems.MEOWMERE.get());
                 output.accept(WrathyArmamentItems.MYTHRIL_INGOT.get());
@@ -98,7 +103,8 @@ public class WrathyArmamentMiscRegistries {
                 output.accept(WrathyArmamentItems.SHARD_OF_MECHANVIL.get());
                 output.accept(WrathyArmamentItems.SHARD_OF_NETHERNESS.get());
             }).build());
-    public static void register(IEventBus bus){
+
+    public static void register(IEventBus bus) {
         PARTICLE_TYPES.register(bus);
         ENCHANTMENTS.register(bus);
         EFFECTS.register(bus);

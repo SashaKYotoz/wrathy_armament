@@ -32,6 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.EntityPositionSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -49,6 +50,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.client.particles.options.CapturedSoulParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.technical.BladeOfChaosEntity;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.*;
@@ -167,6 +169,20 @@ public class OnActionsTrigger {
             if (player.getMainHandItem().is(WrathyArmamentItems.FROSTMOURNE.get())) {
                 if (player.getMainHandItem().getOrCreateTag().getInt("charge") < 5)
                     player.getMainHandItem().getOrCreateTag().putInt("charge", player.getMainHandItem().getOrCreateTag().getInt("charge") + 1);
+                CapturedSoulParticleOption option = new CapturedSoulParticleOption(new EntityPositionSource(event.getEntity(), 0), 30, 0.25f, 0.25f, 0.75f);
+                if (player.level() instanceof ServerLevel level)
+                    level.sendParticles(option, player.getX(), player.getY(), player.getZ(), 1, 0, 0, 0, 0);
+            }
+            if (player.getMainHandItem().is(WrathyArmamentItems.BLACKRAZOR.get())) {
+                if (player.getMainHandItem().getOrCreateTag().getInt("charge") < 20)
+                    player.getMainHandItem().getOrCreateTag().putInt("charge", player.getMainHandItem().getOrCreateTag().getInt("charge") + 1);
+                CapturedSoulParticleOption option = new CapturedSoulParticleOption(new EntityPositionSource(event.getEntity(), 0), 30, 0.25f, 0.25f, 0.25f);
+                if (player.level() instanceof ServerLevel level) {
+                    level.sendParticles(option, player.getX(), player.getY(), player.getZ(), 1, 0, 0, 0, 0);
+                    level.sendParticles(ParticleTypes.HEART, player.getX(), player.getY() + 1, player.getZ(), 5, 0, 1, 0, 1);
+                    player.addEffect(new MobEffectInstance(MobEffects.HEAL, 10, 1));
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 100, 1));
+                }
             }
         }
     }

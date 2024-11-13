@@ -41,13 +41,13 @@ public class MoonLordLasering extends Goal {
             } else if (attackTime < 100) {
                 attackTime++;
                 int scaling = 0;
-                for (int i = 0; i < 32; i++) {
+                for (int i = 0; i < 36; i++) {
                     BlockPos pos2 = this.lord.level().clip(new ClipContext(this.lord.getEyePosition(1f), this.lord.getEyePosition(1f).add(this.lord.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this.lord)).getBlockPos();
                     if (!this.lord.level().getBlockState(new BlockPos(pos2.getX(), pos2.getY(), pos2.getZ())).canOcclude())
                         scaling = scaling + 1;
                     BlockPos pos = this.lord.level().clip(new ClipContext(this.lord.getEyePosition(1f), this.lord.getEyePosition(1f).add(this.lord.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this.lord)).getBlockPos();
                     Vec3 center = pos.getCenter();
-                    List<Entity> entityList = this.lord.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(1), e -> true).stream().sorted(Comparator.comparingDouble(t -> t.distanceToSqr(center))).toList();
+                    List<Entity> entityList = this.lord.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(0.5), e -> true).stream().sorted(Comparator.comparingDouble(t -> t.distanceToSqr(center))).toList();
                     for (Entity entity : entityList) {
                         if (entity instanceof LivingEntity livingEntity && this.lord.tickCount % 5 == 0)
                             livingEntity.hurt(this.lord.damageSources().magic(),this.lord.level().getDifficulty().equals(Difficulty.HARD) ? 8 : 5);

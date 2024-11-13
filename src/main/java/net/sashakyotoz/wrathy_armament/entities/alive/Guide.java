@@ -31,15 +31,17 @@ import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 public class Guide extends PathfinderMob implements RangedAttackMob {
     private final RangedBowAttackGoal<Guide> bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
     private final MeleeAttackGoal meleeGoal = new MeleeAttackGoal(this, 1.2D, false);
+
     public Guide(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         GuideNames[] poses = GuideNames.values();
         GuideNames currentPose = poses[random.nextInt(poses.length)];
         setCustomName(Component.literal(currentPose.gName));
     }
+
     protected void registerGoals() {
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, BossLikePathfinderMob.class, 6.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(4,new OpenDoorGoal(this,true));
+        this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
@@ -55,35 +57,37 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
     @Override
     public void tick() {
         super.tick();
-        if (this.tickCount % 500 == 0){
-            this.setItemInHand(InteractionHand.MAIN_HAND,this.random.nextBoolean() ? new ItemStack(Items.BOW) : new ItemStack(Items.IRON_SWORD));
+        if (this.tickCount % 500 == 0) {
+            this.setItemInHand(InteractionHand.MAIN_HAND, this.random.nextBoolean() ? new ItemStack(Items.BOW) : new ItemStack(Items.IRON_SWORD));
             this.reassessWeaponGoal();
         }
-        if (this.getTarget() != null){
-            if (this.tickCount % 60 == 0 && this.getHealth() < this.getMaxHealth() && !this.hasEffect(MobEffects.REGENERATION)){
+        if (this.getTarget() != null) {
+            if (this.tickCount % 60 == 0 && this.getHealth() < this.getMaxHealth() && !this.hasEffect(MobEffects.REGENERATION)) {
                 if (!this.level().isClientSide())
-                    this.addEffect(new MobEffectInstance(MobEffects.REGENERATION,40,1));
+                    this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 1));
             }
-            if (this.tickCount % 5 == 0){
-                Player player = this.level().getNearestPlayer(this,48);
+            if (this.tickCount % 5 == 0) {
+                Player player = this.level().getNearestPlayer(this, 48);
                 if (player != null && player.getLastHurtByMob() != null)
                     this.setTarget(player.getLastHurtByMob());
             }
         }
     }
+
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem)));
         AbstractArrow abstractarrow = ProjectileUtil.getMobArrow(this, itemstack, pDistanceFactor);
         if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
-            abstractarrow = ((BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrow);
+            abstractarrow = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrow);
         double d0 = pTarget.getX() - this.getX();
         double d1 = pTarget.getY(0.34D) - abstractarrow.getY();
         double d2 = pTarget.getZ() - this.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        abstractarrow.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+        abstractarrow.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         this.level().addFreshEntity(abstractarrow);
     }
+
     public void reassessWeaponGoal() {
         if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
@@ -101,14 +105,15 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
             }
         }
     }
+
     @Override
     protected void tickDeath() {
         this.setLivingEntityFlag(4, true);
-        if (this.deathTime == 19 && !this.level().isClientSide() && this.level() instanceof ServerLevel level){
+        if (this.deathTime == 19 && !this.level().isClientSide() && this.level() instanceof ServerLevel level) {
             level.setDayTime(13000);
-            this.level().explode(this,this.getX(),this.getY(),this.getZ(),3, Level.ExplosionInteraction.MOB);
-            HandlerStoneBlock.provokeCollapse(this.level(),this.getOnPos().above(),7,3);
-            MoonLord lord = new MoonLord(WrathyArmamentEntities.MOON_LORD.get(),level);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 3, Level.ExplosionInteraction.MOB);
+            HandlerStoneBlock.provokeCollapse(null, this.level(), this.getOnPos().above(), 7, 3);
+            MoonLord lord = new MoonLord(WrathyArmamentEntities.MOON_LORD.get(), level);
             lord.moveTo(this.getOnPos().above(2).getCenter());
             this.level().addFreshEntity(lord);
         }
@@ -126,7 +131,7 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
         return super.hurt(pSource, pAmount) && pSource.getEntity() instanceof Player;
     }
 
-    enum GuideNames{
+    enum GuideNames {
         ANDREW("Andrew"),
         ASHER("Asher"),
         BRANDON("Brandon"),
@@ -146,11 +151,14 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
         WYATT("Wyatt"),
         SCOT("Scot"),
         BRADLY("Bradly");
-        GuideNames(String gName){
+
+        GuideNames(String gName) {
             this.gName = gName;
         }
+
         public final String gName;
     }
+
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)

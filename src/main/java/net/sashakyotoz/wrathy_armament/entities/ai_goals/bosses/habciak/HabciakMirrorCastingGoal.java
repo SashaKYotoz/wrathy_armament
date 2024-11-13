@@ -1,6 +1,7 @@
 package net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.habciak;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,7 @@ public class HabciakMirrorCastingGoal extends Goal {
     public HabciakMirrorCastingGoal(Habciak habciak) {
         this.habciak = habciak;
     }
-    
+
     @Override
     public boolean canUse() {
         return this.habciak.getTarget() != null && !this.habciak.isDeadOrDying();
@@ -27,6 +28,7 @@ public class HabciakMirrorCastingGoal extends Goal {
         if (target != null && this.habciak.hasLineOfSight(target)) {
             if (attackTime == 100) {
                 attackTime = 0;
+                this.habciak.playSound(SoundEvents.ILLUSIONER_MIRROR_MOVE, 3, 2.5f);
                 this.habciak.mirrorCasting.stop();
                 this.habciak.backFlip.start(this.habciak.tickCount);
                 this.habciak.backFlipRotation = 360;
@@ -37,7 +39,7 @@ public class HabciakMirrorCastingGoal extends Goal {
                 this.habciak.reassessAttackGoal(this.habciak.getRandom().nextInt(3));
             } else if (attackTime < 100) {
                 attackTime++;
-                this.habciak.mirrorCasting.startIfStopped( this.habciak.tickCount);
+                this.habciak.mirrorCasting.startIfStopped(this.habciak.tickCount);
                 if (attackTime % 2 == 0) {
                     Vec3 eyePos = this.habciak.getEyePosition();
                     Vec3 lookVec = this.habciak.getLookAngle();
@@ -61,8 +63,8 @@ public class HabciakMirrorCastingGoal extends Goal {
                         );
                     }
                 }
-                if (attackTime % 5 == 0 && !target.hasEffect(MobEffects.CONFUSION)){
-                    target.addEffect(new MobEffectInstance(MobEffects.CONFUSION,80,1));
+                if (attackTime % 5 == 0 && !target.hasEffect(MobEffects.CONFUSION)) {
+                    target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 1));
                     target.setSecondsOnFire(4);
                 }
                 if (this.habciak.distanceToSqr(target) > 9)

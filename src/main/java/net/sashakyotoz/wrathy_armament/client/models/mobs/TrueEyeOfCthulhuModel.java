@@ -89,7 +89,7 @@ public class TrueEyeOfCthulhuModel <T extends TrueEyeOfCthulhu> extends Hierarch
     public void setupAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.head.yRot = pNetHeadYaw / (180F / (float) Math.PI);
-        this.head.xRot = pHeadPitch / (180F / (float) Math.PI);
+        this.root.xRot = pHeadPitch / (180F / (float) Math.PI);
         this.animate(pEntity.interactive, TrueEyeOfCthulhuAnimations.INTERACTIVE,pAgeInTicks);
     }
 }

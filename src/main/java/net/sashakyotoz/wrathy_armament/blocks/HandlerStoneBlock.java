@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -35,11 +36,12 @@ import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.antlr.v4.runtime.misc.Triple;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
 public class HandlerStoneBlock extends Block {
-    public static final IntegerProperty SWORD_INDEX = IntegerProperty.create("sword_index", 0, 4);
+    public static final IntegerProperty SWORD_INDEX = IntegerProperty.create("sword_index", 0, 5);
     public static final BooleanProperty CONTAINS_KEEPER = BooleanProperty.create("contains_keeper");
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape BASE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
@@ -75,7 +77,7 @@ public class HandlerStoneBlock extends Block {
     @Override
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource source) {
         if (state.getValue(CONTAINS_KEEPER) && source.nextBoolean())
-            OnActionsTrigger.addParticles(new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(pos.below())), level, pos.getX(), pos.getY()+0.5f, pos.getZ(), 2);
+            OnActionsTrigger.addParticles(new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(pos.below())), level, pos.getX(), pos.getY() + 0.5f, pos.getZ(), 2);
         super.randomTick(state, level, pos, source);
     }
 
@@ -87,7 +89,7 @@ public class HandlerStoneBlock extends Block {
                     ItemStack stack = WrathyArmamentItems.MASTER_SWORD.get().getDefaultInstance();
                     player.getCooldowns().addCooldown(stack.getItem(), 200);
                     player.spawnAtLocation(stack);
-                    provokeCollapse(level, pos, 16, 18);
+                    provokeCollapse(player, level, pos, 16, 18);
                     List<LivingEntity> entityList = level.getEntitiesOfClass(LivingEntity.class, new AABB(pos.getCenter(), pos.getCenter()).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(pos.getCenter()))).toList();
                     for (LivingEntity entity : entityList) {
                         if (entity instanceof Player player1) {
@@ -147,6 +149,25 @@ public class HandlerStoneBlock extends Block {
                     OnActionsTrigger.queueServerWork(20, () -> waveFlaming(level, pos));
                     OnActionsTrigger.queueServerWork(100, () -> OnActionsTrigger.vec3 = new Vec3(0, -256, 0));
                 }
+                case 5 -> {
+                    ItemStack stack = WrathyArmamentItems.BLACKRAZOR.get().getDefaultInstance();
+                    player.getCooldowns().addCooldown(stack.getItem(), 200);
+                    player.spawnAtLocation(stack);
+                    provokeCollapse(player, level, pos, 16, 8);
+                    List<LivingEntity> entityList = level.getEntitiesOfClass(LivingEntity.class, new AABB(pos.getCenter(), pos.getCenter()).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(pos.getCenter()))).toList();
+                    for (LivingEntity entity : entityList) {
+                        if (entity instanceof Player player1) {
+                            OnActionsTrigger.playerCameraData.computeIfAbsent(player1.getStringUUID(), k -> new Triple<>(0, 0, 0));
+                            OnActionsTrigger.playerCameraData.put(player1.getStringUUID(), new Triple<>(
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).a + 100,
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).b,
+                                    OnActionsTrigger.playerCameraData.get(player1.getStringUUID()).c
+                            ));
+                        }
+                    }
+                    OnActionsTrigger.vec3 = pos.getCenter();
+                    OnActionsTrigger.queueServerWork(100, () -> OnActionsTrigger.vec3 = new Vec3(0, -256, 0));
+                }
             }
             level.setBlock(pos, this.defaultBlockState().setValue(SWORD_INDEX, 0), 3);
             level.setBlock(pos, this.defaultBlockState().setValue(CONTAINS_KEEPER, false), 3);
@@ -154,13 +175,15 @@ public class HandlerStoneBlock extends Block {
         return super.use(state, level, pos, player, hand, result);
     }
 
-    public static void provokeCollapse(Level level, BlockPos pos, int radius, int yOffset) {
+    public static void provokeCollapse(@Nullable Player player, Level level, BlockPos pos, int radius, int yOffset) {
         for (int y = -radius + yOffset; y < radius - yOffset / 3; y++) {
             for (int x = -radius; x < radius; x++) {
                 for (int z = -radius; z < radius; z++) {
                     int finalX = x;
                     int finalY = y;
                     int finalZ = z;
+                    if (player != null && player.tickCount % 10 == 0)
+                        player.playSound(SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, 2, 2);
                     OnActionsTrigger.queueServerWork(10, () -> {
                         if (level.getBlockState(pos.offset(finalX, finalY, finalZ)).canOcclude() && level instanceof ServerLevel serverLevel) {
                             BlockPos pos1 = pos.offset(finalX, finalY, finalZ);

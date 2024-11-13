@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.MoonLordModel;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.entities.bosses.parts.MoonLordPart;
@@ -54,6 +55,8 @@ public class MoonLordEyesLayer extends RenderLayer<MoonLord, MoonLordModel<MoonL
             else if (moonLord.getMainParts().get(2).getHealthPoints() <= 0 &&
                     moonLord.getMainParts().get(3).getHealthPoints() <= 0)
                 alphaModifier = 0.25f;
+            else if (moonLord.getDataLordPose().equals(MoonLord.LordPose.ATTACKING) && this.texture.getPath().contains("hand"))
+                alphaModifier = TextureAnimator.simpleAlphaFunction(0.5f, moonLord.tickCount);
         }
         return alphaModifier;
     }

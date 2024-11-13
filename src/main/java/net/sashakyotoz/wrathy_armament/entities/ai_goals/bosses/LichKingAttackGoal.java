@@ -1,5 +1,6 @@
 package net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses;
 
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -122,6 +123,7 @@ public class LichKingAttackGoal extends Goal {
             this.lich.setIdOfCombo();
             this.resetAttackCooldown();
             OnActionsTrigger.queueServerWork(20,()->{
+                this.lich.playSound(SoundEvents.EVOKER_FANGS_ATTACK);
                 if (this.lich.distanceToSqr(entity) < 16)
                     this.lich.doHurtTarget(entity);
                 this.lich.setAttacking(false);

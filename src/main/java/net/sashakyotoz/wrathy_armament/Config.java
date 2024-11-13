@@ -13,9 +13,9 @@ public class Config {
             .define("Show lancer if armor is equipped", true);
     public static final ForgeConfigSpec.IntValue TIME_SINCE_REST_TO_SPAWN_SASHAKYOTOZ = BUILDER
             .comment("Determine needed time since rest to spawn SashaKYotoz")
-            .defineInRange("time to spawn sashakyotoz", 96000,4000,999999);
+            .defineInRange("time to spawn sashakyotoz", 96000,4000,9999999);
     public static final ForgeConfigSpec.IntValue TIME_TO_SPAWN_GUIDE = BUILDER
             .comment("Determine needed time needed to spawn Guide")
-            .defineInRange("time to spawn guide", 30000,4000,999999);
+            .defineInRange("time to spawn guide", 30000,4000,9999999);
     static final ForgeConfigSpec SPEC = BUILDER.build();
 }

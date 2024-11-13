@@ -27,14 +27,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.PartEntity;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
-import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordLasering;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordMeleeAttack;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordShooting;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordTeleport;
 import net.sashakyotoz.wrathy_armament.entities.bosses.parts.MoonLordPart;
+import net.sashakyotoz.wrathy_armament.entities.technical.EyeOfCthulhuProjectile;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -52,18 +53,19 @@ public class MoonLord extends BossLikePathfinderMob {
     private final MoonLordPart heart;
     private final MoonLordPart rightHandEye;
     private final MoonLordPart leftHandEye;
-    public final HashMap<String,Integer> damageTakenByPart = new HashMap<>();
+    public final HashMap<String, Integer> damageTakenByPart = new HashMap<>();
     public final AnimationState death = new AnimationState();
-    public final AnimationState meleeAttack = new AnimationState();
+    public final AnimationState eyeShooting = new AnimationState();
     public final AnimationState eyeAttack = new AnimationState();
     public final AnimationState interactive = new AnimationState();
     public int deathTicks = 0;
+    private boolean movementFlag = false;
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (entity) -> entity.getMobType() != MobType.UNDEAD && entity.attackable();
 
     public MoonLord(EntityType<? extends BossLikePathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 500;
-        this.moveControl = new FlyingMoveControl(this, 15, true);
+        this.moveControl = new FlyingMoveControl(this, 25, false);
         this.headEye = new MoonLordPart(this, "headEye", 1.5f, 1.5f);
         this.heart = new MoonLordPart(this, "heart", 2.5f, 2.5f);
         this.rightHandEye = new MoonLordPart(this, "rightHandEye", 1.5f, 1.5f);
@@ -123,6 +125,7 @@ public class MoonLord extends BossLikePathfinderMob {
         if (this.getHealth() < this.getMaxHealth() && this.random.nextBoolean())
             OnActionsTrigger.queueServerWork(30, () -> this.setDataLordPose(LordPose.IDLING));
     }
+
     @Override
     protected PathNavigation createNavigation(Level level) {
         return new FlyingPathNavigation(this, level);
@@ -163,6 +166,8 @@ public class MoonLord extends BossLikePathfinderMob {
     @Override
     public void tick() {
         super.tick();
+        if (this.getTarget() != null && this.getTarget().distanceToSqr(this.getTarget()) > 384)
+            this.setDataLordPose(LordPose.TELEPORTING);
         if (this.tickCount % 5 == 0 && this.getDataLordPose().equals(LordPose.IDLING))
             this.setRandomLordPose();
         if (this.tickCount % 30 == 0)
@@ -191,8 +196,11 @@ public class MoonLord extends BossLikePathfinderMob {
             this.getMainParts().forEach(moonLordPart -> {
                 if (this.damageTakenByPart.get(moonLordPart.name) != null &&
                         this.damageTakenByPart.get(moonLordPart.name) > 0)
-                    this.damageTakenByPart.put(moonLordPart.name,this.damageTakenByPart.get(moonLordPart.name)-1);
+                    this.damageTakenByPart.put(moonLordPart.name, this.damageTakenByPart.get(moonLordPart.name) - 1);
             });
+        if (this.getTarget() != null && this.tickCount % 120 == 0)
+            movementFlag = !movementFlag;
+        this.getMoveControl().strafe(0.5f, movementFlag ? 1 : -1);
     }
 
     private void tickPart(MoonLordPart moonLordPart, double pOffsetX, double pOffsetY, double pOffsetZ) {
@@ -203,25 +211,22 @@ public class MoonLord extends BossLikePathfinderMob {
         int random = this.random.nextIntBetweenInclusive(0, 2);
         switch (this.getDataLordPose()) {
             case SHOOTING -> {
-                switch (random) {
-                    default -> this.setDataLordPose(LordPose.ATTACKING);
-                    case 1 -> this.setDataLordPose(LordPose.LASERING);
-                    case 2 -> this.setDataLordPose(LordPose.TELEPORTING);
-                }
+                if (random == 1)
+                    this.setDataLordPose(LordPose.LASERING);
+                else
+                    this.setDataLordPose(LordPose.ATTACKING);
             }
             case ATTACKING -> {
-                switch (random) {
-                    default -> this.setDataLordPose(LordPose.SHOOTING);
-                    case 1 -> this.setDataLordPose(LordPose.LASERING);
-                    case 2 -> this.setDataLordPose(LordPose.TELEPORTING);
-                }
+                if (random == 1)
+                    this.setDataLordPose(LordPose.LASERING);
+                else
+                    this.setDataLordPose(LordPose.SHOOTING);
             }
             case LASERING -> {
-                switch (random) {
-                    default -> this.setDataLordPose(LordPose.SHOOTING);
-                    case 1 -> this.setDataLordPose(LordPose.ATTACKING);
-                    case 2 -> this.setDataLordPose(LordPose.TELEPORTING);
-                }
+                if (random == 1)
+                    this.setDataLordPose(LordPose.ATTACKING);
+                else
+                    this.setDataLordPose(LordPose.SHOOTING);
             }
             case TELEPORTING -> {
                 switch (random) {
@@ -234,22 +239,39 @@ public class MoonLord extends BossLikePathfinderMob {
         }
     }
 
-    @Override
-    public void aiStep() {
-        super.aiStep();
-        if (this.getDataLordPose().equals(LordPose.ATTACKING) && !this.meleeAttack.isStarted())
-            this.meleeAttack.start(this.tickCount);
-        if (level().isClientSide()){
-            if (this.getDataLordPose().equals(LordPose.IDLING) ||
-                    this.getDataLordPose().equals(LordPose.LASERING))
-                this.interactive.startIfStopped(this.tickCount);
-            else
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> dataAccessor) {
+        if (DATA_LORD_POSE.equals(dataAccessor)) {
+            if (!(getDataLordPose().equals(LordPose.IDLING)
+                    && getDataLordPose().equals(LordPose.LASERING)))
                 this.interactive.stop();
-            if (this.getDataLordPose().equals(LordPose.SHOOTING) && !this.eyeAttack.isStarted())
-                this.eyeAttack.start(this.tickCount);
-            if (this.getDataLordPose().equals(LordPose.ATTACKING) && !this.meleeAttack.isStarted())
-                this.meleeAttack.start(this.tickCount);
+            switch (this.getDataLordPose()) {
+                case DYING -> this.death.start(this.tickCount);
+                case ATTACKING -> {
+                    this.eyeShooting.start(this.tickCount);
+                    OnActionsTrigger.queueServerWork(7, () -> {
+                        for (int i = -1; i < 2; i++) {
+                            EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
+                            projectile.setOwner(this);
+                            projectile.setOwner(this);
+                            projectile.shootFromRotation(this, this.getXRot(), this.getYRot() + 15, 0, 3F, 0.5F);
+                            this.level().addFreshEntity(projectile);
+                        }
+                    });
+                    OnActionsTrigger.queueServerWork(14, () -> {
+                        for (int i = -1; i < 2; i++) {
+                            EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
+                            projectile.setOwner(this);
+                            projectile.shootFromRotation(this, this.getXRot(), this.getYRot() - 15, 0, 3F, 0.5F);
+                            this.level().addFreshEntity(projectile);
+                        }
+                    });
+                    OnActionsTrigger.queueServerWork(21, this::setRandomLordPose);
+                }
+                case IDLING,LASERING -> this.interactive.startIfStopped(this.tickCount);
+                case SHOOTING -> this.eyeAttack.start(this.tickCount);
+            }
         }
+        super.onSyncedDataUpdated(dataAccessor);
     }
 
     @Override
@@ -273,10 +295,9 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     public void registerGoals() {
-        this.goalSelector.addGoal(1,new LookAtPlayerGoal(this, Player.class,32,0.5f));
-        this.goalSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class,0, false, false,LIVING_ENTITY_SELECTOR));
+        this.goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 48, 1f));
+        this.goalSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false, LIVING_ENTITY_SELECTOR));
         this.goalSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new MoonLordMeleeAttack(this));
         this.targetSelector.addGoal(3, new MoonLordTeleport(this));
         this.targetSelector.addGoal(3, new MoonLordLasering(this));
         this.targetSelector.addGoal(3, new MoonLordShooting(this));
@@ -326,12 +347,14 @@ public class MoonLord extends BossLikePathfinderMob {
                 .add(Attributes.FOLLOW_RANGE, 48)
                 .add(Attributes.ARMOR, 16)
                 .add(Attributes.ARMOR_TOUGHNESS, 16)
-                .add(Attributes.MOVEMENT_SPEED, 0.2)
+                .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.FLYING_SPEED, 0.5)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1);
     }
+
     protected void checkFallDamage(double pY, boolean pOnGround, BlockState pState, BlockPos pPos) {
     }
+
     //poses
     public enum LordPose {
         DYING,
