@@ -29,7 +29,6 @@ import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.JohannesKnightAt
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
 import net.sashakyotoz.wrathy_armament.registers.*;
-import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -80,7 +79,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
                 createSpellEntity(level, d0 * 2, d1, d2 * 2, l);
             }
         }
-        OnActionsTrigger.queueServerWork(20, this::setRandomPose);
+        queueServerWork(20, this::setRandomPose);
     }
 
     private void createSpellEntity(ServerLevel level, double vx, double vy, double vz, int i) {
@@ -114,17 +113,17 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
                     if (this.level() instanceof ServerLevel level)
                         this.applyDarknessAround(level, Vec3.atCenterOf(this.getOnPos()), this, 20);
                     refreshDimensions();
-                    OnActionsTrigger.queueServerWork(40, () -> this.setIsInSecondPhase(true));
-                    OnActionsTrigger.queueServerWork(50, () -> this.dashFountain.start(this.tickCount));
-                    OnActionsTrigger.queueServerWork(70, () -> this.setKnightPose(KnightPose.ATTACKING));
+                    queueServerWork(40, () -> this.setIsInSecondPhase(true));
+                    queueServerWork(50, () -> this.dashFountain.start(this.tickCount));
+                    queueServerWork(70, () -> this.setKnightPose(KnightPose.ATTACKING));
                 } else {
                     if (!this.deathFountain.isStarted())
                         this.deathFountain.start(this.tickCount);
                 }
             } else if (this.getKnightPose() == KnightPose.IDLING && this.getTarget() != null)
-                OnActionsTrigger.queueServerWork(50, this::setRandomPose);
+                queueServerWork(50, this::setRandomPose);
             else {
-                if (this.getTarget() != null && this.distanceToSqr(this.getTarget()) < 16) {
+                if (this.getTarget() != null) {
                     switch (this.getKnightPose()) {
                         case JUMPING -> {
                             if (!this.jumpKnight.isStarted()) this.jumpKnight.start(this.tickCount);
@@ -171,7 +170,7 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
     @Override
     public void onLeaveCombat() {
         if (this.getHealth() < this.getMaxHealth() && this.random.nextBoolean())
-            OnActionsTrigger.queueServerWork(30, () -> this.setKnightPose(KnightPose.IDLING));
+            queueServerWork(30, () -> this.setKnightPose(KnightPose.IDLING));
         super.onLeaveCombat();
     }
 
@@ -180,30 +179,30 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
         switch (this.getKnightPose()) {
             case SHOOTING -> {
                 switch (random) {
-                    default -> this.setKnightPose(KnightPose.ATTACKING);
                     case 1 -> this.setKnightPose(KnightPose.DASHING);
                     case 2 -> this.setKnightPose(KnightPose.JUMPING);
+                    default -> this.setKnightPose(KnightPose.ATTACKING);
                 }
             }
             case ATTACKING -> {
                 switch (random) {
-                    default -> this.setKnightPose(KnightPose.SHOOTING);
                     case 1 -> this.setKnightPose(KnightPose.DASHING);
                     case 2 -> this.setKnightPose(KnightPose.JUMPING);
+                    default -> this.setKnightPose(KnightPose.SHOOTING);
                 }
             }
             case DASHING -> {
                 switch (random) {
-                    default -> this.setKnightPose(KnightPose.SHOOTING);
                     case 1 -> this.setKnightPose(KnightPose.ATTACKING);
                     case 2 -> this.setKnightPose(KnightPose.JUMPING);
+                    default -> this.setKnightPose(KnightPose.SHOOTING);
                 }
             }
             case JUMPING -> {
                 switch (random) {
-                    default -> this.setKnightPose(KnightPose.SHOOTING);
                     case 1 -> this.setKnightPose(KnightPose.ATTACKING);
                     case 2 -> this.setKnightPose(KnightPose.DASHING);
+                    default -> this.setKnightPose(KnightPose.SHOOTING);
                 }
             }
         }
@@ -230,15 +229,15 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
             projectile.setOwner(JohannesKnight.this);
             projectile.setProjectileType("huge_sword");
             projectile.moveTo(
-                    this.getX() + OnActionsTrigger.getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2),
+                    this.getX() + getXVector(speed, Yaw) + randomOffset,
                     this.getY() + 1,
-                    this.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2));
+                    this.getZ() + getZVector(speed, Yaw) + randomOffset);
             level.addFreshEntity(projectile);
         }
         this.setDeltaMovement(new Vec3(randomOffset, 0.25f, -randomOffset));
         if (!this.isInSecondPhase() && !this.hasEffect(MobEffects.MOVEMENT_SPEED))
             this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 100, 3));
-        OnActionsTrigger.queueServerWork(20, this::setRandomPose);
+        queueServerWork(20, this::setRandomPose);
     }
 
     public void johannesSwordDash() {
@@ -252,14 +251,14 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
                 projectile.setOwner(JohannesKnight.this);
                 projectile.setProjectileType("knight_axe");
                 projectile.moveTo(
-                        this.getX() + OnActionsTrigger.getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2),
+                        this.getX() + getXVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2),
                         this.getY() + 1 + i,
-                        this.getZ() + OnActionsTrigger.getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2));
+                        this.getZ() + getZVector(speed, Yaw) + random.nextIntBetweenInclusive(-2, 2));
                 level.addFreshEntity(projectile);
             }
         }
-        OnActionsTrigger.queueServerWork(10, () -> this.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, Yaw), (this.getXRot() * (-0.025)) + 0.25, OnActionsTrigger.getZVector(speed, Yaw))));
-        OnActionsTrigger.queueServerWork(20, this::setRandomPose);
+        queueServerWork(10, () -> this.setDeltaMovement(new Vec3(getXVector(speed, Yaw), (this.getXRot() * (-0.025)) + 0.25, getZVector(speed, Yaw))));
+        queueServerWork(20, this::setRandomPose);
     }
 
     public void johannesSwordBackwardsDash() {
@@ -272,14 +271,14 @@ public class JohannesKnight extends BossLikePathfinderMob implements RangedAttac
                 projectile.setOwner(JohannesKnight.this);
                 projectile.setProjectileType("knight_dagger");
                 projectile.moveTo(
-                        this.getX() + OnActionsTrigger.getXVector(speed + i, Yaw),
+                        this.getX() + getXVector(speed + i, Yaw),
                         this.getY() + (this.isInSecondPhase() ? i : 0),
-                        this.getZ() + OnActionsTrigger.getZVector(speed + i, Yaw));
+                        this.getZ() + getZVector(speed + i, Yaw));
                 level.addFreshEntity(projectile);
             }
         }
-        OnActionsTrigger.queueServerWork(10, () -> this.setDeltaMovement(new Vec3(OnActionsTrigger.getXVector(speed, -Yaw), 0.25, -OnActionsTrigger.getZVector(speed, Yaw))));
-        OnActionsTrigger.queueServerWork(20, this::setRandomPose);
+        queueServerWork(10, () -> this.setDeltaMovement(new Vec3(-getXVector(speed, Yaw), 0.25, -getZVector(speed, Yaw))));
+        queueServerWork(20, this::setRandomPose);
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.AABB;
-import net.sashakyotoz.wrathy_armament.entities.bosses.PersistentAngerMob;
+import net.sashakyotoz.wrathy_armament.entities.bosses.core.PersistentAngerMob;
 
 import java.util.List;
 

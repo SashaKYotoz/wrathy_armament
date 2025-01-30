@@ -43,12 +43,8 @@ public class CapturedSoulParticle extends TextureSheetParticle {
         float f = Mth.sin(((float) this.age + pPartialTicks - ((float) Math.PI * 2F)) * 0.05F) * 2.0F;
         float f1 = Mth.lerp(pPartialTicks, this.rotO, this.rot);
         float f2 = Mth.lerp(pPartialTicks, this.pitchO, this.pitch) + ((float) Math.PI / 2F);
-        this.renderSignal(pBuffer, pRenderInfo, pPartialTicks, (p_253355_) -> {
-            p_253355_.rotateY(f1).rotateX(-f2).rotateY(f);
-        });
-        this.renderSignal(pBuffer, pRenderInfo, pPartialTicks, (p_253351_) -> {
-            p_253351_.rotateY(-(float) Math.PI + f1).rotateX(f2).rotateY(f);
-        });
+        this.renderSignal(pBuffer, pRenderInfo, pPartialTicks, (quaternionf) -> quaternionf.rotateY(f1).rotateX(-f2).rotateY(f));
+        this.renderSignal(pBuffer, pRenderInfo, pPartialTicks, (quaternionf) -> quaternionf.rotateY(-(float) Math.PI + f1).rotateX(f2).rotateY(f));
     }
 
     private void renderSignal(VertexConsumer pBuffer, Camera pRenderInfo, float pPartialTicks, Consumer<Quaternionf> pQuaternionConsumer) {

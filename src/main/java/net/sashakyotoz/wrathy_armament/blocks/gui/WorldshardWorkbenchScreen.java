@@ -28,7 +28,7 @@ public class WorldshardWorkbenchScreen extends AbstractContainerScreen<Worldshar
         this.imageWidth = 176;
         this.imageHeight = 197;
     }
-    private static final ResourceLocation BACKGROUND_LOCATION = new ResourceLocation(WrathyArmament.MODID,"textures/gui/blocks/worldshard_workbench_bg.png");
+    public static final ResourceLocation BACKGROUND_LOCATION = new ResourceLocation(WrathyArmament.MODID,"textures/gui/blocks/worldshard_workbench_bg.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -44,7 +44,7 @@ public class WorldshardWorkbenchScreen extends AbstractContainerScreen<Worldshar
         RenderSystem.defaultBlendFunc();
         guiGraphics.blit(BACKGROUND_LOCATION, this.leftPos, this.topPos + 16, 0, 0, this.imageWidth, this.imageHeight);
         renderProgressArrow(guiGraphics);
-        if (this.getMenu().blockEntity.getRecipe() != null){
+        if (this.getMenu().blockEntity.hasRecipe()){
             RandomSource random = this.level.random;
             if (random.nextInt(5) == 0) {
                 sparkles.add(new WorkbenchSparkle(this.player,this.leftPos, this.topPos, 0.5 + random.nextDouble(), 0.5 + random.nextDouble()));

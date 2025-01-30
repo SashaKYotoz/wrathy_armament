@@ -16,7 +16,6 @@ import net.sashakyotoz.wrathy_armament.client.renderer.bosses.*;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.GuideRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.LichMyrmidonRenderer;
 import net.sashakyotoz.wrathy_armament.client.renderer.livings.TrueEyeOfCthulhuRenderer;
-import net.sashakyotoz.wrathy_armament.entities.bosses.Habciak;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class WrathyArmamentClientEvents {
@@ -32,13 +31,14 @@ public class WrathyArmamentClientEvents {
         event.registerEntityRenderer(WrathyArmamentEntities.JOHANNES_KNIGHT.get(), JohannesKnightRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.MOON_LORD.get(), MoonLordRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.TRUE_EYE_OF_CTHULHU.get(), TrueEyeOfCthulhuRenderer::new);
-        event.registerEntityRenderer(WrathyArmamentEntities.THE_GUIDE.get(),(context)-> new GuideRenderer(context,false));
+        event.registerEntityRenderer(WrathyArmamentEntities.THE_GUIDE.get(), (context) -> new GuideRenderer(context, false));
         event.registerEntityRenderer(WrathyArmamentEntities.PARTICLE_LIKE_ENTITY.get(), ParticleLikeEntityRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(), HarmfulProjectileRenderer::new);
         event.registerEntityRenderer(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), ThrownItemRenderer::new);
         event.registerBlockEntityRenderer(WrathyArmamentBlockEntities.WORLDSHARD_WORKBENCH.get(), WorldshardWorkbenchEntityRenderer::new);
         event.registerBlockEntityRenderer(WrathyArmamentBlockEntities.PARADISE_BLOCK.get(), ParadiseBlockEntityRenderer::new);
     }
+
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(LancerBackModel.LAYER_LOCATION, LancerBackModel::createBodyLayer);
@@ -62,16 +62,18 @@ public class WrathyArmamentClientEvents {
         event.registerLayerDefinition(CircleFlameModel.LAYER_LOCATION, CircleFlameModel::createBodyLayer);
         event.registerLayerDefinition(ShieldDashModel.LAYER_LOCATION, ShieldDashModel::createBodyLayer);
         event.registerLayerDefinition(SphereLikeEntityModel.LAYER_LOCATION, SphereLikeEntityModel::createBodyLayer);
-        event.registerLayerDefinition(TransparentHumanoidLayerModel.LAYER_LOCATION,TransparentHumanoidLayerModel::createBodyLayer);
-        event.registerLayerDefinition(ForgeModel.LAYER_LOCATION,ForgeModel::createBodyLayer);
-        event.registerLayerDefinition(BlackrazorModel.LAYER_LOCATION,BlackrazorModel::createBodyLayer);
+        event.registerLayerDefinition(TransparentHumanoidLayerModel.LAYER_LOCATION, TransparentHumanoidLayerModel::createBodyLayer);
+        event.registerLayerDefinition(ForgeModel.LAYER_LOCATION, ForgeModel::createBodyLayer);
+        event.registerLayerDefinition(BlackrazorModel.LAYER_LOCATION, BlackrazorModel::createBodyLayer);
     }
+
     @SubscribeEvent
     public static void onParticleSetup(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), PhantomRayParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.ZENITH_WAY.get(), ZenithWayParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.FIRE_SPHERE.get(), FireSphereParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), FrostSoulParticle::provider);
+        event.registerSpriteSet(WrathyArmamentMiscRegistries.BEAM_SPARKLES.get(), BeamSparklesParticle::provider);
         event.registerSpriteSet(WrathyArmamentMiscRegistries.CAPTURED_SOUL.get(), CapturedSoulParticle::provider);
     }
 }

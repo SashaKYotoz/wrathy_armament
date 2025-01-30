@@ -1,7 +1,6 @@
 package net.sashakyotoz.wrathy_armament.entities.bosses;
 
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -25,13 +24,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.ResetAngerTargetGoal;
+import net.sashakyotoz.wrathy_armament.entities.bosses.core.PersistentAngerMob;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class BossLikePathfinderMob extends PathfinderMob implements Enemy, PersistentAngerMob {
     public static final EntityDataAccessor<Boolean> ATTACKING = SynchedEntityData.defineId(BossLikePathfinderMob.class, EntityDataSerializers.BOOLEAN);
@@ -40,6 +39,12 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     public final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(36000, 1080000);
     @Nullable
     public UUID persistentAngerTarget;
+
+    private final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
+
+    public void queueServerWork(int tick, Runnable action) {
+        workQueue.add(new AbstractMap.SimpleEntry<>(action, tick));
+    }
 
     public BossLikePathfinderMob(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -92,8 +97,8 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
         return false;
     }
 
-    public void spawnParticle(Level world, double x, double y, double z, float modifier) {
-        spawnParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), world, x, y, z, modifier);
+    public void spawnParticle(Level level, double x, double y, double z, float modifier) {
+        spawnParticle(WrathyArmamentMiscRegistries.FROST_SOUL_RAY.get(), level, x, y, z, modifier);
     }
 
     @Override
@@ -108,6 +113,19 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
         this.updateSwingTime();
         this.updateNoActionTime();
         super.aiStep();
+    }
+
+    @Override
+    public void tick() {
+        List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
+        workQueue.forEach(work -> {
+            work.setValue(work.getValue() - 1);
+            if (work.getValue() == 0)
+                actions.add(work);
+        });
+        actions.forEach(e -> e.getKey().run());
+        workQueue.removeAll(actions);
+        super.tick();
     }
 
     protected void updateNoActionTime() {
@@ -125,10 +143,10 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
         return true;
     }
 
-    public void spawnParticle(ParticleOptions type, Level world, double x, double y, double z, float modifier) {
+    public void spawnParticle(ParticleOptions type, Level level, double x, double y, double z, float modifier) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0)
-                world.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
+                level.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
         }
     }
 
@@ -150,13 +168,11 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     }
 
     public void hitNearbyMobs(float damage, int radius) {
-        List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(centerOfMob(), centerOfMob()).inflate(radius), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(centerOfMob()))).toList();
-        for (Entity entityIterator : entityList) {
-            if (!(entityIterator == this)) {
-                if (entityIterator instanceof LivingEntity livingEntity) {
-                    livingEntity.hurt(this.damageSources().magic(), damage);
-                    break;
-                }
+        List<LivingEntity> entityList = this.level().getEntitiesOfClass(LivingEntity.class, new AABB(centerOfMob(), centerOfMob()).inflate(radius), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(centerOfMob()))).toList();
+        for (LivingEntity entityIterator : entityList) {
+            if (entityIterator != this) {
+                entityIterator.hurt(this.damageSources().magic(), damage);
+                break;
             }
         }
     }

@@ -29,10 +29,10 @@ public class SashaKYotozSpawner implements CustomSpawner {
         List<ServerPlayer> playerList = pLevel.getPlayers(ServerPlayer::onGround);
         for (ServerPlayer serverPlayer : playerList) {
             int i = serverPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
-            if (i < Config.TIME_SINCE_REST_TO_SPAWN_SASHAKYOTOZ.get())
+            if (i < Config.Common.TIME_SINCE_REST_TO_SPAWN_SASHAKYOTOZ.get())
                 pastTick++;
             else {
-                if (pastTick >= Config.TIME_SINCE_REST_TO_SPAWN_SASHAKYOTOZ.get()) {
+                if (pastTick >= Config.Common.TIME_SINCE_REST_TO_SPAWN_SASHAKYOTOZ.get()) {
                     RandomSource random = serverPlayer.getRandom();
                     BlockPos blockpos = serverPlayer.getOnPos();
                     BlockPos blockpos1 = blockpos.above(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));

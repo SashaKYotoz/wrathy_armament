@@ -1,0 +1,36 @@
+{
+  "type": "wrathy_armament:worldshard_workbench_crafting",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "S": {
+      "item": "minecraft:spire_armor_trim_smithing_template"
+    },
+    "e": {
+      "item": "minecraft:end_crystal"
+    },
+    "s": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "SBR",
+    "ENN",
+    "eRs"
+  ],
+  "result": {
+    "item": "wrathy_armament:murasama"
+  },
+  "show_notification": true
+}

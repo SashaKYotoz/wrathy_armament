@@ -19,6 +19,7 @@ public class LichMyrmidonRenderer extends FixedDeathAnimationMobRenderer<LichMyr
             }
         });
     }
+
     @Override
     public ResourceLocation getTextureLocation(LichMyrmidon pEntity) {
         return WrathyArmament.createWALocation("textures/entity/lich_myrmidon.png");

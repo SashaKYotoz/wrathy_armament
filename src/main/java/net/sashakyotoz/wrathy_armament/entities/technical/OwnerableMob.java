@@ -16,21 +16,27 @@ import java.util.List;
 public class OwnerableMob extends PathfinderMob implements Enemy {
     private LivingEntity owner;
     private boolean haveToFindOwner = false;
+
     public OwnerableMob(EntityType<? extends OwnerableMob> type, Level level) {
         super(type, level);
     }
-    public LivingEntity getOwner(){
+
+    public LivingEntity getOwner() {
         return this.owner;
     }
-    public boolean isHaveToFindOwner(){
+
+    public boolean isHaveToFindOwner() {
         return this.haveToFindOwner;
     }
-    public void setHaveToFindOwner(boolean b){
+
+    public void setHaveToFindOwner(boolean b) {
         this.haveToFindOwner = b;
     }
-    public void setOwner(LivingEntity entity){
+
+    public void setOwner(LivingEntity entity) {
         this.owner = entity;
     }
+
     public Player getNearestPlayer() {
         final Vec3 center = new Vec3(this.getX(), this.getY(), this.getZ());
         List<Entity> entityList = this.level().getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(24), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(center))).toList();

@@ -16,20 +16,21 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.sashakyotoz.SashaKYotozMeleeAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.sashakyotoz.SashaKYotozMovementGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.sashakyotoz.SashaKYotozRandomStrollGoal;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
-import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -38,53 +39,78 @@ import java.util.List;
 public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
     private final ServerBossEvent bossEvent = new ServerBossEvent(Component.translatable("boss.wrathy_armament.sashakyotoz"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.NOTCHED_10);
     private static final EntityDataAccessor<SashaKYotozPhase> DATA_SASHAKYOTOZ_PHASE = SynchedEntityData.defineId(SashaKYotoz.class, WrathyArmamentMiscRegistries.SASHAKYOTOZ_PHASE.get());
-    public int takeOffRotDegrees = 0;
+    public int timeOfAbility = 0;
 
     public final AnimationState idle = new AnimationState();
     public final AnimationState takeOff = new AnimationState();
     public final AnimationState landing = new AnimationState();
+    public final AnimationState flying = new AnimationState();
     public final AnimationState attackByScythe = new AnimationState();
     public final AnimationState attackByBlade = new AnimationState();
     public final AnimationState attackPhantomRay = new AnimationState();
-    public final AnimationState attackCycleOfPhantoms = new AnimationState();
+    public final AnimationState attackCircleOfPhantoms = new AnimationState();
     public final AnimationState death = new AnimationState();
+
+    private final GroundPathNavigation groundPathNavigation = new GroundPathNavigation(this, this.level());
+    private final FlyingPathNavigation flyingPathNavigation = new FlyingPathNavigation(this, this.level());
 
     public SashaKYotoz(EntityType<? extends SashaKYotoz> type, Level level) {
         super(WrathyArmamentEntities.SASHAKYOTOZ.get(), level);
         this.xpReward = XP_REWARD_BOSS;
-        this.setMaxUpStep(1.25f);
         this.moveControl = new FlyingMoveControl(this, 15, false);
+        this.setMaxUpStep(1.25f);
     }
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         if (DATA_SASHAKYOTOZ_PHASE.equals(pKey)) {
+            if (!isInPhase(SashaKYotozPhase.FLYING)) {
+                this.navigation = groundPathNavigation;
+                this.flying.stop();
+            }
+            if (!isInPhase(SashaKYotozPhase.IDLING))
+                this.idle.stop();
             switch (this.getSashaKYotozPhase()) {
-                case IDLING -> this.idle.startIfStopped(this.tickCount);
-                case TAKING_OFF -> {
-                    this.takeOff.start(this.tickCount);
-                    this.takeOffRotDegrees = 360;
-                    this.setDeltaMovement(
-                            this.getXVector(-0.25f, this.getYRot()),
-                            0.5f,
-                            this.getZVector(-0.25f, this.getYRot())
-                    );
-                    this.setSashaKYotozPhase(SashaKYotozPhase.FLYING);
+                case IDLING -> this.idle.start(this.tickCount);
+                case FLYING -> {
+                    this.flying.start(this.tickCount);
+                    this.navigation = flyingPathNavigation;
                 }
-                case LANDING -> {
-                    this.landing.start(this.tickCount);
-                    this.setRandomPhase();
-                }
+//                case TAKING_OFF -> this.takeOff.start(this.tickCount);
+                case LANDING -> this.landing.start(this.tickCount);
                 case RANGED_ATTACKING -> {
                     this.attackPhantomRay.start(this.tickCount);
-                    OnActionsTrigger.queueServerWork(8, () -> this.setDeltaMovement(
-                            this.getXVector(-2, this.getYRot()),
-                            0.325,
-                            this.getZVector(-2, this.getYRot())
-                    ));
-                    OnActionsTrigger.queueServerWork(15, () -> {
-                        rayAttack();
-                        this.setRandomPhase();
+                    queueServerWork(10, () -> {
+                        this.setDeltaMovement(
+                                this.getXVector(-1, this.getYRot()),
+                                0.35,
+                                this.getZVector(-1, this.getYRot()));
+                        this.rayAttack();
+                    });
+                }
+                case MELEE_ATTACKING -> {
+                    this.attackByBlade.start(this.tickCount);
+                    this.playSound(SoundEvents.PHANTOM_SWOOP, 1.5f, 2f);
+                    this.queueServerWork(20, () -> {
+                        if (this.getTarget() != null && this.getTarget().distanceToSqr(this) < 12)
+                            this.hurtTarget(this, this.getTarget());
+                    });
+                }
+                case MELEE_SCYTHE_ATTACKING -> {
+                    this.attackByScythe.start(this.tickCount);
+                    this.playSound(SoundEvents.PHANTOM_BITE, 1.5f, 2f);
+                    this.queueServerWork(20, () -> {
+                        if (this.getTarget() != null && this.getTarget().distanceToSqr(this) < 16)
+                            this.hurtTarget(this, this.getTarget());
+                    });
+                }
+                case MELEE_CIRCLE_ATTACKING -> {
+                    this.attackCircleOfPhantoms.start(this.tickCount);
+                    this.setDeltaMovement(new Vec3(0, -1, 0));
+                    this.queueServerWork(30, () -> {
+                        this.spawnParticle(WrathyArmamentMiscRegistries.PHANTOM_RAY.get(), this.level(), this.getX(), this.getY() + 1, this.getZ(), 2);
+                        this.playSound(SoundEvents.PHANTOM_SWOOP, 1.5f, 1.6f);
+                        this.hitNearbyMobs(Component.translatable("death.attack.wrathy_armament.phantom_shock_message"), 12, 7);
                     });
                 }
             }
@@ -93,16 +119,16 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
     }
 
     public boolean doHurtTarget(Entity entity) {
-        if (!(entity instanceof LivingEntity)) {
+        if (!(entity instanceof LivingEntity))
             return false;
-        } else {
+        else {
             this.level().broadcastEntityEvent(this, (byte) 4);
-            this.playSound(SoundEvents.IRON_GOLEM_ATTACK, 1.0F, this.getVoicePitch());
-            return SashaKYotoz.hurtTarget(this, (LivingEntity) entity);
+            this.playSound(SoundEvents.PHANTOM_SWOOP, 1.0F, this.getVoicePitch());
+            return hurtTarget(this, (LivingEntity) entity);
         }
     }
 
-    public static boolean hurtTarget(LivingEntity warrior, LivingEntity target) {
+    private boolean hurtTarget(LivingEntity warrior, LivingEntity target) {
         float f = (float) warrior.getAttributeValue(Attributes.ATTACK_DAMAGE);
         boolean flag = target.hurt(warrior.damageSources().mobAttack(warrior), f);
         if (flag)
@@ -110,39 +136,31 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
         return flag;
     }
 
-    public void handleEntityEvent(byte handleByte) {
-        if (handleByte >= 4 && handleByte <= 20) {
-            if (isInPhase(SashaKYotozPhase.MELEE_SCYTHE_ATTACKING))
-                this.attackByScythe.start(this.tickCount);
-            if (isInPhase(SashaKYotozPhase.MELEE_ATTACKING))
-                this.attackByBlade.start(this.tickCount);
-        } else
-            super.handleEntityEvent(handleByte);
-    }
-
     @Override
-    public void baseTick() {
-        super.baseTick();
-//        WrathyArmament.LOGGER.info("SashaKYotoz's phase: {}", this.getSashaKYotozPhase());
+    public void tick() {
+        super.tick();
         if (this.tickCount % 2 == 0) {
             if (this.isInPhase(SashaKYotozPhase.FLYING))
                 this.animatePhantomFlight();
-            if (this.getTarget() == null && this.isInPhase(SashaKYotozPhase.FLYING))
-                this.setSashaKYotozPhase(SashaKYotozPhase.LANDING);
-            if (this.getTarget() != null && this.isInPhase(SashaKYotozPhase.IDLING))
-                this.setRandomPhase();
         }
-        if (this.takeOffRotDegrees > 0)
-            this.takeOffRotDegrees--;
+        if (this.timeOfAbility > 0)
+            this.timeOfAbility--;
+        if (this.getTarget() != null && this.timeOfAbility <= 0)
+            setPhase();
     }
 
-    public void setRandomPhase() {
-        int random = this.random.nextIntBetweenInclusive(0, 3);
-        if (!this.isInPhase(SashaKYotozPhase.FLYING) && !this.isInPhase(SashaKYotozPhase.TAKING_OFF)) {
-            switch (random) {
-                default -> this.setSashaKYotozPhase(SashaKYotozPhase.MELEE_SCYTHE_ATTACKING);
-                case 1 -> this.setSashaKYotozPhase(SashaKYotozPhase.MELEE_ATTACKING);
-                case 2 -> this.setSashaKYotozPhase(SashaKYotozPhase.RANGED_ATTACKING);
+    public void setPhase() {
+        switch (this.getSashaKYotozPhase()) {
+            case IDLING, LANDING ->
+                    this.setSashaKYotozPhase(this.getTarget() == null ? SashaKYotozPhase.IDLING : SashaKYotozPhase.MELEE_ATTACKING);
+            case MELEE_ATTACKING -> this.setSashaKYotozPhase(SashaKYotozPhase.MELEE_CIRCLE_ATTACKING);
+            case MELEE_CIRCLE_ATTACKING -> this.setSashaKYotozPhase(SashaKYotozPhase.MELEE_SCYTHE_ATTACKING);
+            case MELEE_SCYTHE_ATTACKING -> this.setSashaKYotozPhase(SashaKYotozPhase.RANGED_ATTACKING);
+            case RANGED_ATTACKING -> this.setSashaKYotozPhase(SashaKYotozPhase.TAKING_OFF);
+            case TAKING_OFF -> this.setSashaKYotozPhase(SashaKYotozPhase.FLYING);
+            case FLYING -> {
+                if (this.getTarget() != null && this.getTarget().distanceToSqr(this) < 9)
+                    this.setSashaKYotozPhase(SashaKYotozPhase.LANDING);
             }
         }
     }
@@ -190,7 +208,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
         }
     }
 
-    //logic
     @Override
     public void setNoGravity(boolean ignored) {
         super.setNoGravity(this.isInPhase(SashaKYotozPhase.FLYING));
@@ -202,7 +219,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SashaKYotozMovementGoal(this));
         this.goalSelector.addGoal(2, new SashaKYotozRandomStrollGoal(this, 0.8, 160));
-        this.targetSelector.addGoal(3, new SashaKYotozMeleeAttackGoal(this));
     }
 
     @Override
@@ -219,8 +235,6 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
     //hurt
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (this.random.nextBoolean() && !this.isInPhase(SashaKYotozPhase.FLYING))
-            this.setSashaKYotozPhase(SashaKYotozPhase.MELEE_SCYTHE_ATTACKING);
         return !isPowered() && super.hurt(source, amount);
     }
 
@@ -268,6 +282,7 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
 
     public void setSashaKYotozPhase(SashaKYotozPhase phase) {
         this.entityData.set(DATA_SASHAKYOTOZ_PHASE, phase);
+        this.timeOfAbility = phase.getAbilityTime;
     }
 
     public SashaKYotozPhase getSashaKYotozPhase() {
@@ -279,12 +294,18 @@ public class SashaKYotoz extends BossLikePathfinderMob implements PowerableMob {
     }
 
     public enum SashaKYotozPhase {
-        IDLING,
-        FLYING,
-        TAKING_OFF,
-        LANDING,
-        RANGED_ATTACKING,
-        MELEE_ATTACKING,
-        MELEE_SCYTHE_ATTACKING
+        IDLING(100),
+        FLYING(80),
+        TAKING_OFF(20),
+        LANDING(20),
+        RANGED_ATTACKING(80),
+        MELEE_ATTACKING(50),
+        MELEE_CIRCLE_ATTACKING(60),
+        MELEE_SCYTHE_ATTACKING(50);
+        public final int getAbilityTime;
+
+        SashaKYotozPhase(int abilityTime) {
+            this.getAbilityTime = abilityTime;
+        }
     }
 }

@@ -89,7 +89,7 @@ public class HandlerStoneBlock extends Block {
                     ItemStack stack = WrathyArmamentItems.MASTER_SWORD.get().getDefaultInstance();
                     player.getCooldowns().addCooldown(stack.getItem(), 200);
                     player.spawnAtLocation(stack);
-                    provokeCollapse(player, level, pos, 16, 18);
+                    provokeCollapse(player, level, pos, 18, 20);
                     List<LivingEntity> entityList = level.getEntitiesOfClass(LivingEntity.class, new AABB(pos.getCenter(), pos.getCenter()).inflate(16), e -> true).stream().sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(pos.getCenter()))).toList();
                     for (LivingEntity entity : entityList) {
                         if (entity instanceof Player player1) {
@@ -110,7 +110,7 @@ public class HandlerStoneBlock extends Block {
                     OnActionsTrigger.queueServerWork(30, () -> {
                         if (level instanceof ServerLevel serverLevel) {
                             LichKing king = new LichKing(WrathyArmamentEntities.LICH_KING.get(), serverLevel);
-                            king.moveTo(pos.getCenter().offsetRandom(RandomSource.create(), 3));
+                            king.moveTo(pos.above().getCenter().offsetRandom(RandomSource.create(), 3));
                             serverLevel.addFreshEntity(king);
                         }
                     });
@@ -187,7 +187,7 @@ public class HandlerStoneBlock extends Block {
                     OnActionsTrigger.queueServerWork(10, () -> {
                         if (level.getBlockState(pos.offset(finalX, finalY, finalZ)).canOcclude() && level instanceof ServerLevel serverLevel) {
                             BlockPos pos1 = pos.offset(finalX, finalY, finalZ);
-                            if (level.random.nextBoolean()) {
+                            if (level.random.nextFloat() > 0.65) {
                                 level.addParticle(new BlockParticleOption(ParticleTypes.FALLING_DUST, level.getBlockState(pos1)), pos1.getX(), pos1.getY() - 1, pos1.getZ(), 0, -1, 0);
                             } else
                                 FallingBlockEntity.fall(serverLevel, pos1, level.getBlockState(pos1));

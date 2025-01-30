@@ -3,7 +3,6 @@ package net.sashakyotoz.wrathy_armament.client.renderer.bosses;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidArmorModel;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,12 +13,7 @@ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.HierarchicalPlayerModel;
@@ -49,7 +43,6 @@ public class HabciakRenderer extends FixedDeathAnimationMobRenderer<Habciak, Hie
                 this.model = normalModel;
         }
         pPoseStack.mulPose(Axis.XP.rotationDegrees(habciak.backFlipRotation));
-        this.setModelProperties(habciak);
         super.render(habciak, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }
 
@@ -81,53 +74,6 @@ public class HabciakRenderer extends FixedDeathAnimationMobRenderer<Habciak, Hie
 
     public Vec3 getDeltaMovementLerped(Habciak habciak, float pPatialTick) {
         return habciak.getDeltaMovement().lerp(habciak.getDeltaMovement(), pPatialTick);
-    }
-
-    private void setModelProperties(Habciak habciak) {
-        HumanoidModel<Habciak> humanoidModel = this.getModel();
-        humanoidModel.crouching = habciak.isCrouching();
-        HumanoidModel.ArmPose humanoidmodel$armpose = getArmPose(habciak, InteractionHand.MAIN_HAND);
-        HumanoidModel.ArmPose humanoidmodel$armpose1 = getArmPose(habciak, InteractionHand.OFF_HAND);
-        if (humanoidmodel$armpose.isTwoHanded())
-            humanoidmodel$armpose1 = habciak.getOffhandItem().isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
-        if (habciak.getMainArm() == HumanoidArm.RIGHT) {
-            humanoidModel.rightArmPose = humanoidmodel$armpose;
-            humanoidModel.leftArmPose = humanoidmodel$armpose1;
-        } else {
-            humanoidModel.rightArmPose = humanoidmodel$armpose1;
-            humanoidModel.leftArmPose = humanoidmodel$armpose;
-        }
-    }
-
-    private static HumanoidModel.ArmPose getArmPose(Habciak habciak, InteractionHand pHand) {
-        ItemStack itemstack = habciak.getItemInHand(pHand);
-        if (itemstack.isEmpty()) {
-            return HumanoidModel.ArmPose.EMPTY;
-        } else {
-            if (habciak.getUsedItemHand() == pHand && habciak.getUseItemRemainingTicks() > 0) {
-                UseAnim useanim = itemstack.getUseAnimation();
-                if (useanim == UseAnim.BLOCK)
-                    return HumanoidModel.ArmPose.BLOCK;
-                if (useanim == UseAnim.BOW)
-                    return HumanoidModel.ArmPose.BOW_AND_ARROW;
-
-                if (useanim == UseAnim.SPEAR)
-                    return HumanoidModel.ArmPose.THROW_SPEAR;
-
-                if (useanim == UseAnim.CROSSBOW && pHand == habciak.getUsedItemHand())
-                    return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-
-                if (useanim == UseAnim.TOOT_HORN)
-                    return HumanoidModel.ArmPose.TOOT_HORN;
-            } else if (!habciak.swinging && itemstack.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(itemstack)) {
-                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
-            }
-
-            HumanoidModel.ArmPose forgeArmPose = net.minecraftforge.client.extensions.common.IClientItemExtensions.of(itemstack).getArmPose(habciak, pHand, itemstack);
-            if (forgeArmPose != null) return forgeArmPose;
-
-            return HumanoidModel.ArmPose.ITEM;
-        }
     }
 
     @Override

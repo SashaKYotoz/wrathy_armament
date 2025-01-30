@@ -21,7 +21,7 @@ group = mod_group_id
 version = mod_version
 
 base {
-    archivesName = mod_id+mod_version+minecraft_version
+    archivesName = mod_id + mod_version + minecraft_version
 }
 
 java {
@@ -29,12 +29,10 @@ java {
 }
 
 minecraft {
-
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     mappings channel: mapping_channel, version: mapping_version
 
     copyIdeResources = true
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         configureEach {
@@ -86,11 +84,17 @@ repositories {
         content {
             includeGroup "curse.maven"
         }
-        maven {
-            name "KosmX's maven"
-            url 'https://maven.kosmx.dev/'
-        }
-        maven { url "https://maven.shedaniel.me/" }
+    }
+    maven {
+        name "KosmX's maven"
+        url 'https://maven.kosmx.dev/'
+    }
+    maven {
+        url "https://maven.shedaniel.me/"
+    }
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
     }
 }
 
@@ -98,8 +102,14 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("curse.maven:anitexlib-1011434:5572038")
     implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    implementation fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    runtimeOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424")
+
+    compileOnly fg.deobf("curse.maven:jei-238222:6075247")
+    runtimeOnly fg.deobf("curse.maven:jei-238222:6075247")
+//    runtimeOnly fg.deobf("curse.maven:worldedit-225608:4586218")
+
     runtimeOnly fg.deobf("curse.maven:cloth-config-348521:4973441")
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
 }

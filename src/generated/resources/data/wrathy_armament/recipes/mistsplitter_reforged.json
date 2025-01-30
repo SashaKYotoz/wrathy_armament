@@ -1,0 +1,33 @@
+{
+  "type": "wrathy_armament:worldshard_workbench_crafting",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:end_crystal"
+    },
+    "E": {
+      "item": "minecraft:eye_armor_trim_smithing_template"
+    },
+    "H": {
+      "item": "minecraft:heart_of_the_sea"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    },
+    "P": {
+      "item": "minecraft:purpur_block"
+    },
+    "e": {
+      "item": "minecraft:end_rod"
+    }
+  },
+  "pattern": [
+    "EeN",
+    "HPP",
+    "CNe"
+  ],
+  "result": {
+    "item": "wrathy_armament:mistsplitter_reforged"
+  },
+  "show_notification": true
+}

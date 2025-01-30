@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -24,8 +23,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.PhantomLancerOnBackLayer;
 import net.sashakyotoz.wrathy_armament.client.renderer.layers.TransparentFireLayer;
+import net.sashakyotoz.wrathy_armament.client.renderer.layers.WeaponsOnBackLayer;
+import net.sashakyotoz.wrathy_armament.networking.WANetworkingManager;
 import net.sashakyotoz.wrathy_armament.registers.*;
 import org.slf4j.Logger;
 
@@ -36,13 +36,15 @@ public class WrathyArmament {
 
     public WrathyArmament() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
         WrathyArmamentItems.ITEMS.register(modEventBus);
         WrathyArmamentBlocks.BLOCKS.register(modEventBus);
         WrathyArmamentMiscRegistries.register(modEventBus);
         WrathyArmamentBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         WrathyArmamentEntities.REGISTRY.register(modEventBus);
         WrathyArmamentSounds.init();
+        modEventBus.addListener(WANetworkingManager::registerPackets);
         if (FMLEnvironment.dist.isClient()) {
             modEventBus.addListener(this::registerLayer);
             modEventBus.addListener(this::clientLoad);
@@ -69,12 +71,11 @@ public class WrathyArmament {
 
     @OnlyIn(Dist.CLIENT)
     private void registerLayer(EntityRenderersEvent.AddLayers event) {
-        EntityModelSet entityModels = event.getEntityModels();
         event.getSkins().forEach((s) -> {
             LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>> livingEntityRenderer = event.getSkin(s);
             if (livingEntityRenderer instanceof PlayerRenderer playerRenderer) {
-                playerRenderer.addLayer(new PhantomLancerOnBackLayer<>(playerRenderer, entityModels));
-                playerRenderer.addLayer(new TransparentFireLayer<>(playerRenderer, entityModels));
+                playerRenderer.addLayer(new TransparentFireLayer<>(playerRenderer, event.getEntityModels()));
+                playerRenderer.addLayer(new WeaponsOnBackLayer<>(playerRenderer, event.getContext()));
             }
         });
     }

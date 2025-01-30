@@ -2,9 +2,12 @@ package net.sashakyotoz.wrathy_armament.blocks.blockentities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -13,6 +16,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SmithingTemplateItem;
@@ -26,6 +30,10 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
 import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.blocks.WorldshardWorkbench;
+import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.SimpleCraftingContainer;
+import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.WorldshardWorkbenchRecipe;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlockEntities;
@@ -37,8 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
-    private static HashMap<String, List<ItemStack>> recipes = new HashMap<>();
-    private final ItemStackHandler itemHandler = new ItemStackHandler(10) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(10) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -46,7 +53,7 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
     };
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     protected final ContainerData data;
-    private int progress = 0;
+    public int progress = 0;
     private int maxProgress = 300;
 
 
@@ -75,17 +82,6 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
                 return 2;
             }
         };
-    }
-
-    /**
-     * <p>String name - key of recipe
-     * <p> First item in list have to instead SmithingTemplateItem if type of action is to craft
-     * <p> If list contains only 3 items and first item is material - type of action is to upgrade
-     */
-    public static void addRecipe(String name, List<ItemStack> itemStacks) {
-        if (itemStacks.size() > 10)
-            throw new IllegalArgumentException("Worldshard Workbench recipes error: List for recipe can't exceed 9 items");
-        recipes.put(name, itemStacks);
     }
 
     @Override
@@ -138,14 +134,30 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+        Containers.dropContents(this.getLevel(), this.worldPosition, inventory);
     }
 
-    //recipes system
     public void tick(Level level, BlockPos pos, BlockState state, WorldshardWorkbenchBlockEntity blockEntity) {
-        if (level.isClientSide())
-            return;
         ItemStack mainStack = blockEntity.itemHandler.getStackInSlot(0);
+        if (level.isClientSide()) {
+            if (mainStack.getItem() instanceof SwordLikeItem) {
+                if (mainStack.getOrCreateTag().getInt("Sparkles") < 5) {
+                    if (mainStack.getOrCreateTag().getInt("CombatExperience") > XPTiers.values()[mainStack.getOrCreateTag().getInt("Sparkles")].getNeededXP()) {
+                        int remainingUseTicks = blockEntity.maxProgress - blockEntity.progress;
+                        float sin = (float) Math.sin(remainingUseTicks * Math.PI / 10);
+                        float cos = (float) Math.cos(remainingUseTicks * Math.PI / 10);
+                        if (blockEntity.progress % 15 == 0)
+                            level.playLocalSound(pos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1.5f, 0.75f, true);
+                        level.addParticle(ParticleTypes.END_ROD,
+                                pos.getX() + 0.5f + sin, pos.getY() + 1.1f, pos.getZ() + 0.5f + cos, 0, 0, 0);
+                    }
+                }
+            }
+            if (hasRecipe()) {
+                if (blockEntity.progress % 15 == 0)
+                    level.playLocalSound(pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.5f, 0.75f, true);
+            }
+        }
         boolean isCraftingAction = mainStack.getItem() instanceof SmithingTemplateItem;
         float[] colors = new float[3];
         switch (this.getModelVariantForRecipe()) {
@@ -170,7 +182,7 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
                 colors[2] = 0.1f;
             }
         }
-        if (getRecipe() != null || (!isCraftingAction && mainStack.getItem() instanceof SwordLikeItem)) {
+        if (hasRecipe() || (!isCraftingAction && mainStack.getItem() instanceof SwordLikeItem)) {
             if (isCraftingAction) {
                 if (RandomSource.create().nextBoolean())
                     blockEntity.progress++;
@@ -181,7 +193,7 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
                 }
             }
             if (blockEntity.progress % 2 == 0 && level instanceof ServerLevel serverLevel)
-                serverLevel.sendParticles(new ColorableParticleOption("sparkle",colors[0],colors[1],colors[2]), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 2, 0, 0, 0, 0.5f);
+                serverLevel.sendParticles(new ColorableParticleOption("sparkle", colors[0], colors[1], colors[2]), pos.getX() + 0.5f, pos.getY() + 1, pos.getZ() + 0.5f, 2, 0, 0, 0, 0.5f);
             setChanged(level, pos, state);
             if (blockEntity.progress >= blockEntity.maxProgress) {
                 if (isCraftingAction)
@@ -210,11 +222,11 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
     }
 
     public int getModelVariantForRecipe() {
-        if (getRecipe() == null)
+        if (getCurrentRecipe().isEmpty())
             return -1;
         else {
-            List<ItemStack> matchedRecipe = getRecipe();
-            ItemStack stackToIdentifyModel = matchedRecipe.get(0);
+            Optional<WorldshardWorkbenchRecipe> matchedRecipe = getCurrentRecipe();
+            ItemStack stackToIdentifyModel = matchedRecipe.get().getResultItem(null);
             if (stackToIdentifyModel.is(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE))
                 return 0;
             else if (stackToIdentifyModel.is(Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE))
@@ -228,34 +240,42 @@ public class WorldshardWorkbenchBlockEntity extends BlockEntity implements MenuP
     }
 
     private void craftItem(WorldshardWorkbenchBlockEntity pEntity) {
-        List<ItemStack> matchedRecipe = getRecipe();
-        if (matchedRecipe != null) {
+        Optional<WorldshardWorkbenchRecipe> matchedRecipe = getCurrentRecipe();
+        if (matchedRecipe.isPresent()) {
+            ItemStack result = matchedRecipe.get().getResultItem(pEntity.getLevel().registryAccess());
             for (int i = 0; i < 9; i++) {
                 pEntity.itemHandler.extractItem(i, 1, false);
             }
-            pEntity.itemHandler.insertItem(9, matchedRecipe.get(9), false);
+            this.itemHandler.setStackInSlot(9, new ItemStack(result.getItem(),
+                    this.itemHandler.getStackInSlot(9).getCount() + result.getCount()));
             pEntity.resetProgress();
         }
     }
 
-    public List<ItemStack> getRecipe() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+    public boolean hasRecipe() {
+        Optional<WorldshardWorkbenchRecipe> recipe = getCurrentRecipe();
+
+        if (recipe.isEmpty()) {
+            return false;
+        }
+        ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
+
+        return canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem());
+    }
+
+    private Optional<WorldshardWorkbenchRecipe> getCurrentRecipe() {
+        SimpleCraftingContainer inventory = new SimpleCraftingContainer(3, 3, this.itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
+            inventory.setItem(i, this.itemHandler.getStackInSlot(i));
         }
-        List<ItemStack> itemsInSlots = new ArrayList<>();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            itemsInSlots.add(inventory.getItem(i));
-        }
-        for (Map.Entry<String, List<ItemStack>> entry : recipes.entrySet()) {
-            int count = 0;
-            for (int i = 0; i < entry.getValue().size() - 1; i++) {
-                if (ItemStack.matches(entry.getValue().get(i), itemsInSlots.get(i)))
-                    count++;
-            }
-            if (count >= 9)
-                return entry.getValue();
-        }
-        return null;
+        return this.getLevel().getRecipeManager().getRecipeFor(WorldshardWorkbenchRecipe.Type.INSTANCE, inventory, this.getLevel());
+    }
+
+    private boolean canInsertItemIntoOutputSlot(Item item) {
+        return this.itemHandler.getStackInSlot(9).isEmpty() || this.itemHandler.getStackInSlot(9).is(item);
+    }
+
+    private boolean canInsertAmountIntoOutputSlot(int count) {
+        return this.itemHandler.getStackInSlot(9).getCount() + count <= this.itemHandler.getStackInSlot(9).getMaxStackSize();
     }
 }

@@ -1,6 +1,6 @@
 [![](https://img.shields.io/badge/All--Rights--Reserved-blue)](https://github.com/SashaKYotoz/wrathy_armament/blob/master/LICENSE)[![](https://img.shields.io/discord/1155188824360624148?color=Green&label=Discord&logo=Discord&style=flat-square)](https://discord.gg/vjyzphNywy)
 
-Status: **In active development | Stable**
+Status: **Stable**
 
 <hr>
 

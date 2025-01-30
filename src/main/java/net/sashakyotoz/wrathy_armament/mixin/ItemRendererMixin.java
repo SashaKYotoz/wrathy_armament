@@ -2,14 +2,24 @@ package net.sashakyotoz.wrathy_armament.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.items.MasterSword;
-import net.sashakyotoz.wrathy_armament.items.MirrorSword;
+import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
+import net.sashakyotoz.wrathy_armament.items.swords.MasterSword;
+import net.sashakyotoz.wrathy_armament.items.swords.MirrorSword;
+import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import net.sashakyotoz.wrathy_armament.utils.RenderUtils;
+import net.sashakyotoz.wrathy_armament.utils.WARenderTypes;
+import net.sashakyotoz.wrathy_armament.utils.capabilities.items.XPTiers;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +30,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(ItemRenderer.class)
-public class ItemRendererMixin {
+public abstract class ItemRendererMixin {
+
+    @Shadow
+    public abstract void renderModelLists(BakedModel pModel, ItemStack pStack, int pCombinedLight, int pCombinedOverlay, PoseStack pPoseStack, VertexConsumer pBuffer);
+
+    @Shadow
+    @Final
+    private ItemModelShaper itemModelShaper;
+
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Shadow
     @Final
@@ -60,5 +81,22 @@ public class ItemRendererMixin {
             }
         }
         ci.cancel();
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"))
+    private void renderOutline(ItemStack pItemStack, ItemDisplayContext pDisplayContext, boolean pLeftHand, PoseStack pPoseStack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay, BakedModel pModel, CallbackInfo ci) {
+        if (pItemStack.getItem() instanceof SwordLikeItem item && this.minecraft.getCameraEntity() != null) {
+            if (item.getCurrentSparkles(pItemStack) < 5 && item.getStoredXP(pItemStack) > XPTiers.values()[item.getCurrentSparkles(pItemStack)].getNeededXP()) {
+                pPoseStack.translate(-0.00077f, 0.0009f, 0.0009);
+                pPoseStack.scale(1.0015f, 1.0015f, 1.0015f);
+                renderModelLists(this.itemModelShaper.getItemModel(pItemStack), pItemStack, pCombinedLight, pCombinedOverlay, pPoseStack,
+                        pBuffer.getBuffer(OnActionsTrigger.isOculusIn() ?
+                                RenderType.energySwirl(WrathyArmament.createWALocation("textures/item/materials/lined_sparkle_blinking.png"),
+                                        RenderUtils.getOscillatingValue(this.minecraft.getCameraEntity().tickCount, 8), 0)
+                                : WARenderTypes.translucentSwirl(
+                                WrathyArmament.createWALocation("textures/item/materials/sparkle_blinking.png"),
+                                RenderUtils.getOscillatingValue(this.minecraft.getCameraEntity().tickCount, 24), 0)));
+            }
+        }
     }
 }

@@ -29,12 +29,11 @@ public class ZenithEntity extends AbstractArrow {
     private static final EntityDataAccessor<Byte> RETURNING_SPEED = SynchedEntityData.defineId(ZenithEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Integer> INDEX = SynchedEntityData.defineId(ZenithEntity.class, EntityDataSerializers.INT);
     private boolean dealtDamage;
-    public int clientSideReturnBladeTickCount;
 
-    public ZenithEntity(Level level, LivingEntity livingEntity,int Index) {
+    public ZenithEntity(Level level, LivingEntity livingEntity, int Index) {
         super(WrathyArmamentEntities.ZENITH.get(), livingEntity, level);
         this.entityData.set(RETURNING_SPEED, (byte) 4);
-        this.entityData.set(INDEX,Index);
+        this.entityData.set(INDEX, Index);
         this.setNoGravity(true);
         timer = 120;
     }
@@ -44,7 +43,8 @@ public class ZenithEntity extends AbstractArrow {
         timer = 120;
         this.setNoGravity(true);
     }
-    public int getIndex(){
+
+    public int getIndex() {
         return this.entityData.get(INDEX);
     }
 
@@ -58,11 +58,11 @@ public class ZenithEntity extends AbstractArrow {
         }
         Entity entity = this.getOwner();
         int i = this.entityData.get(RETURNING_SPEED);
-        if(timer > 50){
+        if (timer > 40) {
             double speed = 1.5;
-            this.level().addParticle(WrathyArmamentMiscRegistries.ZENITH_WAY.get(),this.getX(),this.getY(),this.getZ(), OnActionsTrigger.getXVector(speed,this.getYRot()),OnActionsTrigger.getYVector(speed,this.getXRot()),OnActionsTrigger.getZVector(speed,this.getYRot()));
+            this.level().addParticle(WrathyArmamentMiscRegistries.ZENITH_WAY.get(), this.getX(), this.getY(), this.getZ(), OnActionsTrigger.getXVector(speed, this.getYRot()), OnActionsTrigger.getYVector(speed, this.getXRot()), OnActionsTrigger.getZVector(speed, this.getYRot()));
         }
-        if (entity != null && timer < 105) {
+        if (entity != null && timer < 100) {
             if (!this.isAcceptibleReturnOwner()) {
                 this.discard();
             } else {
@@ -74,10 +74,6 @@ public class ZenithEntity extends AbstractArrow {
                 }
                 double d0 = 0.05D * (double) i;
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.95D).add(vec3.normalize().scale(d0)));
-                if (this.clientSideReturnBladeTickCount == 0) {
-                    this.playSound(SoundEvents.ELYTRA_FLYING, 2.0F, 0.5F);
-                }
-                ++this.clientSideReturnBladeTickCount;
             }
         }
         super.tick();
@@ -117,12 +113,13 @@ public class ZenithEntity extends AbstractArrow {
             }
             if (entity instanceof LivingEntity livingEntity) {
                 if (owner instanceof LivingEntity)
-                    entity.hurt(this.damageSources().magic(),f);
+                    entity.hurt(this.damageSources().magic(), f);
                 this.doPostHurtEffects(livingEntity);
             }
         }
         this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01D, -0.1D, -0.01D));
     }
+
     @Override
     protected ItemStack getPickupItem() {
         return ItemStack.EMPTY;
@@ -137,6 +134,7 @@ public class ZenithEntity extends AbstractArrow {
             super.playerTouch(player);
         }
     }
+
     protected float getWaterInertia() {
         return 1.1F;
     }

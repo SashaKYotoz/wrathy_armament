@@ -30,5 +30,19 @@
       "wrathy_armament:items/soul_swing/soul_slash",
       "wrathy_armament:items/soul_swing/soul_slash1"
     ]
+  },
+  "entity.beam_shooting": {
+    "subtitle": "subtitles.block.beacon.ambient",
+    "sounds": [
+      "wrathy_armament:entities/beam_shooting0",
+      "wrathy_armament:entities/beam_shooting1"
+    ]
+  },
+  "entity.moon_lord_hurt": {
+    "subtitle": "subtitles.entity.moon_lord_hurt",
+    "sounds": [
+      "wrathy_armament:entities/moon_lord_hurt0",
+      "wrathy_armament:entities/moon_lord_hurt1"
+    ]
   }
 }

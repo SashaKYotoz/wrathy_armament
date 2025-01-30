@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.client.models.technical.BlackrazorModel;
+import net.sashakyotoz.wrathy_armament.mixin.accessor.EntityModelSetAccessor;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +27,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = BlockEntityWithoutLevelRenderer.class, priority = 1024)
+import java.util.Map;
+
+@Mixin(BlockEntityWithoutLevelRenderer.class)
 public class BlockEntityWithoutLevelRendererMixin {
     @Shadow
     @Final
@@ -32,9 +37,11 @@ public class BlockEntityWithoutLevelRendererMixin {
     @Unique
     private BlackrazorModel wrathy_armament$blackrazorModel;
 
-    @Inject(method = "onResourceManagerReload", at = @At("HEAD"))
+    @Inject(method = "onResourceManagerReload", at = @At("TAIL"))
     public void onReload(ResourceManager pResourceManager, CallbackInfo ci) {
-        this.wrathy_armament$blackrazorModel = new BlackrazorModel(entityModelSet.bakeLayer(BlackrazorModel.LAYER_LOCATION));
+        Map<ModelLayerLocation, LayerDefinition> roots = ((EntityModelSetAccessor) entityModelSet).getRoots();
+        if (roots.containsKey(BlackrazorModel.LAYER_LOCATION))
+            this.wrathy_armament$blackrazorModel = new BlackrazorModel(entityModelSet.bakeLayer(BlackrazorModel.LAYER_LOCATION));
     }
 
     @Inject(method = "renderByItem", at = @At("HEAD"))
@@ -49,15 +56,17 @@ public class BlockEntityWithoutLevelRendererMixin {
                 case GUI -> pPoseStack.translate(2.5, -1.1, 0);
             }
             VertexConsumer mainConsumer = pBuffer.getBuffer(RenderType.entityTranslucent(WrathyArmament.createWALocation("textures/item/blackrazor.png")));
-            this.wrathy_armament$blackrazorModel.handle().render(pPoseStack, mainConsumer, pPackedLight, pPackedOverlay);
-            this.wrathy_armament$blackrazorModel.blade().render(pPoseStack, mainConsumer, pPackedLight, pPackedOverlay, 1, pStack.getOrCreateTag().getInt("hungryTimer") > 0 ? 0 : 1, 1, 0.375f);
-            Minecraft minecraft = Minecraft.getInstance();
-            LocalPlayer player = minecraft.player;
-            pPoseStack.scale(1.01f, 1.01f, 1.01f);
-            if (player != null) {
-                float f = (player.tickCount - minecraft.getPartialTick()) * 0.25f;
-                VertexConsumer consumer = pBuffer.getBuffer(RenderType.energySwirl(TheEndPortalRenderer.END_PORTAL_LOCATION, this.wrathy_armament$getEnergySwirlX(f) % 1.0F, f * 0.01F % 1.0F));
-                this.wrathy_armament$blackrazorModel.blade().render(pPoseStack, consumer, pPackedLight, pPackedOverlay);
+            if (wrathy_armament$blackrazorModel != null){
+                this.wrathy_armament$blackrazorModel.handle().render(pPoseStack, mainConsumer, pPackedLight, pPackedOverlay);
+                this.wrathy_armament$blackrazorModel.blade().render(pPoseStack, mainConsumer, pPackedLight, pPackedOverlay, 1, pStack.getOrCreateTag().getInt("hungryTimer") > 0 ? 0 : 1, 1, 0.375f);
+                Minecraft minecraft = Minecraft.getInstance();
+                LocalPlayer player = minecraft.player;
+                pPoseStack.scale(1.01f, 1.01f, 1.01f);
+                if (player != null) {
+                    float f = (player.tickCount - minecraft.getPartialTick()) * 0.25f;
+                    VertexConsumer consumer = pBuffer.getBuffer(RenderType.energySwirl(TheEndPortalRenderer.END_PORTAL_LOCATION, this.wrathy_armament$getEnergySwirlX(f) % 1.0F, f * 0.01F % 1.0F));
+                    this.wrathy_armament$blackrazorModel.blade().render(pPoseStack, consumer, pPackedLight, pPackedOverlay);
+                }
             }
             pPoseStack.popPose();
         }

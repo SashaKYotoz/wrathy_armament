@@ -2,36 +2,36 @@ package net.sashakyotoz.wrathy_armament.entities.bosses;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.habciak.HabciakBypassGoal;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.habciak.HabciakFloorAttackGoal;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.habciak.HabciakMirrorCastingGoal;
+import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.HabciakMovementGoal;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 
 public class Habciak extends BossLikePathfinderMob {
     private final ServerBossEvent bossEvent = new ServerBossEvent(Component.translatable("boss.wrathy_armament.habciak"), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_6);
+    private static final EntityDataAccessor<HabciakPose> DATA_HABCIAK_POSE = SynchedEntityData.defineId(Habciak.class, WrathyArmamentMiscRegistries.HABCIAK_POSE.get());
     public final AnimationState death = new AnimationState();
     public final AnimationState jump = new AnimationState();
     public final AnimationState floorAttack = new AnimationState();
     public final AnimationState backFlip = new AnimationState();
     public final AnimationState mirrorCasting = new AnimationState();
-    private final MeleeAttackGoal meleeGoal = new MeleeAttackGoal(this, 1.5D, true);
-    private final HabciakBypassGoal jumpGoal = new HabciakBypassGoal(this);
-    private final HabciakFloorAttackGoal floorAttackGoal = new HabciakFloorAttackGoal(this);
-    private final HabciakMirrorCastingGoal mirrorCastingGoal = new HabciakMirrorCastingGoal(this);
+    public final AnimationState splash = new AnimationState();
     public int backFlipRotation = 0;
 
     public Habciak(EntityType<? extends PathfinderMob> type, Level level) {
@@ -40,32 +40,13 @@ public class Habciak extends BossLikePathfinderMob {
     }
 
     public Player playerToRender() {
-        return this.getTarget() instanceof Player player ? player : level().getNearestPlayer(this, 16);
+        return this.getTarget() instanceof Player player ? player : level().getNearestPlayer(this, 24);
     }
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1, true));
+        this.goalSelector.addGoal(1, new HabciakMovementGoal(this));
         super.registerGoals();
-    }
-
-    public void reassessAttackGoal(int i) {
-        if (!this.level().isClientSide) {
-            this.goalSelector.removeGoal(this.meleeGoal);
-            this.goalSelector.removeGoal(this.jumpGoal);
-            this.goalSelector.removeGoal(this.floorAttackGoal);
-            this.goalSelector.removeGoal(this.mirrorCastingGoal);
-            switch (i) {
-                default -> this.goalSelector.addGoal(3, meleeGoal);
-                case 1 -> this.goalSelector.addGoal(3, jumpGoal);
-                case 2 -> this.goalSelector.addGoal(3, floorAttackGoal);
-                case 3 -> this.goalSelector.addGoal(3, mirrorCastingGoal);
-            }
-        }
-    }
-
-    public boolean doBackFlip() {
-        return !onGround() && this.goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof HabciakMirrorCastingGoal);
     }
 
     @Override
@@ -75,16 +56,36 @@ public class Habciak extends BossLikePathfinderMob {
     }
 
     @Override
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_HABCIAK_POSE, HabciakPose.IDLING);
+        super.defineSynchedData();
+    }
+
+    private void setHabciakPose(HabciakPose knightPose) {
+        this.entityData.set(DATA_HABCIAK_POSE, knightPose);
+    }
+
+    public HabciakPose getHabciakPose() {
+        return this.entityData.get(DATA_HABCIAK_POSE);
+    }
+
+    public boolean isInPose(HabciakPose phase) {
+        return this.getHabciakPose() == phase;
+    }
+
+    @Override
     public void tick() {
         super.tick();
-        if (!this.isFallFlying() && this.doBackFlip())
-            this.backFlip.startIfStopped(this.tickCount);
         if (backFlipRotation > 0)
             backFlipRotation--;
         if (this.tickCount % 5 == 0) {
+            if (this.getTarget() != null && this.isInPose(HabciakPose.IDLING))
+                changePose();
+            if (this.getHealth() < 480 && this.getItemInHand(InteractionHand.MAIN_HAND).is(Items.ENCHANTED_GOLDEN_APPLE)) {
+                this.heal(1);
+                this.playSound(SoundEvents.GENERIC_EAT, 1.5f, 2);
+            }
             if (this.getTarget() instanceof Player player) {
-                if (this.goalSelector.getRunningGoals().noneMatch(goal -> goal.getGoal() instanceof HabciakBypassGoal))
-                    this.setItemInHand(InteractionHand.MAIN_HAND, player.getMainHandItem());
                 this.setItemSlot(EquipmentSlot.HEAD, player.getItemBySlot(EquipmentSlot.HEAD));
                 this.setItemSlot(EquipmentSlot.CHEST, player.getItemBySlot(EquipmentSlot.CHEST));
                 if (this.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ElytraItem) {
@@ -101,12 +102,112 @@ public class Habciak extends BossLikePathfinderMob {
                 this.setItemSlot(EquipmentSlot.LEGS, player.getItemBySlot(EquipmentSlot.LEGS));
                 this.setItemSlot(EquipmentSlot.FEET, player.getItemBySlot(EquipmentSlot.FEET));
                 this.setItemSlot(EquipmentSlot.OFFHAND, player.getItemBySlot(EquipmentSlot.OFFHAND));
-                if (player.getUseItem().getUseDuration() > 60) {
-                    this.startUsingItem(player.getUsedItemHand());
+                if (!this.isInPose(HabciakPose.BYPASSING))
+                    this.setItemInHand(InteractionHand.MAIN_HAND, this.isInPose(HabciakPose.MIRROR_CASTING)
+                            ? WrathyArmamentItems.MIRROR_SWORD.get().getDefaultInstance()
+                            : player.getMainHandItem());
+            }
+        }
+    }
+
+    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
+        if (DATA_HABCIAK_POSE.equals(dataAccessor)) {
+            if (!this.isInPose(HabciakPose.MIRROR_CASTING))
+                this.mirrorCasting.stop();
+            if (!this.isInPose(HabciakPose.JUMPING))
+                this.jump.stop();
+            if (!this.isInPose(HabciakPose.BACKFLIPPING))
+                this.backFlip.stop();
+            switch (this.getHabciakPose()) {
+                case JUMPING -> {
+                    this.jump.start(this.tickCount);
+                    this.spawnParticle(ParticleTypes.CLOUD, this.level(), this.getX(), this.getY() + 0.5f, this.getZ(), 1.5f);
+                    queueServerWork(30, this::changePose);
+                }
+                case BACKFLIPPING -> {
+                    this.backFlip.start(this.tickCount);
+                    queueServerWork(20, () -> this.setDeltaMovement(
+                            -this.getXVector(1, this.getYRot()),
+                            0.75f,
+                            -this.getZVector(1, this.getYRot())
+                    ));
+                    queueServerWork(50, this::changePose);
+                }
+                case ATTACKING -> {
+                    this.floorAttack.start(this.tickCount);
+                    queueServerWork(50, () -> {
+                        if (this.getTarget() != null && this.getTarget().distanceToSqr(this) < 9)
+                            doEnchantDamageEffects(this, this.getTarget());
+                    });
+                    queueServerWork(60, this::changePose);
+                }
+                case BYPASSING -> {
+                    this.setItemInHand(InteractionHand.MAIN_HAND, Items.ENCHANTED_GOLDEN_APPLE.getDefaultInstance());
+                    this.startUsingItem(InteractionHand.MAIN_HAND);
+                    queueServerWork(100, this::changePose);
+                }
+                case MIRROR_CASTING -> {
+                    this.mirrorCasting.start(this.tickCount);
+                    queueServerWork(50, () -> {
+                        shootTakenDamage();
+                        changePose();
+                    });
+                }
+                case SPLASH -> {
+                    this.splash.start(this.tickCount);
+                    this.playSound(SoundEvents.FROG_LONG_JUMP, 1.5f, 2f);
+                    queueServerWork(20, () -> this.setDeltaMovement(new Vec3(
+                            this.getXVector(0.75f, this.getYRot()),
+                            0.65,
+                            this.getZVector(0.75f, this.getYRot())
+                    )));
+                    queueServerWork(40, () -> {
+                        this.hitNearbyMobs(12, 7);
+                        changePose();
+                    });
                 }
             }
-            if (this.getRandom().nextInt(0, 19) == 5)
-                this.reassessAttackGoal(this.getRandom().nextInt(4));
+        }
+        super.onSyncedDataUpdated(dataAccessor);
+    }
+
+    private void changePose() {
+        switch (this.getHabciakPose()) {
+            case IDLING, BYPASSING -> this.setHabciakPose(HabciakPose.ATTACKING);
+            case ATTACKING -> this.setHabciakPose(HabciakPose.BACKFLIPPING);
+            case BACKFLIPPING -> this.setHabciakPose(HabciakPose.JUMPING);
+            case JUMPING -> this.setHabciakPose(HabciakPose.MIRROR_CASTING);
+            case MIRROR_CASTING -> this.setHabciakPose(HabciakPose.SPLASH);
+            case SPLASH -> this.setHabciakPose(HabciakPose.BYPASSING);
+        }
+    }
+
+    private void shootTakenDamage() {
+        if (this.isInPose(HabciakPose.MIRROR_CASTING)) {
+            Vec3 eyePos = this.getEyePosition();
+            Vec3 lookVec = this.getViewVector(1.0F);
+            Vec3 endPos = eyePos.add(lookVec.scale(9));
+            int particleCount = 20;
+            Vec3 step = endPos.subtract(eyePos).scale(1.0 / particleCount);
+            double radius = 0.25;
+            for (int v = 0; v < 180; v++) {
+                for (int j = 0; j < particleCount; j++) {
+                    Vec3 basePos = eyePos.add(step.scale(j));
+                    double angle = (v) * Math.PI / 20 + (j * Math.PI / 10);
+                    double offsetX = radius * Math.cos(angle);
+                    double offsetY = radius * Math.sin(angle);
+                    Vec3 perpendicular = lookVec.cross(new Vec3(0, 1, 0)).normalize();
+                    Vec3 particlePos = basePos.add(perpendicular.scale(offsetX)).add(0, offsetY, 0);
+                    this.level().addParticle(
+                            ParticleTypes.CLOUD,
+                            particlePos.x,
+                            particlePos.y,
+                            particlePos.z,
+                            0, 0, 0
+                    );
+                }
+            }
+            this.hitNearbyMobs(12, 9);
         }
     }
 
@@ -130,7 +231,8 @@ public class Habciak extends BossLikePathfinderMob {
 
     @Override
     public void die(DamageSource source) {
-        this.deathTime = -100;
+        this.setHabciakPose(HabciakPose.DYING);
+        this.deathTime = -80;
         super.die(source);
     }
 
@@ -143,11 +245,22 @@ public class Habciak extends BossLikePathfinderMob {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 500.0D)
-                .add(Attributes.ATTACK_DAMAGE, 10)
+                .add(Attributes.ATTACK_DAMAGE, 12)
                 .add(Attributes.FOLLOW_RANGE, 48)
-                .add(Attributes.ARMOR, 10)
-                .add(Attributes.ARMOR_TOUGHNESS, 10)
+                .add(Attributes.ARMOR, 8)
+                .add(Attributes.ARMOR_TOUGHNESS, 8)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
+    }
+
+    public enum HabciakPose {
+        DYING,
+        ATTACKING,
+        MIRROR_CASTING,
+        BACKFLIPPING,
+        BYPASSING,
+        JUMPING,
+        SPLASH,
+        IDLING
     }
 }

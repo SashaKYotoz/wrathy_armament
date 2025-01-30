@@ -1,0 +1,14 @@
+{
+  "fallback": "wrathy_armament:habciak_arena/center",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "wrathy_armament:habciak_arena/habciak_arena_center",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

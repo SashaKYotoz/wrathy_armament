@@ -12,10 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.client.models.technical.AxeProjectileModel;
-import net.sashakyotoz.wrathy_armament.client.models.technical.DaggerProjectileModel;
-import net.sashakyotoz.wrathy_armament.client.models.technical.HugeSwordModel;
-import net.sashakyotoz.wrathy_armament.client.models.technical.ShieldDashModel;
+import net.sashakyotoz.wrathy_armament.client.models.technical.*;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 
 public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileEntity> {
@@ -27,6 +24,7 @@ public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileE
     private final HugeSwordModel<HarmfulProjectileEntity> swordModel;
     private final ShieldDashModel<HarmfulProjectileEntity> shieldModel;
     private final AxeProjectileModel<HarmfulProjectileEntity> axeModel;
+    private final ParticleLikeEntityModel<HarmfulProjectileEntity> circleModel;
 
     public HarmfulProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -35,6 +33,7 @@ public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileE
         this.axeModel = new AxeProjectileModel<>(context.bakeLayer(AxeProjectileModel.LAYER_LOCATION));
         this.swordModel = new HugeSwordModel<>(context.bakeLayer(HugeSwordModel.LAYER_LOCATION));
         this.shieldModel = new ShieldDashModel<>(context.bakeLayer(ShieldDashModel.LAYER_LOCATION));
+        this.circleModel = new ParticleLikeEntityModel<>(context.bakeLayer(ParticleLikeEntityModel.LAYER_LOCATION));
     }
 
     @Override
@@ -43,13 +42,19 @@ public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileE
         if (entity.rotationRelativelyToY() != 0 && !entity.getProjectileType().equals("huge_sword")) {
             poseStack.mulPose(Axis.YP.rotationDegrees(180 - entity.rotationRelativelyToY()));
         }
+        if (entity.getProjectileType().equals("vertical_circle")) {
+            poseStack.scale(0.75f, 0.75f, 0.75f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(entity.tickCount % 360));
+        }
         if (entity.getProjectileType().equals("axe"))
             poseStack.mulPose(Axis.XP.rotation(Mth.TWO_PI * entity.tickCount * 0.125f));
         switch (entity.getProjectileType()) {
-            default -> this.model = daggerModel;
             case "axe", "knight_axe" -> this.model = axeModel;
             case "huge_sword" -> this.model = swordModel;
             case "shield_dash" -> this.model = shieldModel;
+            case "vertical_circle" -> this.model = circleModel;
+            default -> this.model = daggerModel;
         }
         float f7 = this.getBob(entity, partialTicks);
         if (entity.getProjectileType().equals("huge_sword")) {
@@ -58,9 +63,8 @@ public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileE
             poseStack.translate(0, -3.5 + entity.timeToVanish / 40f, 0);
         } else if (entity.getProjectileType().equals("shield_dash")) {
             poseStack.scale(1.5f + entity.timeToVanish / 5f, 1.5f + entity.timeToVanish / 5f, 1.5f + entity.timeToVanish / 5f);
-            poseStack.translate(0,-1.5f,0);
-        }
-        else
+            poseStack.translate(0, -1.5f, 0);
+        } else
             poseStack.translate(0, -0.5, 0);
         this.model.setupAnim(entity, 0, 0.0F, f7, entity.getYRot(), entity.getXRot());
         VertexConsumer vertexconsumer = bufferSource.getBuffer(this.model.renderType(getTextureLocation(entity)));
@@ -81,6 +85,7 @@ public class HarmfulProjectileRenderer extends EntityRenderer<HarmfulProjectileE
             case "huge_sword" -> SWORD;
             case "shield_dash" ->
                     TextureAnimator.getAnimatedTextureByName(WrathyArmament.MODID, "textures/entity/particle_like/shield_dash/", "shield_dash");
+            case "vertical_circle" -> ParticleLikeEntityRenderer.LIGHT_CIRCLE;
             default -> DAGGER;
         };
     }

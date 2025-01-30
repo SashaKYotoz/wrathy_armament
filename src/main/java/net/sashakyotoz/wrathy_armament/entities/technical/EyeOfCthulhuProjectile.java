@@ -45,7 +45,6 @@ public class EyeOfCthulhuProjectile extends AbstractArrow implements ItemSupplie
         this.entityData.define(TIME_TO_BOOM, 30);
     }
 
-
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
@@ -54,12 +53,6 @@ public class EyeOfCthulhuProjectile extends AbstractArrow implements ItemSupplie
     @Override
     protected ItemStack getPickupItem() {
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    protected void doPostHurtEffects(LivingEntity entity) {
-        super.doPostHurtEffects(entity);
-        entity.setArrowCount(entity.getArrowCount() - 1);
     }
 
     @Override

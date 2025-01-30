@@ -6,6 +6,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.CthulhuRangedAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.MobCopyOwnerTargetGoal;
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.TrueEyeMeleeGoal;
@@ -41,7 +43,7 @@ public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
         super(pEntityType, pLevel);
         this.xpReward = XP_REWARD_MEDIUM;
         this.navigation = new FlyingPathNavigation(this, this.level());
-        this.moveControl = new FlyingMoveControl(this, 30, true);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
     @Override
@@ -52,9 +54,27 @@ public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(2, new MobCopyOwnerTargetGoal(this));
-        this.goalSelector.addGoal(3, new WaterAvoidingRandomFlyingGoal(this, 1.5f));
+        this.goalSelector.addGoal(3, new WaterAvoidingRandomFlyingGoal(this, 0.9f));
         this.goalSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, true));
         super.registerGoals();
+    }
+    public void travel(Vec3 pTravelVector) {
+        if (this.isControlledByLocalInstance()) {
+            if (this.isInWater()) {
+                this.moveRelative(0.02F, pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.8F));
+            } else if (this.isInLava()) {
+                this.moveRelative(0.02F, pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
+            } else {
+                this.moveRelative(this.getSpeed(), pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.91F));
+            }
+        }
+        this.calculateEntityAnimation(false);
     }
 
     @Override
@@ -147,9 +167,10 @@ public class TrueEyeOfCthulhu extends OwnerableMob implements RangedAttackMob {
 
     @Override
     public void performRangedAttack(LivingEntity pTarget, float pVelocity) {
+        this.playSound(SoundEvents.CONDUIT_DEACTIVATE,1.24f,1f);
         EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
         projectile.setOwner(this);
-        projectile.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 3.0F, 0.75F);
+        projectile.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 3.0F, 0.35F);
         this.level().addFreshEntity(projectile);
     }
 }

@@ -1,0 +1,33 @@
+{
+  "type": "wrathy_armament:worldshard_workbench_crafting",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:ancient_debris"
+    },
+    "E": {
+      "item": "minecraft:echo_shard"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "R": {
+      "item": "minecraft:raiser_armor_trim_smithing_template"
+    },
+    "S": {
+      "item": "wrathy_armament:shard_of_mechanvil"
+    },
+    "s": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "RSA",
+    "NNN",
+    "ESs"
+  ],
+  "result": {
+    "item": "wrathy_armament:half_zatoichi"
+  },
+  "show_notification": true
+}

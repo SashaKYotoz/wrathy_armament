@@ -11,9 +11,13 @@
   "client": [
     "BlockEntityWithoutLevelRendererMixin",
     "FogRendererMixin",
+    "GuiGraphicsMixin",
+    "ItemInHandLayerMixin",
     "ItemInHandRendererMixin",
     "ItemRendererMixin",
-    "OverBossHealthBarMixin"
+    "OverBossHealthBarMixin",
+    "accessor.EntityModelSetAccessor",
+    "accessor.ItemRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

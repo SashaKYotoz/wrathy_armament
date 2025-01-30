@@ -38,18 +38,18 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
     public void render(ZenithEntity zenithEntity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         VertexConsumer vb = bufferIn.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(zenithEntity)));
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, zenithEntity.yRotO, zenithEntity.getYRot()) - 90));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, zenithEntity.xRotO, zenithEntity.getXRot())));
+        poseStack.mulPose(Axis.YP.rotationDegrees(zenithEntity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(zenithEntity.tickCount % 360));
         if(this.model != null)
             this.model.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 0.5f);
         else
             this.zenith.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1f);
         poseStack.popPose();
         switch (zenithEntity.getIndex()){
-            default -> this.model = this.copperSword;
             case 1 -> this.model = this.terrablade;
             case 2 -> this.model = this.meowmere;
             case 3-> this.model = this.zenith;
+            default -> this.model = this.copperSword;
         }
         super.render(zenithEntity, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
     }
@@ -57,9 +57,6 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
     @Override
     public ResourceLocation getTextureLocation(ZenithEntity entity) {
         switch (entity.getIndex()){
-            default -> {
-                return copperSwordTexture;
-            }
             case 1 ->{
                 return terrabladeTexture;
             }
@@ -68,6 +65,9 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
             }
             case 3->{
                 return zenithTexture;
+            }
+            default -> {
+                return copperSwordTexture;
             }
         }
     }

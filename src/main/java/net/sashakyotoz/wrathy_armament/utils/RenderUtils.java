@@ -3,6 +3,7 @@ package net.sashakyotoz.wrathy_armament.utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -11,13 +12,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
+import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class RenderUtils {
 
-    public static void renderBeam(Mob entity, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, RenderType type, boolean toScale) {
+    public static void renderBeam(Mob entity, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, RenderType type) {
         if (entity.getTarget() != null) {
             float f1 = entity.level().getGameTime() + pPartialTicks;
             float f2 = f1 * 0.5F % 1.0F;
@@ -31,14 +34,14 @@ public class RenderUtils {
             vec32 = vec32.normalize();
             float f5 = (float) Math.acos(vec32.y);
             float f6 = (float) Math.atan2(vec32.z, vec32.x);
-            float modifier = (float) getOscillatingValue(entity.tickCount, 3);
+            float modifier = getOscillatingValue(entity.tickCount, 3);
             modifier = Math.max(modifier, 0.25f);
             pPoseStack.scale(modifier, modifier, modifier);
             pPoseStack.mulPose(Axis.YP.rotationDegrees((((float) Math.PI / 2F) - f6) * (180F / (float) Math.PI)));
             pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (180F / (float) Math.PI)));
             float f7 = f1 * 0.05F * -1.5F;
-            int j = 0;
-            int k = 100;
+            int j = 25;
+            int k = 175;
             int l = 255;
             float f11 = Mth.cos(f7 + 2.3561945F) * 0.282F;
             float f12 = Mth.sin(f7 + 2.3561945F) * 0.282F;
@@ -94,8 +97,8 @@ public class RenderUtils {
             pPoseStack.mulPose(Axis.YP.rotationDegrees((((float) Math.PI / 2F) - f6) * (180F / (float) Math.PI)));
             pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (180F / (float) Math.PI)));
             float f7 = f1 * 0.05F * -1.5F;
-            int j = 0;
-            int k = 100;
+            int j = 25;
+            int k = 125;
             int l = 255;
             float f11 = Mth.cos(f7 + 2.3561945F) * 0.282F;
             float f12 = Mth.sin(f7 + 2.3561945F) * 0.282F;
@@ -165,12 +168,81 @@ public class RenderUtils {
     }
 
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, float pX, float pY, float pZ, int pRed, int pGreen, int pBlue, float pU, float pV) {
-        pConsumer.vertex(pPose, pX, pY, pZ).color(pRed, pGreen, pBlue, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+        pConsumer.vertex(pPose, pX, pY, pZ).color(pRed, pGreen, pBlue, 200).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
     }
 
-    public static double getOscillatingValue(int tickCount, int periodInSeconds) {
+    public static void renderTongue(MoonLord lord, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer) {
+        pPoseStack.pushPose();
+        BlockPos pos = lord.level().getNearestPlayer(lord, 32) != null ? lord.level().getNearestPlayer(lord, 32).getOnPos().above() : posOfViewing(lord,lord.getOnPos()).above();
+        Vec3 vec3 = pos.getCenter().add(0f,0.25f,0f);
+        double d0 = (double) (Mth.lerp(pPartialTicks, lord.yBodyRotO, lord.yBodyRot) * ((float) Math.PI / 180F)) + (Math.PI / 2D);
+        Vec3 vec31 = lord.getLeashOffset(pPartialTicks);
+        double d1 = Math.cos(d0) * vec31.z + Math.sin(d0) * vec31.x;
+        double d2 = Math.sin(d0) * vec31.z - Math.cos(d0) * vec31.x;
+        double d3 = Mth.lerp(pPartialTicks, lord.xo, lord.getX()) + d1;
+        double d4 = Mth.lerp(pPartialTicks, lord.yo, lord.getY()) + vec31.y;
+        double d5 = Mth.lerp(pPartialTicks, lord.zo, lord.getZ()) + d2;
+        pPoseStack.translate(d1, vec31.y, d2);
+        float f = (float) (vec3.x - d3);
+        float f1 = (float) (vec3.y - d4);
+        float f2 = (float) (vec3.z - d5);
+        VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.leash());
+        Matrix4f matrix4f = pPoseStack.last().pose();
+        BlockPos blockpos = BlockPos.containing(lord.getEyePosition(pPartialTicks));
+        int i = lord.level().getBrightness(LightLayer.BLOCK, blockpos);
+        int j = getBlockLightLevel(lord, pos);
+        int k = lord.level().getBrightness(LightLayer.SKY, blockpos);
+        int l = lord.level().getBrightness(LightLayer.SKY, pos);
+        int segments = 32;
+        float segmentSize = 0.25F;
+        for (int i1 = 0; i1 <= segments; ++i1) {
+            float t = (float) i1 / segments;
+            float x = f * t;
+            float y = f1 > 0.0F ? f1 * t * t : f1 - f1 * (1.0F - t) * (1.0F - t);
+            float z = f2 * t;
+            int blockLight = (int) Mth.lerp(t, (float) i, (float) j);
+            int skyLight = (int) Mth.lerp(t, (float) k, (float) l);
+            int light = LightTexture.pack(blockLight, skyLight);
+            addCube(vertexconsumer, matrix4f, x, y, z, segmentSize, light);
+        }
+        pPoseStack.popPose();
+    }
+
+    private static int getBlockLightLevel(MoonLord lord, BlockPos pPos) {
+        return lord.isOnFire() ? 15 : lord.level().getBrightness(LightLayer.BLOCK, pPos);
+    }
+
+    private static void addCube(VertexConsumer vertexconsumer, Matrix4f matrix, float x, float y, float z, float size, int light) {
+        float halfSize = size / 2.0F;
+        addFace(vertexconsumer, matrix, x - halfSize, y - halfSize, z + halfSize, x + halfSize, y + halfSize, z + halfSize, light);
+        addFace(vertexconsumer, matrix, x - halfSize, y - halfSize, z - halfSize, x + halfSize, y + halfSize, z - halfSize, light);
+        addFace(vertexconsumer, matrix, x - halfSize, y - halfSize, z - halfSize, x - halfSize, y + halfSize, z + halfSize, light);
+        addFace(vertexconsumer, matrix, x + halfSize, y - halfSize, z - halfSize, x + halfSize, y + halfSize, z + halfSize, light);
+        addFace(vertexconsumer, matrix, x - halfSize, y + halfSize, z - halfSize, x + halfSize, y + halfSize, z + halfSize, light);
+        addFace(vertexconsumer, matrix, x - halfSize, y - halfSize, z - halfSize, x + halfSize, y - halfSize, z + halfSize, light);
+    }
+
+    private static void addFace(VertexConsumer vertexconsumer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int light) {
+        vertexconsumer.vertex(matrix, x1, y1, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y2, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y2, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y1, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+
+        vertexconsumer.vertex(matrix, x1, y1, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y2, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y2, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y1, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+    }
+
+    public static float getOscillatingValue(int tickCount, int periodInSeconds) {
         int periodInTicks = periodInSeconds * 20;
         double phase = (2 * Math.PI * (tickCount % periodInTicks)) / periodInTicks;
-        return 0.5 * (1 + Math.sin(phase));
+        return (float) (0.5f * (1 + Math.sin(phase)));
+    }
+
+    public static float getOscillatingWithNegativeValue(int tickCount, int periodInSeconds) {
+        int periodInTicks = periodInSeconds * 20;
+        double phase = (2 * Math.PI * (tickCount % periodInTicks)) / periodInTicks;
+        return (float) (0.5f * Math.sin(phase));
     }
 }

@@ -267,10 +267,10 @@ public class MoonLordModel<T extends MoonLord> extends HierarchicalModel<T> {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.head.yRot = pNetHeadYaw / (180F / (float) Math.PI);
         this.head.xRot = pHeadPitch / (180F / (float) Math.PI);
-        this.animate(pEntity.death, MoonLordAnimations.DEATH,pAgeInTicks,0.5f);
-        this.animate(pEntity.eyeShooting, MoonLordAnimations.EYESHOOTING,pAgeInTicks);
-        this.animate(pEntity.eyeAttack, MoonLordAnimations.EYEATTACK,pAgeInTicks);
-        this.animate(pEntity.interactive,MoonLordAnimations.INTERACTIVE,pAgeInTicks,pEntity.getAnimationScaling());
+        this.animate(pEntity.death, MoonLordAnimations.DEATH, pAgeInTicks, 0.5f);
+        this.animate(pEntity.eyeShooting, MoonLordAnimations.EYESHOOTING, pAgeInTicks, 0.5f);
+        this.animate(pEntity.eyeAttack, MoonLordAnimations.EYEATTACK, pAgeInTicks, 0.5f);
+        this.animate(pEntity.interactive, MoonLordAnimations.INTERACTIVE, pAgeInTicks, pEntity.getAnimationScaling());
     }
 
     public List<ModelPart> getHeartLayerModelParts() {

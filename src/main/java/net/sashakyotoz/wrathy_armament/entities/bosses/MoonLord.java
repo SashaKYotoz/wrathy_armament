@@ -7,45 +7,54 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.PartEntity;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordLasering;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordShooting;
-import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.moon_lord.MoonLordTeleport;
-import net.sashakyotoz.wrathy_armament.entities.bosses.parts.MoonLordPart;
+import net.sashakyotoz.wrathy_armament.WrathyArmament;
+import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.MoonLordMovementGoal;
+import net.sashakyotoz.wrathy_armament.entities.alive.TrueEyeOfCthulhu;
+import net.sashakyotoz.wrathy_armament.entities.bosses.core.MoonLordPart;
 import net.sashakyotoz.wrathy_armament.entities.technical.EyeOfCthulhuProjectile;
+import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
+import net.sashakyotoz.wrathy_armament.utils.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class MoonLord extends BossLikePathfinderMob {
     private static final EntityDataAccessor<Float> ANIMATION_SCALING = SynchedEntityData.defineId(MoonLord.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> IS_LASER_ACTIVATED = SynchedEntityData.defineId(MoonLord.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<MoonLord.LordPose> DATA_LORD_POSE = SynchedEntityData.defineId(MoonLord.class, WrathyArmamentMiscRegistries.LORD_POSE.get());
     private final ServerBossEvent bossEvent = new ServerBossEvent(Component.translatable("entity.wrathy_armament.moon_lord"), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.NOTCHED_20);
     private final MoonLordPart[] subEntities;
@@ -59,8 +68,10 @@ public class MoonLord extends BossLikePathfinderMob {
     public final AnimationState eyeAttack = new AnimationState();
     public final AnimationState interactive = new AnimationState();
     public int deathTicks = 0;
-    private boolean movementFlag = false;
+    private int timeOfAbility = 0;
+
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (entity) -> entity.getMobType() != MobType.UNDEAD && entity.attackable();
+    private final TargetingConditions eyesCountTargeting = TargetingConditions.forNonCombat().range(32.0D).ignoreLineOfSight().ignoreInvisibilityTesting();
 
     public MoonLord(EntityType<? extends BossLikePathfinderMob> type, Level level) {
         super(type, level);
@@ -74,17 +85,11 @@ public class MoonLord extends BossLikePathfinderMob {
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.length + 1) + 1);
     }
 
-    @Override
-    public int getHeadRotSpeed() {
-        return 8;
-    }
-
     //entity data
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(ANIMATION_SCALING, 1f);
-        this.entityData.define(IS_LASER_ACTIVATED, false);
         this.entityData.define(DATA_LORD_POSE, LordPose.IDLING);
     }
 
@@ -96,34 +101,17 @@ public class MoonLord extends BossLikePathfinderMob {
         this.entityData.set(ANIMATION_SCALING, f);
     }
 
-    public boolean isLaserActivated() {
-        return this.entityData.get(IS_LASER_ACTIVATED);
-    }
-
-    public void setIsLaserActivated(boolean b) {
-        this.entityData.set(IS_LASER_ACTIVATED, b);
-    }
-
-    public LordPose getDataLordPose() {
+    public LordPose getLordPose() {
         return this.entityData.get(DATA_LORD_POSE);
     }
 
-    public void setDataLordPose(LordPose pose) {
+    public void setLordPose(LordPose pose) {
         this.entityData.set(DATA_LORD_POSE, pose);
+        this.timeOfAbility = pose.getAbilityTime;
     }
 
-    //combat management
-
-    @Override
-    public void onEnterCombat() {
-        if (this.getDataLordPose().equals(LordPose.IDLING))
-            this.setRandomLordPose();
-    }
-
-    @Override
-    public void onLeaveCombat() {
-        if (this.getHealth() < this.getMaxHealth() && this.random.nextBoolean())
-            OnActionsTrigger.queueServerWork(30, () -> this.setDataLordPose(LordPose.IDLING));
+    public boolean isInPose(LordPose phase) {
+        return this.getLordPose() == phase;
     }
 
     @Override
@@ -131,9 +119,11 @@ public class MoonLord extends BossLikePathfinderMob {
         return new FlyingPathNavigation(this, level);
     }
 
-    public void applyBrightnessAround(ServerLevel level, Vec3 vec3, @Nullable Entity sourceEntity, int i) {
-        MobEffectInstance mobeffectinstance = new MobEffectInstance(WrathyArmamentMiscRegistries.BRIGHTNESS.get(), 60, 1, false, false);
-        MobEffectUtil.addEffectToPlayersAround(level, sourceEntity, vec3, i, mobeffectinstance, 50);
+    public void applyBrightnessAround(Level level, Vec3 vec3, @Nullable Entity sourceEntity, int i) {
+        if (level instanceof ServerLevel serverLevel) {
+            MobEffectInstance mobeffectinstance = new MobEffectInstance(WrathyArmamentMiscRegistries.BRIGHTNESS.get(), 40, 1, false, false);
+            MobEffectUtil.addEffectToPlayersAround(serverLevel, sourceEntity, vec3, i, mobeffectinstance, 40);
+        }
     }
 
     @Override
@@ -166,10 +156,6 @@ public class MoonLord extends BossLikePathfinderMob {
     @Override
     public void tick() {
         super.tick();
-        if (this.getTarget() != null && this.getTarget().distanceToSqr(this.getTarget()) > 384)
-            this.setDataLordPose(LordPose.TELEPORTING);
-        if (this.tickCount % 5 == 0 && this.getDataLordPose().equals(LordPose.IDLING))
-            this.setRandomLordPose();
         if (this.tickCount % 30 == 0)
             this.setAnimationScaling(this.getRandom().nextIntBetweenInclusive(-10, 10) / 10f);
         //sub entities stuff
@@ -198,77 +184,159 @@ public class MoonLord extends BossLikePathfinderMob {
                         this.damageTakenByPart.get(moonLordPart.name) > 0)
                     this.damageTakenByPart.put(moonLordPart.name, this.damageTakenByPart.get(moonLordPart.name) - 1);
             });
-        if (this.getTarget() != null && this.tickCount % 120 == 0)
-            movementFlag = !movementFlag;
-        this.getMoveControl().strafe(0.5f, movementFlag ? 1 : -1);
+        if (this.timeOfAbility > 0)
+            this.timeOfAbility--;
+        if (this.getTarget() != null && this.timeOfAbility <= 0)
+            setLordPose();
+        if (this.isInPose(LordPose.LASERING)) {
+            LivingEntity target = this.getTarget();
+            float k = RenderUtils.getOscillatingWithNegativeValue(this.tickCount, 8);
+//            TODO: finish with setting of rotation
+            if (target != null) {
+                double d0 = target.getX() - this.getX();
+                double d2 = target.getZ() - this.getZ();
+                double d1 = target.getEyeY() - (this.getEyeY() + 2.9f);
+                double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+                float f = (float) (Mth.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F;
+                float f2 = (float) (-(Mth.atan2(d1, d3) * (double) (180F / (float) Math.PI)));
+                float getRotYToTarget = this.rotlerp(this.getYRot(), f, 40);
+                float getRotXToTarget = this.rotlerp(this.getXRot(), f2, 25);
+                float delta = RenderUtils.getOscillatingValue(this.tickCount, 8);
+                this.setXRot(Mth.lerp(delta, getRotXToTarget - (30 * k), getRotXToTarget + (30 * k)));
+                float yRot = lerp(k, getRotYToTarget + 50, getRotYToTarget - 50) % 360;
+                this.setYRot(yRot);
+            }
+            if (this.tickCount % 5 == 0) {
+                if (this.tickCount % 4 == 0)
+                    this.playSound(WrathyArmamentSounds.BEAM_SHOOTING, 1.5f, 0.9f);
+                for (int i = 0; i < 33; i++) {
+                    Vec3 center = posOfViewing(this, BlockPos.containing(this.getX(), this.getY(), this.getZ())).getCenter();
+                    List<LivingEntity> entityList = this.level().getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(1.5f), e -> true).stream().sorted(Comparator.comparingDouble(t -> t.distanceToSqr(center))).toList();
+                    for (LivingEntity entity : entityList) {
+                        if (entity != this && !(entity instanceof TrueEyeOfCthulhu))
+                            entity.hurt(this.damageSources().magic(), this.level().getDifficulty().equals(Difficulty.HARD) ? 8 : 5);
+                    }
+                }
+            }
+        }
+    }
+
+    private float lerp(float pDelta, float pStart, float pEnd) {
+        pDelta = Math.max(0, Math.min(1, pDelta));
+        return pStart + pDelta * (pEnd - pStart);
+    }
+
+    private float rotlerp(float pAngle, float pTargetAngle, float pMaxIncrease) {
+        float f = Mth.wrapDegrees(pTargetAngle - pAngle);
+        if (f > pMaxIncrease)
+            f = pMaxIncrease;
+        if (f < -pMaxIncrease)
+            f = -pMaxIncrease;
+        return pAngle + f;
+    }
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 55;
     }
 
     private void tickPart(MoonLordPart moonLordPart, double pOffsetX, double pOffsetY, double pOffsetZ) {
         moonLordPart.setPos(this.getX() + pOffsetX, this.getY() + pOffsetY, this.getZ() + pOffsetZ);
     }
 
-    public void setRandomLordPose() {
-        int random = this.random.nextIntBetweenInclusive(0, 2);
-        switch (this.getDataLordPose()) {
+    public void setLordPose() {
+        switch (this.getLordPose()) {
+            case IDLING, TELEPORTING, EYE_BLADES -> this.setLordPose(LordPose.ATTACKING);
+            case ATTACKING -> this.setLordPose(LordPose.SHOOTING);
             case SHOOTING -> {
-                if (random == 1)
-                    this.setDataLordPose(LordPose.LASERING);
+                if (this.getTarget().distanceToSqr(this) > 441)
+                    this.setLordPose(LordPose.TELEPORTING);
                 else
-                    this.setDataLordPose(LordPose.ATTACKING);
+                    this.setLordPose(LordPose.LASERING);
             }
-            case ATTACKING -> {
-                if (random == 1)
-                    this.setDataLordPose(LordPose.LASERING);
-                else
-                    this.setDataLordPose(LordPose.SHOOTING);
-            }
-            case LASERING -> {
-                if (random == 1)
-                    this.setDataLordPose(LordPose.ATTACKING);
-                else
-                    this.setDataLordPose(LordPose.SHOOTING);
-            }
-            case TELEPORTING -> {
-                switch (random) {
-                    default -> this.setDataLordPose(LordPose.SHOOTING);
-                    case 1 -> this.setDataLordPose(LordPose.ATTACKING);
-                    case 2 -> this.setDataLordPose(LordPose.LASERING);
-                }
-            }
-            case IDLING -> this.setDataLordPose(LordPose.ATTACKING);
+            case LASERING -> this.setLordPose(LordPose.EYE_BLADES);
         }
     }
 
     public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> dataAccessor) {
         if (DATA_LORD_POSE.equals(dataAccessor)) {
-            if (!(getDataLordPose().equals(LordPose.IDLING)
-                    && getDataLordPose().equals(LordPose.LASERING)))
+            if (!(getLordPose().equals(LordPose.IDLING)
+                    && getLordPose().equals(LordPose.LASERING)))
                 this.interactive.stop();
-            switch (this.getDataLordPose()) {
+            switch (this.getLordPose()) {
                 case DYING -> this.death.start(this.tickCount);
                 case ATTACKING -> {
-                    this.eyeShooting.start(this.tickCount);
-                    OnActionsTrigger.queueServerWork(7, () -> {
-                        for (int i = -1; i < 2; i++) {
-                            EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
-                            projectile.setOwner(this);
-                            projectile.setOwner(this);
-                            projectile.shootFromRotation(this, this.getXRot(), this.getYRot() + 15, 0, 3F, 0.5F);
-                            this.level().addFreshEntity(projectile);
-                        }
+                    this.eyeAttack.start(this.tickCount);
+                    if (this.getTarget() != null && !this.getTarget().hasEffect(MobEffects.WEAKNESS)) {
+                        this.getTarget().addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
+                        this.getTarget().addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0));
+                    }
+                    int i = this.level().getNearbyEntities(TrueEyeOfCthulhu.class, this.eyesCountTargeting, this, this.getBoundingBox().inflate(32.0D)).size();
+                    queueServerWork(20, () -> {
+                        if (i < 3) {
+                            TrueEyeOfCthulhu eyeOfCthulhu = new TrueEyeOfCthulhu(WrathyArmamentEntities.TRUE_EYE_OF_CTHULHU.get(), this.level());
+                            eyeOfCthulhu.setOwner(this);
+                            eyeOfCthulhu.moveTo(this.getOnPos().getCenter());
+                            eyeOfCthulhu.setDeltaMovement(
+                                    getXVector(2, this.getYRot()),
+                                    OnActionsTrigger.getYVector(1, this.getXRot()),
+                                    getZVector(2, this.getYRot())
+                            );
+                            this.level().addFreshEntity(eyeOfCthulhu);
+                        } else
+                            this.applyBrightnessAround(this.level(), this.getEyePosition(), this, 32);
                     });
+                }
+                case IDLING -> this.interactive.startIfStopped(this.tickCount);
+                case LASERING -> {
+                    this.navigation.stop();
+                    this.interactive.startIfStopped(this.tickCount);
+                }
+                case EYE_BLADES -> {
+                    if (this.getTarget() != null)
+                        this.lookAt(this.getTarget(), 15, 15);
+                    this.eyeAttack.start(this.tickCount);
+                    if (this.getTarget() != null && this.level() instanceof ServerLevel serverLevel) {
+                        for (int i = 0; i < 4; i++) {
+                            int randomOffset = this.getRandom().nextInt(-2, 3);
+                            HarmfulProjectileEntity projectile = new HarmfulProjectileEntity(WrathyArmamentEntities.HARMFUL_PROJECTILE_ENTITY.get(), serverLevel, 10, "vertical_circle");
+                            projectile.setOwner(MoonLord.this);
+                            projectile.setProjectileType("vertical_circle");
+                            projectile.moveTo(
+                                    this.getTarget().getX() + randomOffset,
+                                    this.getTarget().getY() + 2.5f + i,
+                                    this.getTarget().getZ() + randomOffset);
+                            serverLevel.addFreshEntity(projectile);
+                        }
+                    }
+                }
+                case SHOOTING -> {
+                    this.eyeShooting.start(this.tickCount);
                     OnActionsTrigger.queueServerWork(14, () -> {
                         for (int i = -1; i < 2; i++) {
                             EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
                             projectile.setOwner(this);
-                            projectile.shootFromRotation(this, this.getXRot(), this.getYRot() - 15, 0, 3F, 0.5F);
+                            projectile.setOwner(this);
+                            projectile.shootFromRotation(this.leftHandEye, this.leftHandEye.getXRot(), this.leftHandEye.getYRot(), 0, 3F, 0);
                             this.level().addFreshEntity(projectile);
                         }
                     });
-                    OnActionsTrigger.queueServerWork(21, this::setRandomLordPose);
+                    OnActionsTrigger.queueServerWork(28, () -> {
+                        for (int i = -1; i < 2; i++) {
+                            EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
+                            projectile.setOwner(this);
+                            projectile.shootFromRotation(this.rightHandEye, this.rightHandEye.getXRot(), this.rightHandEye.getYRot(), 0, 3F, 0);
+                            this.level().addFreshEntity(projectile);
+                        }
+                    });
                 }
-                case IDLING,LASERING -> this.interactive.startIfStopped(this.tickCount);
-                case SHOOTING -> this.eyeAttack.start(this.tickCount);
+                case TELEPORTING -> {
+                    this.applyBrightnessAround(this.level(), this.getEyePosition(), this, 48);
+                    this.playSound(SoundEvents.CONDUIT_AMBIENT_SHORT, 1.5f, 2f);
+                    LivingEntity target = this.getTarget();
+                    if (target != null)
+                        this.teleportTo(target.getRandomX(2), target.getY() + 1, target.getRandomZ(2));
+                }
             }
         }
         super.onSyncedDataUpdated(dataAccessor);
@@ -276,7 +344,7 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     public boolean isDeadOrDying() {
-        return super.isDeadOrDying() || this.getDataLordPose().equals(LordPose.DYING);
+        return super.isDeadOrDying() || this.getLordPose().equals(LordPose.DYING);
     }
 
     @Override
@@ -286,7 +354,7 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     protected float getStandingEyeHeight(Pose pPose, EntityDimensions pDimensions) {
-        return super.getStandingEyeHeight(pPose, pDimensions) + 2.8f;
+        return super.getStandingEyeHeight(pPose, pDimensions) + 2.95f;
     }
 
     @Override
@@ -295,17 +363,9 @@ public class MoonLord extends BossLikePathfinderMob {
 
     @Override
     public void registerGoals() {
-        this.goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 48, 1f));
-        this.goalSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+        this.goalSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 0, false, false, LIVING_ENTITY_SELECTOR));
         this.goalSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new MoonLordTeleport(this));
-        this.targetSelector.addGoal(3, new MoonLordLasering(this));
-        this.targetSelector.addGoal(3, new MoonLordShooting(this));
-    }
-
-    @Override
-    protected void setRot(float pYRot, float pXRot) {
-        super.setRot(pYRot * (this.getDataLordPose().equals(LordPose.LASERING) ? 0.65f : 1), pXRot);
+        this.goalSelector.addGoal(3, new MoonLordMovementGoal(this));
     }
 
     public boolean isEyesActive() {
@@ -320,23 +380,64 @@ public class MoonLord extends BossLikePathfinderMob {
     }
 
     @Override
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return WrathyArmamentSounds.MOON_LORD_HURT;
+    }
+
+    @Override
     protected void tickDeath() {
         this.deathTicks--;
-        if (!this.death.isStarted())
-            this.death.start(this.tickCount);
-        if (deathTime == 10 && this.level() instanceof ServerLevel level) {
+        if (deathTime == 10) {
             this.spawnParticle(new ColorableParticleOption("sparkle", 0.25f, 0.35f, 1f), this.level(), this.getX(), this.getY(), this.getZ(), 5);
-            this.applyBrightnessAround(level, this.getOnPos().getCenter(), this, 16);
+            this.playSound(SoundEvents.CONDUIT_DEACTIVATE, 2f, 1.5f);
+            this.applyBrightnessAround(this.level(), this.getOnPos().getCenter(), this, 16);
         }
+        if (deathTime == 19 && this.level() instanceof ServerLevel level)
+            level.setDayTime(3000);
         super.tickDeath();
+    }
+
+    private BlockPos posOfViewing(LivingEntity entity, BlockPos pos) {
+        BlockPos pos1 = pos;
+        int scaling = 0;
+        for (int i = 0; i < 32; i++) {
+            BlockPos pos2 = entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos();
+            if (!entity.level().getBlockState(new BlockPos(pos2.getX(), pos2.getY(), pos2.getZ())).canOcclude())
+                scaling = scaling + 1;
+            else {
+                if (this.tickCount % 4 == 0)
+                    entity.level().addParticle(WrathyArmamentMiscRegistries.BEAM_SPARKLES.get(), pos2.getX(), pos2.getY() + 0.1f, pos2.getZ(), 0, 0.125f, 0);
+            }
+            pos1 = entity.level().clip(new ClipContext(entity.getEyePosition(1f), entity.getEyePosition(1f).add(entity.getViewVector(1f).scale(scaling)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)).getBlockPos();
+        }
+        return pos1;
     }
 
     @Override
     public void die(DamageSource source) {
         this.deathTime = -100;
         this.deathTicks = 200;
-        this.setDataLordPose(LordPose.DYING);
+        this.setLordPose(LordPose.DYING);
         super.die(source);
+    }
+
+    public void travel(Vec3 pTravelVector) {
+        if (this.isControlledByLocalInstance()) {
+            if (this.isInWater()) {
+                this.moveRelative(0.02F, pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.8F));
+            } else if (this.isInLava()) {
+                this.moveRelative(0.02F, pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
+            } else {
+                this.moveRelative(this.getSpeed(), pTravelVector);
+                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.91F));
+            }
+        }
+        this.calculateEntityAnimation(false);
     }
 
     //attributes
@@ -345,23 +446,30 @@ public class MoonLord extends BossLikePathfinderMob {
                 .add(Attributes.MAX_HEALTH, 750.0D)
                 .add(Attributes.ATTACK_DAMAGE, 15)
                 .add(Attributes.FOLLOW_RANGE, 48)
-                .add(Attributes.ARMOR, 16)
-                .add(Attributes.ARMOR_TOUGHNESS, 16)
-                .add(Attributes.MOVEMENT_SPEED, 0.25)
-                .add(Attributes.FLYING_SPEED, 0.5)
+                .add(Attributes.ARMOR, 12)
+                .add(Attributes.ARMOR_TOUGHNESS, 12)
+                .add(Attributes.MOVEMENT_SPEED, 0.15)
+                .add(Attributes.FLYING_SPEED, 0.15)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1);
     }
 
-    protected void checkFallDamage(double pY, boolean pOnGround, BlockState pState, BlockPos pPos) {
+    @Override
+    public void checkFallDamage(double pY, boolean pOnGround, BlockState pState, BlockPos pPos) {
     }
 
     //poses
     public enum LordPose {
-        DYING,
-        ATTACKING,
-        LASERING,
-        SHOOTING,
-        TELEPORTING,
-        IDLING;
+        DYING(120),
+        ATTACKING(100),
+        LASERING(160),
+        SHOOTING(50),
+        EYE_BLADES(50),
+        TELEPORTING(50),
+        IDLING(80);
+        public final int getAbilityTime;
+
+        LordPose(int actionTime) {
+            this.getAbilityTime = actionTime;
+        }
     }
 }

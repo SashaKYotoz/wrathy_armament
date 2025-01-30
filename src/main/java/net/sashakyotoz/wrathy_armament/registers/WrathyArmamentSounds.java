@@ -10,11 +10,17 @@ public class WrathyArmamentSounds {
     public static final SoundEvent KATANA_SWING = create("item.katana_swing");
     public static final SoundEvent SOUL_SWING = create("item.soul_swing");
     public static final SoundEvent LIGHT_SWING = create("item.light_swing");
+
+    public static final SoundEvent BEAM_SHOOTING = create("entity.beam_shooting");
+    public static final SoundEvent MOON_LORD_HURT = create("entity.moon_lord_hurt");
+
     private static SoundEvent create(String name) {
-        ResourceLocation location = new ResourceLocation(WrathyArmament.MODID,name);
+        ResourceLocation location = new ResourceLocation(WrathyArmament.MODID, name);
         SoundEvent sound = SoundEvent.createVariableRangeEvent(location);
         ForgeRegistries.SOUND_EVENTS.register(location, sound);
         return sound;
     }
-    public static void init(){}
+
+    public static void init() {
+    }
 }

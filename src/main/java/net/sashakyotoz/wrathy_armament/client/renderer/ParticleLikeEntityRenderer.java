@@ -14,11 +14,10 @@ import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 
 public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntity> {
     private static final ResourceLocation FIRE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_circle.png");
-    private static final ResourceLocation FIRE_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_semicycle.png");
-    private static final ResourceLocation LIGHT_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_cycle.png");
-    private static final ResourceLocation PURPLE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/purple_cycle.png");
-    private static final ResourceLocation SOUL_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/soul_cycle.png");
-    private static final ResourceLocation ZENITH_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/zenith_semicycle.png");
+    private static final ResourceLocation FIRE_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_semicircle.png");
+    public static final ResourceLocation LIGHT_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_circle.png");
+    private static final ResourceLocation PURPLE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/purple_circle.png");
+    private static final ResourceLocation SOUL_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/soul_circle.png");
     private final ParticleLikeEntityModel<ParticleLikeEntity> model;
 
     public ParticleLikeEntityRenderer(EntityRendererProvider.Context context) {
@@ -33,7 +32,7 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
             stack.mulPose(Axis.YP.rotationDegrees(180 - entity.rotationRelativelyToY()));
         }
         float f7 = this.getBob(entity, partialTicks);
-        this.scale(entity, stack, partialTicks);
+        this.scale(entity, stack);
         if (entity.getParticleType().equals("lich_rain") || entity.getParticleType().equals("rain"))
             stack.mulPose(Axis.YP.rotationDegrees((entity.tickCount % 360)*2.5f));
         this.model.setupAnim(entity, 0, 0.0F, f7, entity.getYRot(), entity.getXRot());
@@ -43,7 +42,7 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
         stack.popPose();
         super.render(entity, entityYaw, partialTicks, stack, source, packedLightIn);
     }
-    public void scale(ParticleLikeEntity entity, PoseStack stack, float partialTicks) {
+    public void scale(ParticleLikeEntity entity, PoseStack stack) {
         stack.scale(entity.getSize(),0.1f,entity.getSize());
     }
     private float getBob(ParticleLikeEntity entity, float partialTicks) {
@@ -52,9 +51,6 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
     @Override
     public ResourceLocation getTextureLocation(ParticleLikeEntity entity) {
         switch (entity.getIdOfColor()){
-            default -> {
-                return FIRE_CIRCLE;
-            }
             case 1 ->{
                 return FIRE_SEMICIRCLE;
             }
@@ -67,8 +63,8 @@ public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntit
             case 4->{
                 return SOUL_CIRCLE;
             }
-            case 5->{
-                return ZENITH_SEMICIRCLE;
+            default -> {
+                return FIRE_CIRCLE;
             }
         }
     }

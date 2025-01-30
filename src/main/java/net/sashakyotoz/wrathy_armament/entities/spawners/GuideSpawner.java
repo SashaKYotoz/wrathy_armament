@@ -27,7 +27,7 @@ public class GuideSpawner implements CustomSpawner {
             Iterable<BlockPos> posIterator = BlockPos.betweenClosed(player.getOnPos().offset(-16, -16, -16), player.getOnPos().offset(16, 16, 16));
             for (BlockPos pos : posIterator) {
                 if (pLevel.getBlockState(pos).is(BlockTags.DOORS) && pLevel.getCurrentDifficultyAt(pos).getDifficulty() != Difficulty.PEACEFUL) {
-                    if (this.pastTick < Config.TIME_TO_SPAWN_GUIDE.get())
+                    if (this.pastTick < Config.Common.TIME_TO_SPAWN_GUIDE.get())
                         pastTick++;
                     else {
                         Guide guide = WrathyArmamentEntities.THE_GUIDE.get().create(pLevel);

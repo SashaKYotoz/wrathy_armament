@@ -7,6 +7,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.items.*;
+import net.sashakyotoz.wrathy_armament.items.swords.*;
 import net.sashakyotoz.wrathy_armament.utils.ModRarity;
 
 public class WrathyArmamentItems {

@@ -1,0 +1,39 @@
+{
+  "type": "wrathy_armament:worldshard_workbench_crafting",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "wrathy_armament:copper_sword"
+    },
+    "D": {
+      "item": "minecraft:diamond_sword"
+    },
+    "G": {
+      "item": "minecraft:golden_sword"
+    },
+    "M": {
+      "item": "wrathy_armament:meowmere"
+    },
+    "N": {
+      "item": "minecraft:netherite_sword"
+    },
+    "P": {
+      "item": "wrathy_armament:phantom_lancer"
+    },
+    "W": {
+      "item": "minecraft:wild_armor_trim_smithing_template"
+    },
+    "m": {
+      "item": "wrathy_armament:mythril_ingot"
+    }
+  },
+  "pattern": [
+    "WmC",
+    "NDM",
+    "PGm"
+  ],
+  "result": {
+    "item": "wrathy_armament:zenith"
+  },
+  "show_notification": true
+}

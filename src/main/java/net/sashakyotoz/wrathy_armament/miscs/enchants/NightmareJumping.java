@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 
@@ -18,7 +19,7 @@ public class NightmareJumping extends Enchantment {
     }
     @Override
     public boolean canEnchant(ItemStack stack) {
-        return stack.is(WrathyArmamentItems.PHANTOM_LANCER.get());
+        return stack.getItem() instanceof SwordLikeItem;
     }
 
     @Override

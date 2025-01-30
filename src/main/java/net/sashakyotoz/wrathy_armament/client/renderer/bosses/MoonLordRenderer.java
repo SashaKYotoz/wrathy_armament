@@ -6,28 +6,22 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.layers.EyesLayer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.client.models.mobs.MoonLordModel;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.MoonLordEmissiveLayer;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.MoonLordEyesLayer;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.MoonLordGlowingLayer;
+import net.sashakyotoz.wrathy_armament.client.renderer.layers.moonlord.MoonLordEmissiveLayer;
+import net.sashakyotoz.wrathy_armament.client.renderer.layers.moonlord.MoonLordEyesLayer;
+import net.sashakyotoz.wrathy_armament.client.renderer.layers.moonlord.MoonLordGlowingLayer;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.utils.RenderUtils;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class MoonLordRenderer extends FixedDeathAnimationMobRenderer<MoonLord, MoonLordModel<MoonLord>> {
@@ -51,18 +45,20 @@ public class MoonLordRenderer extends FixedDeathAnimationMobRenderer<MoonLord, M
         pPoseStack.scale(2.5f, 2.5f, 2.5f);
     }
 
+
     @Override
     public void render(MoonLord lord, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         super.render(lord, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
-        if (lord.isLaserActivated())
+        if (lord.isInPose(MoonLord.LordPose.LASERING))
             RenderUtils.renderBeam(
                     lord,
                     pPartialTicks,
                     pPoseStack,
                     pBuffer,
-                    RenderType.entityCutoutNoCull(WrathyArmament.createWALocation("textures/entity/bosses/moon_lord/beam.png")),
-                    true);
-        if (lord.deathTicks > -10) {
+                    RenderType.entityCutoutNoCull(WrathyArmament.createWALocation("textures/entity/bosses/moon_lord/beam.png")));
+        if (lord.isInPose(MoonLord.LordPose.ATTACKING))
+            RenderUtils.renderTongue(lord, pPartialTicks, pPoseStack, pBuffer);
+        if (lord.deathTicks > -10 && lord.isDeadOrDying()) {
             float f5 = ((float) lord.deathTicks + pPartialTicks) / 100.0F;
             float f7 = Math.min(f5 > 0.8F ? (f5 - 0.8F) / 0.2F : 0.0F, 1.0F);
             RandomSource randomsource = RandomSource.create(432L);
@@ -99,11 +95,6 @@ public class MoonLordRenderer extends FixedDeathAnimationMobRenderer<MoonLord, M
     @Override
     public ResourceLocation getTextureLocation(MoonLord pEntity) {
         return TEXTURE;
-    }
-
-
-    protected int getBlockLightLevel(MoonLord pEntity, BlockPos pPos) {
-        return pEntity.isOnFire() ? 15 : pEntity.level().getBrightness(LightLayer.BLOCK, pPos);
     }
 
     @Override

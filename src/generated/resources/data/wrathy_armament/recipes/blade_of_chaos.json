@@ -1,0 +1,33 @@
+{
+  "type": "wrathy_armament:worldshard_workbench_crafting",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "C": {
+      "item": "minecraft:chain"
+    },
+    "D": {
+      "item": "minecraft:deepslate"
+    },
+    "E": {
+      "item": "minecraft:nether_star"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "S": {
+      "item": "minecraft:shaper_armor_trim_smithing_template"
+    }
+  },
+  "pattern": [
+    "SCN",
+    "BED",
+    "BNC"
+  ],
+  "result": {
+    "item": "wrathy_armament:blade_of_chaos"
+  },
+  "show_notification": true
+}

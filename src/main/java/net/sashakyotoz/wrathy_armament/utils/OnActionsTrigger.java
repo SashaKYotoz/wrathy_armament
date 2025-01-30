@@ -9,13 +9,10 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +20,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -30,7 +29,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.EntityPositionSource;
 import net.minecraft.world.phys.AABB;
@@ -40,14 +38,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.client.particles.options.CapturedSoulParticleOption;
@@ -65,6 +64,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Mod.EventBusSubscriber
 public class OnActionsTrigger {
     public static HashMap<String, Triple<Integer, Integer, Integer>> playerCameraData = new HashMap<>();
+    public static HashMap<UUID, ModifierLayer<IAnimation>> animationPlayersMap = new HashMap<>();
     public static Vec3 vec3 = new Vec3(0, -256, 0);
     private static final UUID HEALTH_MODIFIER = UUID.fromString("2656de64-a009-47c8-8d53-cc0919b59bc9");
     private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
@@ -199,14 +199,14 @@ public class OnActionsTrigger {
         }
         if (stack.is(WrathyArmamentItems.BLADE_OF_CHAOS.get())) {
             if (player.isCrouching()) {
-                playPlayerAnimation(player.level(), player, "blade_ability_switch");
+                playPlayerAnimation(player.level(), player, "blade_ability_switch", true);
                 player.setPose(Pose.FALL_FLYING);
             } else {
                 String behavior = BladeOfChaosEntity.PossibleBehavior.values()[stack.getOrCreateTag().getInt("StateIndex")].behaviorName;
                 if (behavior.equals(BladeOfChaosEntity.PossibleBehavior.CRUSH.behaviorName))
-                    playPlayerAnimation(player.level(), player, "nemean_crush");
+                    playPlayerAnimation(player.level(), player, "nemean_crush", true);
                 else if (behavior.equals(BladeOfChaosEntity.PossibleBehavior.CYCLONE.behaviorName))
-                    playPlayerAnimation(player.level(), player, "crooked_throw_of_blades");
+                    playPlayerAnimation(player.level(), player, "crooked_throw_of_blades", true);
             }
         }
     }
@@ -270,7 +270,7 @@ public class OnActionsTrigger {
             int shakingTime = cameraData.a;
             int rollingTime = cameraData.b;
             int rotatingTime = cameraData.c;
-            if (player.distanceToSqr(vec3) < 16) {
+            if (player.distanceToSqr(vec3) < 24) {
                 float delta = Minecraft.getInstance().getFrameTime();
                 float ticksExistedDelta = player.tickCount + delta;
                 float intensity = 0.025f;
@@ -300,37 +300,6 @@ public class OnActionsTrigger {
     }
 
     @SubscribeEvent
-    public static void onRegisterCommand(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("get_manual").executes(arguments -> {
-            if (arguments.getSource().getEntity() instanceof Player player) {
-                ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
-                CompoundTag tag = new CompoundTag();
-                ListTag pages = new ListTag();
-                pages.add(StringTag.valueOf("{\"text\":\"Slot indexes:\\ncentral slot - 0\\nabove central slot \\u0020 clockwise, respectively 1-8\"}"));
-                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Zenith recipe:\\n0: \"},{\"text\":\"wild_armor_trim_smithing_template\",\"color\":\"dark_green\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"mythril_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" copper_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"netherite_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"diamond_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" meowmere\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" phantom_lancer\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" golden_sword\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" mythril_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
-                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Blade of chaos recipe:\\n0: \"},{\"text\":\"shaper_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"chain\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" deepslate\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" chain\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
-                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Mistsplitter\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"eye_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"end_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"heart_of_the_sea\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"purpur_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" purpur_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" end_crystal\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" nether_star\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" end_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
-                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Murasama\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"spire_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"blaze_rod\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" redstone_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"ender_eye\",\"color\":\"dark_green\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" end_crystal\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" redstone_block\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
-                pages.add(StringTag.valueOf("[\"\",{\"text\":\"Zatoichi\",\"color\":\"black\"},{\"text\":\" recipe:\\n0: \",\"color\":\"reset\"},{\"text\":\"raiser_armor_trim_smithing_template\",\"color\":\"#6AAB73\"},{\"text\":\"\\n1: \",\"color\":\"reset\"},{\"text\":\"stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n2:\",\"color\":\"reset\"},{\"text\":\" ancient_debris\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"3: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"dark_green\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"4: \",\"color\":\"black\"},{\"text\":\"netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"5:\",\"color\":\"black\"},{\"text\":\" netherite_ingot\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"6:\",\"color\":\"black\"},{\"text\":\" echo_shard\",\"color\":\"#6AAB73\"},{\"text\":\"\\n\",\"color\":\"reset\"},{\"text\":\"7:\",\"color\":\"black\"},{\"text\":\" shard_of_mechanvil\",\"color\":\"#6AAB73\"},{\"text\":\"\\n8:\",\"color\":\"reset\"},{\"text\":\" stick\",\"color\":\"#6AAB73\"},{\"text\":\"\\n \",\"color\":\"reset\"}]"));
-
-                tag.put("pages", pages);
-                tag.putString("title", "Wrathy Armament Manual");
-                tag.putString("author", "SashaKYotoz");
-                tag.putInt("generation", 1);
-                CompoundTag display = new CompoundTag();
-                ListTag lore = new ListTag();
-                lore.add(StringTag.valueOf("Helper to use worldshard workbench"));
-                display.put("Lore", lore);
-                tag.put("display", display);
-                book.setTag(tag);
-                if (!player.getInventory().contains(book))
-                    player.spawnAtLocation(book);
-            }
-            return 0;
-        }));
-    }
-
-    @SubscribeEvent
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
         event.register(HalfZatoichiAbilityCapability.class);
         event.register(MistsplitterDefenseCapability.class);
@@ -352,6 +321,26 @@ public class OnActionsTrigger {
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerAttack(LivingAttackEvent event) {
+        LivingEntity entity = event.getEntity();
+        int damage = 0;
+        if (event.getSource().getEntity() instanceof Player player && player.getItemInHand(InteractionHand.MAIN_HAND).getEnchantmentLevel(WrathyArmamentMiscRegistries.NIGHTMARE_JUMPING.get()) > 0) {
+            if (Math.random() > 0.75)
+                damage = RandomSource.create().nextInt(3, 6);
+            player.teleportTo(event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
+            player.playSound(WrathyArmamentSounds.ITEM_LANCER_SHOT);
+            entity.hurt(new DamageSource(event.getEntity().level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC)) {
+                @Override
+                public Component getLocalizedDeathMessage(LivingEntity _msgEntity) {
+                    return Component.translatable("death.attack.wrathy_armament.nightmare_jumping");
+                }
+            }, event.getAmount() + damage);
+            if (entity.isAlive())
+                entity.setDeltaMovement(0, RandomSource.create().nextInt(5, 15) / 10f, 0);
+        }
+    }
+
     public static double getXVector(double speed, double yaw) {
         return speed * Math.cos((yaw + 90) * (Math.PI / 180));
     }
@@ -367,7 +356,7 @@ public class OnActionsTrigger {
     public static void addParticles(ParticleOptions type, Level level, double x, double y, double z, float modifier) {
         for (int i = 0; i < 360; i++) {
             if (i % 20 == 0)
-                level.addParticle(type, x + 0.25, y, z + 0.25, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
+                level.addParticle(type, x, y, z, Math.cos(i) * 0.25d * modifier, 0.2d, Math.sin(i) * 0.25d * modifier);
         }
     }
 
@@ -380,12 +369,23 @@ public class OnActionsTrigger {
         }
     }
 
-    public static void playPlayerAnimation(Level level, Player player, String path) {
+    public static void playPlayerAnimation(Level level, Player player, String path, boolean showParticleTrail) {
         if (level.isClientSide()) {
             var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(WrathyArmament.createWALocation("animation"));
-            if (animation != null)
+            if (animation != null) {
+                if (showParticleTrail)
+                    animationPlayersMap.put(player.getUUID(), animation);
                 animation.setAnimation(new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation(WrathyArmament.createWALocation(path))).setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL).setFirstPersonConfiguration(new FirstPersonConfiguration(true, true, true, true)));
+            }
         }
+    }
+
+    public static boolean isBetterCombatIn() {
+        return ModList.get().isLoaded("bettercombat");
+    }
+
+    public static boolean isOculusIn() {
+        return ModList.get().isLoaded("oculus") || ModList.get().isLoaded("iris");
     }
 
     public static float getPowerForTime(int i) {

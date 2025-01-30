@@ -28,11 +28,11 @@ public class JohannesSpearEntity extends Entity implements TraceableEntity {
         super(type, level);
     }
 
-    public JohannesSpearEntity(Level level, double x, double y, double z, float p_36930_, int warmupDelayTicks, LivingEntity living) {
+    public JohannesSpearEntity(Level level, double x, double y, double z, float v, int warmupDelayTicks, LivingEntity living) {
         this(WrathyArmamentEntities.JOHANNES_SPEAR.get(), level);
         this.warmupDelayTicks = warmupDelayTicks;
         this.setOwner(living);
-        this.setYRot(p_36930_ * (180F / (float)Math.PI));
+        this.setYRot(v * (180F / (float)Math.PI));
         this.setPos(x, y, z);
     }
 
@@ -58,18 +58,14 @@ public class JohannesSpearEntity extends Entity implements TraceableEntity {
 
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         this.warmupDelayTicks = compoundTag.getInt("Warmup");
-        if (compoundTag.hasUUID("Owner")) {
+        if (compoundTag.hasUUID("Owner"))
             this.ownerUUID = compoundTag.getUUID("Owner");
-        }
-
     }
 
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         compoundTag.putInt("Warmup", this.warmupDelayTicks);
-        if (this.ownerUUID != null) {
+        if (this.ownerUUID != null)
             compoundTag.putUUID("Owner", this.ownerUUID);
-        }
-
     }
 
     public void tick() {
@@ -132,12 +128,12 @@ public class JohannesSpearEntity extends Entity implements TraceableEntity {
         }
     }
 
-    public float getAnimationProgress(float p_36937_) {
+    public float getAnimationProgress(float j) {
         if (!this.clientSideAttackStarted) {
             return 0.0F;
         } else {
             int i = this.lifeTicks - 2;
-            return i <= 0 ? 1.0F : 1.0F - ((float)i - p_36937_) / 20.0F;
+            return i <= 0 ? 1.0F : 1.0F - ((float)i - j) / 20.0F;
         }
     }
 }

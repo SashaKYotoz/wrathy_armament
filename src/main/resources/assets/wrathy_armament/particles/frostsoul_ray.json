@@ -1,8 +1,5 @@
 {
   "textures": [
-    "wrathy_armament:frostsoul_ray_0",
-    "wrathy_armament:frostsoul_ray_1",
-    "wrathy_armament:frostsoul_ray_2",
-    "wrathy_armament:frostsoul_ray_3"
+    "wrathy_armament:frostsoul_ray"
   ]
 }
