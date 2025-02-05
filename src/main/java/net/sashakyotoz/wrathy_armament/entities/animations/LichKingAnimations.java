@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class LichKingAnimations {
-
     public static final AnimationDefinition SPAWN = AnimationDefinition.Builder.withLength(2.25f)
             .addAnimation("Head",
                     new AnimationChannel(AnimationChannel.Targets.POSITION,

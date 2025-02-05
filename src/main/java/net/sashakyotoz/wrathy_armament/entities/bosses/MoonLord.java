@@ -20,6 +20,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -76,7 +77,7 @@ public class MoonLord extends BossLikePathfinderMob {
     public MoonLord(EntityType<? extends BossLikePathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 500;
-        this.moveControl = new FlyingMoveControl(this, 25, false);
+        this.moveControl = new LordMoveControl(this);
         this.headEye = new MoonLordPart(this, "headEye", 1.5f, 1.5f);
         this.heart = new MoonLordPart(this, "heart", 2.5f, 2.5f);
         this.rightHandEye = new MoonLordPart(this, "rightHandEye", 1.5f, 1.5f);
@@ -470,6 +471,45 @@ public class MoonLord extends BossLikePathfinderMob {
 
         LordPose(int actionTime) {
             this.getAbilityTime = actionTime;
+        }
+    }
+    //move control
+    static class LordMoveControl extends MoveControl {
+        private final MoonLord moonLord;
+        private int floatDuration;
+
+        public LordMoveControl(MoonLord moonLord) {
+            super(moonLord);
+            this.moonLord = moonLord;
+        }
+
+        @Override
+        public void tick() {
+            if (this.operation == MoveControl.Operation.MOVE_TO) {
+                if (this.floatDuration-- <= 0) {
+                    this.floatDuration = this.floatDuration + this.moonLord.getRandom().nextInt(6) + 2;
+                    Vec3 vec3 = new Vec3(this.wantedX - this.moonLord.getX(), this.wantedY - this.moonLord.getY(), this.wantedZ - this.moonLord.getZ());
+                    double d0 = vec3.length();
+                    vec3 = vec3.normalize();
+                    if (this.canReach(vec3, Mth.ceil(d0))) {
+                        this.moonLord.setDeltaMovement(this.moonLord.getDeltaMovement().add(vec3.scale(0.15)));
+                    } else {
+                        this.operation = MoveControl.Operation.WAIT;
+                    }
+                }
+            }
+        }
+
+        private boolean canReach(Vec3 pos, int length) {
+            AABB aabb = this.moonLord.getBoundingBox();
+
+            for (int i = 1; i < length; i++) {
+                aabb = aabb.move(pos);
+                if (!this.moonLord.level().noCollision(this.moonLord, aabb)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.client.animation.KeyframeAnimations;
 
 @OnlyIn(Dist.CLIENT)
 public class HabciakAnimations {
-
     public static final AnimationDefinition WALK = AnimationDefinition.Builder.withLength(1f).looping()
             .addAnimation("head",
                     new AnimationChannel(AnimationChannel.Targets.POSITION,
@@ -1829,6 +1828,5 @@ public class HabciakAnimations {
                             new Keyframe(0.6766666f, KeyframeAnimations.degreeVec(30f, 0f, 0f),
                                     AnimationChannel.Interpolations.LINEAR),
                             new Keyframe(1f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
-                                    AnimationChannel.Interpolations.LINEAR)))
-            .build();
+                                    AnimationChannel.Interpolations.LINEAR))).build();
 }

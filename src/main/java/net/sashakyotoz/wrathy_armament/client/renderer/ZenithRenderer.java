@@ -56,19 +56,13 @@ public class ZenithRenderer extends AdvancedEntityRenderer<ZenithEntity,EntityMo
 
     @Override
     public ResourceLocation getTextureLocation(ZenithEntity entity) {
-        switch (entity.getIndex()){
-            case 1 ->{
-                return terrabladeTexture;
-            }
-            case 2 ->{
-                return meowmereTexture;
-            }
-            case 3->{
-                return zenithTexture;
-            }
-            default -> {
-                return copperSwordTexture;
-            }
-        }
+        if (this.model == this.terrablade)
+            return terrabladeTexture;
+        else if (this.model == this.meowmere)
+            return meowmereTexture;
+        else if (this.model == this.zenith)
+            return zenithTexture;
+        else
+            return copperSwordTexture;
     }
 }

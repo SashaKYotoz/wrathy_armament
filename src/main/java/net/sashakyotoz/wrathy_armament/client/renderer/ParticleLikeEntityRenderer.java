@@ -13,11 +13,11 @@ import net.sashakyotoz.wrathy_armament.client.models.technical.ParticleLikeEntit
 import net.sashakyotoz.wrathy_armament.entities.technical.ParticleLikeEntity;
 
 public class ParticleLikeEntityRenderer extends EntityRenderer<ParticleLikeEntity> {
-    private static final ResourceLocation FIRE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_circle.png");
-    private static final ResourceLocation FIRE_SEMICIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/fire_semicircle.png");
-    public static final ResourceLocation LIGHT_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/light_circle.png");
-    private static final ResourceLocation PURPLE_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/purple_circle.png");
-    private static final ResourceLocation SOUL_CIRCLE = new ResourceLocation(WrathyArmament.MODID,"textures/entity/particle_like/soul_circle.png");
+    private static final ResourceLocation FIRE_CIRCLE = WrathyArmament.createWALocation("textures/entity/particle_like/fire_circle.png");
+    private static final ResourceLocation FIRE_SEMICIRCLE = WrathyArmament.createWALocation("textures/entity/particle_like/fire_semicircle.png");
+    public static final ResourceLocation LIGHT_CIRCLE = WrathyArmament.createWALocation("textures/entity/particle_like/light_circle.png");
+    private static final ResourceLocation PURPLE_CIRCLE = WrathyArmament.createWALocation("textures/entity/particle_like/purple_circle.png");
+    private static final ResourceLocation SOUL_CIRCLE = WrathyArmament.createWALocation("textures/entity/particle_like/soul_circle.png");
     private final ParticleLikeEntityModel<ParticleLikeEntity> model;
 
     public ParticleLikeEntityRenderer(EntityRendererProvider.Context context) {
