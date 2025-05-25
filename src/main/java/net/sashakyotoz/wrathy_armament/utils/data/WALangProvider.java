@@ -205,7 +205,7 @@ public class WALangProvider extends LanguageProvider {
         add("jei.wrathy_armament.lunar_voodoo_doll", """
                 Modified Guide Voodoo Doll. \
                 
-                Doll can be dropped from Guide if play slayed him at night and moon is visible. \
+                Doll can be dropped from Guide if player slayed him at night and moon is visible. \
                 
                 Once thrown into water, Moon Lord will be spawned if sky is visible and it's night time""");
     }
