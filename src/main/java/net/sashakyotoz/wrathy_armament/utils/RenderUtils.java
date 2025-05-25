@@ -173,8 +173,8 @@ public class RenderUtils {
 
     public static void renderTongue(MoonLord lord, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer) {
         pPoseStack.pushPose();
-        BlockPos pos = lord.level().getNearestPlayer(lord, 32) != null ? lord.level().getNearestPlayer(lord, 32).getOnPos().above() : posOfViewing(lord,lord.getOnPos()).above();
-        Vec3 vec3 = pos.getCenter().add(0f,0.25f,0f);
+        BlockPos pos = lord.level().getNearestPlayer(lord, 32) != null ? lord.level().getNearestPlayer(lord, 32).getOnPos().above() : posOfViewing(lord, lord.getOnPos()).above();
+        Vec3 vec3 = pos.getCenter().add(0f, 0.25f, 0f);
         double d0 = (double) (Mth.lerp(pPartialTicks, lord.yBodyRotO, lord.yBodyRot) * ((float) Math.PI / 180F)) + (Math.PI / 2D);
         Vec3 vec31 = lord.getLeashOffset(pPartialTicks);
         double d1 = Math.cos(d0) * vec31.z + Math.sin(d0) * vec31.x;
@@ -223,15 +223,15 @@ public class RenderUtils {
     }
 
     private static void addFace(VertexConsumer vertexconsumer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int light) {
-        vertexconsumer.vertex(matrix, x1, y1, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x1, y2, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x2, y2, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x2, y1, z1).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y1, z1).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y2, z1).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y2, z1).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y1, z1).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
 
-        vertexconsumer.vertex(matrix, x1, y1, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x1, y2, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x2, y2, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
-        vertexconsumer.vertex(matrix, x2, y1, z2).color(0.6F, 0.4F, 0.1F, 1F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y1, z2).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x1, y2, z2).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y2, z2).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
+        vertexconsumer.vertex(matrix, x2, y1, z2).color(0.72F, 0.5F, 0.37F, 0.75F).uv2(light).endVertex();
     }
 
     public static float getOscillatingValue(int tickCount, int periodInSeconds) {

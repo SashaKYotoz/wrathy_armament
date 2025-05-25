@@ -105,6 +105,7 @@ public class WrathyArmamentMiscRegistries {
                 output.accept(WrathyArmamentItems.COPPER_SWORD.get());
                 output.accept(WrathyArmamentItems.MEOWMERE.get());
                 output.accept(WrathyArmamentItems.MYTHRIL_INGOT.get());
+                output.accept(WrathyArmamentItems.LUNAR_VOODOO_DOLL.get());
                 output.accept(WrathyArmamentItems.SHARD_OF_CLEAR_MYTHRIL.get());
                 output.accept(WrathyArmamentItems.SHARD_OF_ORICHALCUM.get());
                 output.accept(WrathyArmamentItems.SHARD_OF_MECHANVIL.get());

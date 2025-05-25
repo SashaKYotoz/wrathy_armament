@@ -37,6 +37,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -85,6 +86,11 @@ public class OnActionsTrigger {
             actions.forEach(e -> e.getKey().run());
             workQueue.removeAll(actions);
         }
+    }
+
+    @SubscribeEvent
+    public static void registerPack(AddPackFindersEvent event) {
+
     }
 
     @SubscribeEvent
@@ -297,12 +303,6 @@ public class OnActionsTrigger {
             event.setGreen(1);
             event.setBlue(1);
         }
-    }
-
-    @SubscribeEvent
-    public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(HalfZatoichiAbilityCapability.class);
-        event.register(MistsplitterDefenseCapability.class);
     }
 
     @SubscribeEvent

@@ -29,6 +29,7 @@ public class WrathyArmamentJeiPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
         return WrathyArmament.createWALocation("jei_plugin");
     }
+
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new WorldshardWorkbenchRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
@@ -52,12 +53,15 @@ public class WrathyArmamentJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(WrathyArmamentItems.HALF_ZATOICHI.get(), Component.translatable("jei.wrathy_armament.half_zatoichi"));
         registration.addIngredientInfo(WrathyArmamentItems.BLADE_OF_CHAOS.get(), Component.translatable("jei.wrathy_armament.blade_of_chaos"));
         registration.addIngredientInfo(WrathyArmamentItems.BLACKRAZOR.get(), Component.translatable("jei.wrathy_armament.blackrazor"));
+        registration.addIngredientInfo(WrathyArmamentItems.LUNAR_VOODOO_DOLL.get(), Component.translatable("jei.wrathy_armament.lunar_voodoo_doll"));
     }
+
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(WorldshardWorkbenchScreen.class, 108, 64, 32, 32,
                 WorldshardWorkbenchRecipeCategory.WORLDSHARD_WORKBENCH_RECIPE);
     }
+
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(WrathyArmamentBlocks.WORLDSHARD_WORKBENCH.get()), WorldshardWorkbenchRecipeCategory.WORLDSHARD_WORKBENCH_RECIPE);

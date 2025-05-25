@@ -3,14 +3,9 @@ package net.sashakyotoz.wrathy_armament;
 import com.mojang.logging.LogUtils;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -23,8 +18,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.TransparentFireLayer;
-import net.sashakyotoz.wrathy_armament.client.renderer.layers.WeaponsOnBackLayer;
 import net.sashakyotoz.wrathy_armament.networking.WANetworkingManager;
 import net.sashakyotoz.wrathy_armament.registers.*;
 import org.slf4j.Logger;
@@ -45,10 +38,8 @@ public class WrathyArmament {
         WrathyArmamentEntities.REGISTRY.register(modEventBus);
         WrathyArmamentSounds.init();
         modEventBus.addListener(WANetworkingManager::registerPackets);
-        if (FMLEnvironment.dist.isClient()) {
-            modEventBus.addListener(this::registerLayer);
+        if (FMLEnvironment.dist.isClient())
             modEventBus.addListener(this::clientLoad);
-        }
         TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/layers/transparent_fire", "transparent_fire_overlay");
         TextureAnimator.addEntityToAnimate(WrathyArmament.class, MODID, "entity/particle_like/shield_dash", "shield_dash");
     }
@@ -67,16 +58,5 @@ public class WrathyArmament {
 
     private static IAnimation registerPlayerAnimation(AbstractClientPlayer player) {
         return new ModifierLayer<>();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private void registerLayer(EntityRenderersEvent.AddLayers event) {
-        event.getSkins().forEach((s) -> {
-            LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>> livingEntityRenderer = event.getSkin(s);
-            if (livingEntityRenderer instanceof PlayerRenderer playerRenderer) {
-                playerRenderer.addLayer(new TransparentFireLayer<>(playerRenderer, event.getEntityModels()));
-                playerRenderer.addLayer(new WeaponsOnBackLayer<>(playerRenderer, event.getContext()));
-            }
-        });
     }
 }

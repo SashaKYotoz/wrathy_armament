@@ -1,0 +1,35 @@
+{
+	"parent": "minecraft:item/handheld",
+	"textures": {
+		"layer0": "wrathy_armament:item/zenith"
+	},
+	"overrides": [
+		{"predicate": {"custom_model_data": 0}, "model": "wrathy_armament:item/zenith"},
+		{"predicate": {"custom_model_data": 1}, "model": "wrathy_armament:item/thrown_zenith"}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [0, -90, 55],
+			"translation": [0, 8.5, -1],
+			"scale": [1.275, 1.275, 0.85]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0, 90, -55],
+			"translation": [0, 8.5, -1],
+			"scale": [1.275, 1.275, 0.85]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -90, 25],
+			"translation": [1.13, 3.2, 1.13],
+			"scale": [1.36, 1.36, 0.68]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 90, -25],
+			"translation": [1.13, 3.2, 1.13],
+			"scale": [1.36, 1.36, 0.68]
+		},
+		"gui": {
+			"rotation": [0, -22.5, 0]
+		}
+	}
+}

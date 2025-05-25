@@ -191,8 +191,6 @@ public class MoonLord extends BossLikePathfinderMob {
             setLordPose();
         if (this.isInPose(LordPose.LASERING)) {
             LivingEntity target = this.getTarget();
-            float k = RenderUtils.getOscillatingWithNegativeValue(this.tickCount, 8);
-//            TODO: finish with setting of rotation
             if (target != null) {
                 double d0 = target.getX() - this.getX();
                 double d2 = target.getZ() - this.getZ();
@@ -203,9 +201,8 @@ public class MoonLord extends BossLikePathfinderMob {
                 float getRotYToTarget = this.rotlerp(this.getYRot(), f, 40);
                 float getRotXToTarget = this.rotlerp(this.getXRot(), f2, 25);
                 float delta = RenderUtils.getOscillatingValue(this.tickCount, 8);
-                this.setXRot(Mth.lerp(delta, getRotXToTarget - (30 * k), getRotXToTarget + (30 * k)));
-                float yRot = lerp(k, getRotYToTarget + 50, getRotYToTarget - 50) % 360;
-                this.setYRot(yRot);
+                this.setXRot(Mth.lerp(delta, getRotXToTarget - 30, getRotXToTarget + 30));
+                this.setYRot(Mth.lerp(delta, getRotYToTarget - 50, getRotYToTarget + 50));
             }
             if (this.tickCount % 5 == 0) {
                 if (this.tickCount % 4 == 0)
@@ -220,11 +217,6 @@ public class MoonLord extends BossLikePathfinderMob {
                 }
             }
         }
-    }
-
-    private float lerp(float pDelta, float pStart, float pEnd) {
-        pDelta = Math.max(0, Math.min(1, pDelta));
-        return pStart + pDelta * (pEnd - pStart);
     }
 
     private float rotlerp(float pAngle, float pTargetAngle, float pMaxIncrease) {
@@ -318,7 +310,7 @@ public class MoonLord extends BossLikePathfinderMob {
                             EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
                             projectile.setOwner(this);
                             projectile.setOwner(this);
-                            projectile.shootFromRotation(this.leftHandEye, this.leftHandEye.getXRot(), this.leftHandEye.getYRot(), 0, 3F, 0);
+                            projectile.shootFromRotation(this.leftHandEye, this.getXRot() - 10, this.getYRot(), 0, 3F, 0);
                             this.level().addFreshEntity(projectile);
                         }
                     });
@@ -326,7 +318,7 @@ public class MoonLord extends BossLikePathfinderMob {
                         for (int i = -1; i < 2; i++) {
                             EyeOfCthulhuProjectile projectile = new EyeOfCthulhuProjectile(WrathyArmamentEntities.EYE_OF_CTHULHU_PROJECTILE.get(), this, this.level());
                             projectile.setOwner(this);
-                            projectile.shootFromRotation(this.rightHandEye, this.rightHandEye.getXRot(), this.rightHandEye.getYRot(), 0, 3F, 0);
+                            projectile.shootFromRotation(this.rightHandEye, this.getXRot() - 10, this.getYRot(), 0, 3F, 0);
                             this.level().addFreshEntity(projectile);
                         }
                     });
@@ -473,6 +465,7 @@ public class MoonLord extends BossLikePathfinderMob {
             this.getAbilityTime = actionTime;
         }
     }
+
     //move control
     static class LordMoveControl extends MoveControl {
         private final MoonLord moonLord;

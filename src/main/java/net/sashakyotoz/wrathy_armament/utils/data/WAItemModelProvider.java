@@ -22,6 +22,7 @@ public class WAItemModelProvider extends ItemModelProvider {
         simpleMaterialItem(WrathyArmamentItems.SHARD_OF_MECHANVIL);
         simpleMaterialItem(WrathyArmamentItems.SHARD_OF_ORICHALCUM);
         simpleMaterialItem(WrathyArmamentItems.SHARD_OF_NETHERNESS);
+        simpleMaterialItem(WrathyArmamentItems.LUNAR_VOODOO_DOLL);
     }
     private ItemModelBuilder simpleMaterialItem(RegistryObject<Item> item) {
         return withExistingParent(item.getId().getPath(),

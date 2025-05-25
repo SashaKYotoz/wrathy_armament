@@ -27,6 +27,7 @@ import net.sashakyotoz.wrathy_armament.blocks.HandlerStoneBlock;
 import net.sashakyotoz.wrathy_armament.entities.bosses.BossLikePathfinderMob;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 public class Guide extends PathfinderMob implements RangedAttackMob {
     private final RangedBowAttackGoal<Guide> bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
@@ -107,22 +108,11 @@ public class Guide extends PathfinderMob implements RangedAttackMob {
     }
 
     @Override
-    protected void tickDeath() {
-        this.setLivingEntityFlag(4, true);
-        if (this.deathTime == 19 && !this.level().isClientSide() && this.level() instanceof ServerLevel level) {
-            level.setDayTime(13000);
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 3, Level.ExplosionInteraction.MOB);
-            HandlerStoneBlock.provokeCollapse(null, this.level(), this.getOnPos().above(), 7, 3);
-            MoonLord lord = new MoonLord(WrathyArmamentEntities.MOON_LORD.get(), level);
-            lord.moveTo(this.getOnPos().above(2).getCenter());
-            this.level().addFreshEntity(lord);
-        }
-        super.tickDeath();
-    }
-
-    @Override
     public void die(DamageSource source) {
-        this.deathTime = -80;
+        if (source.getEntity() instanceof Player player
+                && this.level().canSeeSky(this.getOnPos().above())
+                && this.level().isNight())
+            player.drop(WrathyArmamentItems.LUNAR_VOODOO_DOLL.get().getDefaultInstance(), true, false);
         super.die(source);
     }
 

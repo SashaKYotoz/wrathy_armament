@@ -28,16 +28,13 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.Config;
-import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.items.SwingParticleHolder;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
-import org.antlr.v4.runtime.misc.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

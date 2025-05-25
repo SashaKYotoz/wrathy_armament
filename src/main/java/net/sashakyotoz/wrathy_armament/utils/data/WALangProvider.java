@@ -28,7 +28,9 @@ public class WALangProvider extends LanguageProvider {
         WrathyArmamentEntities.REGISTRY.getEntries().forEach(this::addEntityType);
         WrathyArmamentBlocks.BLOCKS.getEntries().forEach(this::addBlock);
         add("creativetab.wrathy_armament_tab", "Wrathly Armament Arsenal");
+        add("pack.wrathy_armament", "Wrathly Armament Pixel Swords");
         add("item.wrathy_armament.material", "Material");
+        add("item.wrathy_armament.action_item", "Action Item");
         add("subtitles.item.phantom_lancer", "Splash of phantoms");
         add("subtitles.item.light_swing", "Light sword swing");
         add("subtitles.item.katana_swing", "Katana-like swing");
@@ -200,6 +202,12 @@ public class WALangProvider extends LanguageProvider {
                 Attacks and abilities are added according to description \
                 
                 of them on wiki and information given by sirdragonblaster""");
+        add("jei.wrathy_armament.lunar_voodoo_doll", """
+                Modified Guide Voodoo Doll. \
+                
+                Doll can be dropped from Guide if play slayed him at night and moon is visible. \
+                
+                Once thrown into water, Moon Lord will be spawned if sky is visible and it's night time""");
     }
 
     private void addDeathDescriptions() {

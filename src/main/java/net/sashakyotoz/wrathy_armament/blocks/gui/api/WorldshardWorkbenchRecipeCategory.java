@@ -16,7 +16,7 @@ import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.WorldshardWo
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import org.jetbrains.annotations.Nullable;
-
+@SuppressWarnings("removal")
 public class WorldshardWorkbenchRecipeCategory implements IRecipeCategory<WorldshardWorkbenchRecipe> {
     public final static ResourceLocation UID = WrathyArmament.createWALocation("worldshard_workbench_crafting");
     public static RecipeType<WorldshardWorkbenchRecipe> WORLDSHARD_WORKBENCH_RECIPE = new RecipeType<>(WorldshardWorkbenchRecipeCategory.UID, WorldshardWorkbenchRecipe.class);
