@@ -28,11 +28,6 @@ public class PhantomFury extends Enchantment {
     }
 
     @Override
-    public boolean isAllowedOnBooks() {
-        return true;
-    }
-
-    @Override
     public Component getFullname(int i) {
         MutableComponent mutablecomponent = Component.translatable(this.getDescriptionId());
         mutablecomponent.withStyle(WrathyArmamentItems.AQUA_TITLE_FORMAT);

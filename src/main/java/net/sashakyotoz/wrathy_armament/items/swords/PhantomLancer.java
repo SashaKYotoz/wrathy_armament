@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -124,8 +123,7 @@ public class PhantomLancer extends SwordLikeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
+    public void appendSwordsDesc(ItemStack itemstack, Level world, List<Component> list) {
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));
         list.add(Component.translatable("item.wrathy_armament.left_hand").withStyle(WrathyArmamentItems.DARK_GREY_TITLE_FORMAT));
         list.add(CommonComponents.EMPTY);

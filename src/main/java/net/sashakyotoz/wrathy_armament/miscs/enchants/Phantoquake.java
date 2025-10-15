@@ -20,16 +20,6 @@ public class Phantoquake extends Enchantment {
     }
 
     @Override
-    public int getMaxLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean isAllowedOnBooks() {
-        return true;
-    }
-
-    @Override
     public Component getFullname(int i) {
         return Component.translatable("enchantment.wrathy_armament.phantoquake").withStyle(ChatFormatting.GOLD);
     }

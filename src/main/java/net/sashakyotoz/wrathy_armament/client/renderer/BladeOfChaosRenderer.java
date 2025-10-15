@@ -3,40 +3,42 @@ package net.sashakyotoz.wrathy_armament.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.client.models.technical.*;
+import net.sashakyotoz.wrathy_armament.client.models.technical.BladeOfChaosModel;
 import net.sashakyotoz.wrathy_armament.entities.technical.BladeOfChaosEntity;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import org.joml.Matrix4f;
 
 public class BladeOfChaosRenderer extends AdvancedEntityRenderer<BladeOfChaosEntity, BladeOfChaosModel<BladeOfChaosEntity>> {
-    private final BladeOfChaosModel<BladeOfChaosEntity> blade;
+    private final ItemRenderer itemRenderer;
     private static final ResourceLocation bladeTexture = WrathyArmament.createWALocation("textures/entity/projectile_like/blade_of_chaos.png");
 
     public BladeOfChaosRenderer(EntityRendererProvider.Context context) {
         super(context, new BladeOfChaosModel<>(context.bakeLayer(BladeOfChaosModel.LAYER_LOCATION)), 0.5f);
-        this.blade = new BladeOfChaosModel<>(context.bakeLayer(BladeOfChaosModel.LAYER_LOCATION));
+        this.itemRenderer = context.getItemRenderer();
     }
 
     @Override
     public void render(BladeOfChaosEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLightIn) {
-        VertexConsumer vb = bufferSource.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity)));
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot())));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180 + Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
-        if (this.model != null)
-            this.model.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 0.75f);
-        else this.blade.renderToBuffer(poseStack, vb, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1f);
+        itemRenderer.renderStatic(WrathyArmamentItems.BLADE_OF_CHAOS.get().getDefaultInstance(), ItemDisplayContext.FIXED,
+                packedLightIn, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, entity.level(), entity.getId());
         poseStack.popPose();
         if (entity.getOwner() != null)
             this.renderChain(entity, partialTicks, poseStack, bufferSource, entity.getOwner());
@@ -96,5 +98,4 @@ public class BladeOfChaosRenderer extends AdvancedEntityRenderer<BladeOfChaosEnt
     public ResourceLocation getTextureLocation(BladeOfChaosEntity entity) {
         return bladeTexture;
     }
-
 }

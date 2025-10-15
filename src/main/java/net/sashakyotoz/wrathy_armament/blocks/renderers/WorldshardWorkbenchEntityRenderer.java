@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.WorldshardWorkbenchBlockEntity;
+import net.sashakyotoz.wrathy_armament.blocks.entities.WorldshardWorkbenchBlockEntity;
 import net.sashakyotoz.wrathy_armament.client.models.technical.ForgeModel;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.mixin.accessor.ItemRendererAccessor;

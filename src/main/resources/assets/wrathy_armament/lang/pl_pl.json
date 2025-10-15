@@ -128,5 +128,6 @@
   "subtitles.item.katana_swing": "Machnięcie Kataną",
   "subtitles.item.light_swing": "Machnięcie Mieczem Lekkim",
   "subtitles.item.phantom_lancer": "Rozprysk Fantomów",
-  "subtitles.item.soul_swing": "Machnięcie Mieczem Dusz"
+  "subtitles.item.soul_swing": "Machnięcie Mieczem Dusz",
+  "tooltip.press_shift": "Naciśnij [ Shift ]"
 }

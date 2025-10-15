@@ -12,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
 
 import java.util.List;
 @OnlyIn(Dist.CLIENT)

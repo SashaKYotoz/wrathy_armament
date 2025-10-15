@@ -28,7 +28,10 @@ import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParti
 import net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.JohannesKnightAttackGoal;
 import net.sashakyotoz.wrathy_armament.entities.technical.HarmfulProjectileEntity;
 import net.sashakyotoz.wrathy_armament.entities.technical.JohannesSpearEntity;
-import net.sashakyotoz.wrathy_armament.registers.*;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
+import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

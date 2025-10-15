@@ -2,7 +2,6 @@ package net.sashakyotoz.wrathy_armament.entities.ai_goals.bosses.sashakyotoz;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.phys.Vec3;
 import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 
 import java.util.EnumSet;

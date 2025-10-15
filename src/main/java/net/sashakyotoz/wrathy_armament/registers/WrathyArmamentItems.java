@@ -6,7 +6,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.items.*;
+import net.sashakyotoz.wrathy_armament.items.ItemWithDescription;
+import net.sashakyotoz.wrathy_armament.items.custom.LunarVoodooDollItem;
 import net.sashakyotoz.wrathy_armament.items.swords.*;
 import net.sashakyotoz.wrathy_armament.utils.ModRarity;
 
@@ -29,7 +30,7 @@ public class WrathyArmamentItems {
     public static final RegistryObject<Item> HALF_ZATOICHI = ITEMS.register("half_zatoichi", () -> new HalfZatoichi(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> MIRROR_SWORD = ITEMS.register("mirror_sword", () -> new MirrorSword(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).stacksTo(1).durability(3200).fireResistant()));
     public static final RegistryObject<Item> BLACKRAZOR = ITEMS.register("blackrazor", () -> new Blackrazor(new Item.Properties().rarity(ModRarity.LEGENDARY_RARITY).stacksTo(1).durability(3200).fireResistant()));
-    //materialsAABB
+    //materials
     public static final RegistryObject<Item> COPPER_SWORD = ITEMS.register("copper_sword", () -> new ItemWithDescription(new Item.Properties().stacksTo(1), "item.wrathy_armament.material"));
     public static final RegistryObject<Item> MEOWMERE = ITEMS.register("meowmere", () -> new ItemWithDescription(new Item.Properties().stacksTo(1), "item.wrathy_armament.material"));
     public static final RegistryObject<Item> MYTHRIL_INGOT = ITEMS.register("mythril_ingot", () -> new ItemWithDescription(new Item.Properties(), "item.wrathy_armament.material"));
@@ -37,5 +38,6 @@ public class WrathyArmamentItems {
     public static final RegistryObject<Item> SHARD_OF_ORICHALCUM = ITEMS.register("shard_of_orichalcum", () -> new ItemWithDescription(new Item.Properties(), "item.wrathy_armament.material"));
     public static final RegistryObject<Item> SHARD_OF_MECHANVIL = ITEMS.register("shard_of_mechanvil", () -> new ItemWithDescription(new Item.Properties(), "item.wrathy_armament.material"));
     public static final RegistryObject<Item> SHARD_OF_NETHERNESS = ITEMS.register("shard_of_netherness", () -> new ItemWithDescription(new Item.Properties(), "item.wrathy_armament.material"));
-    public static final RegistryObject<Item> LUNAR_VOODOO_DOLL = ITEMS.register("lunar_voodoo_doll", () -> new ItemWithDescription(new Item.Properties(), "item.wrathy_armament.action_item"));
+
+    public static final RegistryObject<Item> LUNAR_VOODOO_DOLL = ITEMS.register("lunar_voodoo_doll", () -> new LunarVoodooDollItem(new Item.Properties(), "item.wrathy_armament.action_item"));
 }

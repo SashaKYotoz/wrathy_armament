@@ -51,11 +51,6 @@ public abstract class BossLikePathfinderMob extends PathfinderMob implements Ene
     }
 
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return false;
-    }
-
-    @Override
     protected void defineSynchedData() {
         this.entityData.define(ATTACKING, false);
         this.entityData.define(DATA_REMAINING_ANGER_TIME, 0);

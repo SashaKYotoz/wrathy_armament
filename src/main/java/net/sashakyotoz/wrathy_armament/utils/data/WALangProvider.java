@@ -28,6 +28,7 @@ public class WALangProvider extends LanguageProvider {
         WrathyArmamentEntities.REGISTRY.getEntries().forEach(this::addEntityType);
         WrathyArmamentBlocks.BLOCKS.getEntries().forEach(this::addBlock);
         add("creativetab.wrathy_armament_tab", "Wrathly Armament Arsenal");
+        add("tooltip.press_shift", "Press [ Shift ]");
         add("pack.wrathy_armament", "Wrathly Armament Pixel Swords");
         add("item.wrathy_armament.material", "Material");
         add("item.wrathy_armament.action_item", "Action Item");

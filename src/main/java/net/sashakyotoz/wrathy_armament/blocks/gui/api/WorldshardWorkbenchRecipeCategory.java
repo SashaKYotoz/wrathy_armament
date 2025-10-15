@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.WorldshardWorkbenchRecipe;
+import net.sashakyotoz.wrathy_armament.blocks.entities.recipes.WorldshardWorkbenchRecipe;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import org.jetbrains.annotations.Nullable;

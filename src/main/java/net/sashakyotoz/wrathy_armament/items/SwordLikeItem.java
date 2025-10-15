@@ -1,14 +1,13 @@
 package net.sashakyotoz.wrathy_armament.items;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,10 +25,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
 import net.sashakyotoz.anitexlib.client.renderer.IParticleItem;
-import net.sashakyotoz.anitexlib.registries.ModParticleTypes;
 import net.sashakyotoz.wrathy_armament.Config;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
-import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
 import net.sashakyotoz.wrathy_armament.utils.capabilities.items.XPTiers;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,8 +78,8 @@ public abstract class SwordLikeItem extends Item implements Vanishable, IParticl
         return true;
     }
 
-    public void playAnimAndEffects(Level level, Player player, String animName, SoundEvent event, @Nullable ParticleOptions options,boolean flag) {
-        OnActionsTrigger.playPlayerAnimation(level, player, animName,flag);
+    public void playAnimAndEffects(Level level, Player player, String animName, SoundEvent event, @Nullable ParticleOptions options, boolean flag) {
+        OnActionsTrigger.playPlayerAnimation(level, player, animName, flag);
         player.playSound(event);
         if (options != null)
             OnActionsTrigger.addParticles(options, level, player.getX(), player.getY() + 0.25, player.getZ(), player.getRandom().nextInt(12) / 10f + 0.5f);
@@ -120,11 +117,21 @@ public abstract class SwordLikeItem extends Item implements Vanishable, IParticl
         MutableComponent sparkleOnItem = Component.literal("❇".repeat(Math.max(0, sparkles))).withStyle(ChatFormatting.GOLD).append(Component.literal("❇".repeat(Math.max(0, 5 - sparkles))).withStyle(ChatFormatting.DARK_GRAY));
         pTooltipComponents.add(sparkleOnItem);
         pTooltipComponents.add(CommonComponents.EMPTY);
+        if (Screen.hasShiftDown())
+            appendSwordsDesc(pStack, pLevel, pTooltipComponents);
+        else
+            pTooltipComponents.add(getShiftTooltip());
     }
+
+    public abstract void appendSwordsDesc(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents);
 
     @Override
     public void addParticles(Level level, ItemEntity itemEntity) {
         if (getStoredXP(itemEntity.getItem()) > XPTiers.values()[getCurrentSparkles(itemEntity.getItem())].getNeededXP() && itemEntity.tickCount % 10 == 0)
             OnActionsTrigger.addParticles(new ColorableParticleOption("sparkle", 1f, 1f, 1f), level, itemEntity.getX(), itemEntity.getY() + 0.25f, itemEntity.getZ(), 1.5f);
+    }
+
+    private Component getShiftTooltip() {
+        return Component.translatable("tooltip.press_shift").withStyle(ChatFormatting.DARK_GRAY);
     }
 }

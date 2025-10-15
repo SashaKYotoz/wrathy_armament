@@ -4,7 +4,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.sashakyotoz.wrathy_armament.entities.bosses.Habciak;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.utils.RenderUtils;
 

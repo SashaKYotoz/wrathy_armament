@@ -1,37 +1,28 @@
 package net.sashakyotoz.wrathy_armament.client.renderer.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.sashakyotoz.anitexlib.utils.TextureAnimator;
 import net.sashakyotoz.wrathy_armament.Config;
-import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.client.models.technical.TransparentHumanoidLayerModel;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
-import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
 import net.sashakyotoz.wrathy_armament.utils.RenderUtils;
-import net.sashakyotoz.wrathy_armament.utils.capabilities.ModCapabilities;
-import org.antlr.v4.runtime.misc.Triple;
-import org.spongepowered.asm.mixin.Unique;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class WeaponsOnBackLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private final EntityRendererProvider.Context wrathy_armament$context;

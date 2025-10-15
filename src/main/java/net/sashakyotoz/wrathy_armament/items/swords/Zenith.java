@@ -15,17 +15,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
-import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.technical.ZenithEntity;
 import net.sashakyotoz.wrathy_armament.items.SwingParticleHolder;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
-import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
-import org.antlr.v4.runtime.misc.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -103,8 +98,7 @@ public class Zenith extends SwordLikeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
+    public void appendSwordsDesc(ItemStack itemstack, Level world, List<Component> list) {
         itemstack.getOrCreateTag().putDouble("CustomModelData", 0);
         list.add(Component.translatable("item.wrathy_armament.game.zenith").withStyle(WrathyArmamentItems.TITLE_FORMAT).withStyle(ChatFormatting.ITALIC));
         list.add(CommonComponents.EMPTY);

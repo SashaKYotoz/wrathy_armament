@@ -20,7 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.WorldshardWorkbenchBlockEntity;
+import net.sashakyotoz.wrathy_armament.blocks.entities.WorldshardWorkbenchBlockEntity;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlockEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import org.jetbrains.annotations.Nullable;

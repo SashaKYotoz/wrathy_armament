@@ -19,7 +19,7 @@ side="BOTH"
 [[dependencies.wrathy_armament]]
 modId = "anitexlib"
 mandatory = true
-versionRange = "[0.4,)"
+versionRange = "[0.4.1,)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.wrathy_armament]]

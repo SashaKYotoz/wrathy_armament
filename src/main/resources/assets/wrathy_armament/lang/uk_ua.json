@@ -128,5 +128,6 @@
   "subtitles.item.katana_swing": "Змах катани",
   "subtitles.item.light_swing": "Легкий розмах",
   "subtitles.item.phantom_lancer": "Сплеск фантомів",
-  "subtitles.item.soul_swing": "Душеповний змах"
+  "subtitles.item.soul_swing": "Душеповний змах",
+  "tooltip.press_shift": "Натисніть [ Крастися ]"
 }

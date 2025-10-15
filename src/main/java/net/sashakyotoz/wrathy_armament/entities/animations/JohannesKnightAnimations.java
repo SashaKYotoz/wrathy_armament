@@ -1,11 +1,11 @@
 package net.sashakyotoz.wrathy_armament.entities.animations;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class JohannesKnightAnimations {
     public static final AnimationDefinition WALK = AnimationDefinition.Builder.withLength(0.75f).looping()

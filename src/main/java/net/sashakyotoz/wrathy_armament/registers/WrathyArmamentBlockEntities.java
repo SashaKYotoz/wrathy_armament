@@ -5,8 +5,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.ParadiseBlockEntity;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.WorldshardWorkbenchBlockEntity;
+import net.sashakyotoz.wrathy_armament.blocks.entities.ParadiseBlockEntity;
+import net.sashakyotoz.wrathy_armament.blocks.entities.WorldshardWorkbenchBlockEntity;
 
 public class WrathyArmamentBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =

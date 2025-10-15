@@ -1,7 +1,6 @@
 package net.sashakyotoz.wrathy_armament.entities.alive;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
@@ -23,10 +22,7 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.sashakyotoz.wrathy_armament.blocks.HandlerStoneBlock;
 import net.sashakyotoz.wrathy_armament.entities.bosses.BossLikePathfinderMob;
-import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentEntities;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 
 public class Guide extends PathfinderMob implements RangedAttackMob {

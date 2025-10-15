@@ -19,11 +19,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;
 import net.sashakyotoz.wrathy_armament.entities.technical.BladeOfChaosEntity;
 import net.sashakyotoz.wrathy_armament.items.SwingParticleHolder;
@@ -192,8 +190,7 @@ public class BladeOfChaos extends SwordLikeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
+    public void appendSwordsDesc(ItemStack itemstack, Level world, List<Component> list) {
         list.add(Component.translatable("item.wrathy_armament.game.blade_of_chaos").withStyle(WrathyArmamentItems.TITLE_FORMAT).withStyle(ChatFormatting.ITALIC));
         list.add(CommonComponents.EMPTY);
         list.add(Component.translatable("item.wrathy_armament.abilities").withStyle(WrathyArmamentItems.TITLE_FORMAT));

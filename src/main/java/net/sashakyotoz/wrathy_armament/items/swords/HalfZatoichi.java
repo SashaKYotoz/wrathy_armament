@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
 import net.sashakyotoz.anitexlib.client.particles.parents.options.ColorableParticleOption;
@@ -120,8 +119,7 @@ public class HalfZatoichi extends SwordLikeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
+    public void appendSwordsDesc(ItemStack itemstack, Level world, List<Component> list) {
         MutableComponent charge = Component.translatable("item.wrathy_armament.half_zatoichi_charge");
         charge.withStyle(WrathyArmamentItems.TITLE_FORMAT);
         charge.append(CommonComponents.SPACE).append(Component.translatable("" + itemstack.getOrCreateTag().getInt("charge")));

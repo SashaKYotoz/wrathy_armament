@@ -3,8 +3,6 @@ package net.sashakyotoz.wrathy_armament.blocks.gui.api;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -15,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.WorldshardWorkbenchRecipe;
+import net.sashakyotoz.wrathy_armament.blocks.entities.recipes.WorldshardWorkbenchRecipe;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchScreen;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentBlocks;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;

@@ -9,9 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.entity.PartEntity;
-import net.sashakyotoz.wrathy_armament.WrathyArmament;
 import net.sashakyotoz.wrathy_armament.entities.bosses.MoonLord;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 

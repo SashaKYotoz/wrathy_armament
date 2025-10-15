@@ -21,18 +21,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sashakyotoz.anitexlib.client.particles.parents.options.WaveParticleOption;
 import net.sashakyotoz.wrathy_armament.items.SwingParticleHolder;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentSounds;
 import net.sashakyotoz.wrathy_armament.utils.OnActionsTrigger;
-import org.antlr.v4.runtime.misc.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -178,8 +175,7 @@ public class MirrorSword extends SwordLikeItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
+    public void appendSwordsDesc(ItemStack itemstack, Level world, List<Component> list) {
         MutableComponent charge = Component.translatable("item.wrathy_armament.mirror_sword_charge");
         charge.withStyle(WrathyArmamentItems.TITLE_FORMAT);
         charge.append(CommonComponents.SPACE).append(Component.translatable("" + itemstack.getOrCreateTag().getFloat("damageKeep")));

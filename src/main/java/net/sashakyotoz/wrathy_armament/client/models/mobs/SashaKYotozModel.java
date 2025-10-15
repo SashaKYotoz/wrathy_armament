@@ -8,9 +8,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 import net.sashakyotoz.wrathy_armament.entities.animations.SashaKYotozAnimations;
-import org.jetbrains.annotations.NotNull;
+import net.sashakyotoz.wrathy_armament.entities.bosses.SashaKYotoz;
 
 public class SashaKYotozModel<T extends SashaKYotoz> extends HierarchicalModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(WrathyArmament.createWALocation("sashakyotoz_model"), "main");

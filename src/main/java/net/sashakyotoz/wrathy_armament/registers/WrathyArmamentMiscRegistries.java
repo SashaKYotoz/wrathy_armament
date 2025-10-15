@@ -23,7 +23,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sashakyotoz.wrathy_armament.WrathyArmament;
-import net.sashakyotoz.wrathy_armament.blocks.blockentities.recipes.WorldshardWorkbenchRecipe;
+import net.sashakyotoz.wrathy_armament.blocks.entities.recipes.WorldshardWorkbenchRecipe;
 import net.sashakyotoz.wrathy_armament.blocks.gui.WorldshardWorkbenchMenu;
 import net.sashakyotoz.wrathy_armament.client.particles.options.CapturedSoulParticleOption;
 import net.sashakyotoz.wrathy_armament.client.particles.options.FireSphereParticleOption;

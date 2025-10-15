@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.sashakyotoz.wrathy_armament.items.SwordLikeItem;
-import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentItems;
 import net.sashakyotoz.wrathy_armament.registers.WrathyArmamentMiscRegistries;
 
 import java.util.Set;
@@ -23,18 +22,8 @@ public class NightmareJumping extends Enchantment {
     }
 
     @Override
-    public int getMaxLevel() {
-        return 1;
-    }
-
-    @Override
     protected boolean checkCompatibility(Enchantment enchantment) {
         return enchantment != WrathyArmamentMiscRegistries.PHANTOQUAKE.get();
-    }
-
-    @Override
-    public boolean isAllowedOnBooks() {
-        return true;
     }
 
     @Override

@@ -19,7 +19,6 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class RenderUtils {
-
     public static void renderBeam(Mob entity, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, RenderType type) {
         if (entity.getTarget() != null) {
             float f1 = entity.level().getGameTime() + pPartialTicks;
